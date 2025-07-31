@@ -5,7 +5,7 @@ public class Product
     double price;
     int quantity;
     
-    // constructor, I used parameters to assure that values will come right(I guess)
+    // constructor, I used parameters because I read the values before creating the object
     public Product(String Name, double price, int quantity)
     {
         //I used "this" because the parameters have the same name of the attributes
@@ -14,6 +14,13 @@ public class Product
         this.quantity = quantity;
     }
     
+    public void addProduct (int qtt)
+    {
+        this.quantity = quantity + qtt;
+    }
     
-    
+    public double totalPrice ()
+    {
+        return (double) quantity * price;
+    }
 }
