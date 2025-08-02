@@ -16,7 +16,7 @@ public class Product
     
     public void addProduct (int qtt)
     {
-        this.quantity = quantity + qtt;
+        this.quantity = quantity - qtt;
     }
     
     public double totalPrice ()
