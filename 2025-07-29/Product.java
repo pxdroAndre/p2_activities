@@ -1,26 +1,31 @@
 public class Product
 {
     // Object attributes
-    String Name;
+    String name;
     double price;
     int quantity;
     
     // constructor, I used parameters because I read the values before creating the object
-    public Product(String Name, double price, int quantity)
+    public Product(String name, double price, int quantity)
     {
         //I used "this" because the parameters have the same name of the attributes
-        this.Name = Name;
+        this.name = name;
         this.price = price;
         this.quantity = quantity;
     }
     
-    public void addProduct (int qtt)
+    public void addProducts (int qtt)
     {
-        this.quantity = quantity - qtt;
+        this.quantity = quantity + qtt;
     }
     
-    public double totalPrice ()
+    public double totalValueInStock ()
     {
-        return (double) quantity * price;
+        return (double) this.quantity * this.price;
+    }
+
+    public void removeProducts (int qtt)
+    {
+        this.quantity = quantity - qtt;
     }
 }
