@@ -1,19 +1,34 @@
-public class TaxPayer 
+import java.util.Scanner;
+
+public abstract class TaxPayer
 {
     private String name;
     private double annualIncome;
-    public double taxes;
-    
-    private abstract tax()
-    {
-        
+    private double taxes;
+
+    abstract void tax();
+
+    public final String getName() {
+        return name;
     }
-    
-    public void getData (Scanner scan)
-    {
-        System.out.print("Name: ");
-        this.name = scan.nextLine();
-        System.out.print("Annual income: $");
-        this.annualIncome = scan.nextDouble();
+    public final void setName(String name) {
+        this.name = name;
     }
+
+    public final double getAnnualIncome() {
+        return annualIncome;
+    }
+
+    public final void setAnnualIncome(double annualIncome) {
+        this.annualIncome = annualIncome;
+    }
+
+    public final double getTaxes() {
+        return taxes;
+    }
+
+    public final void setTaxes(double taxes) {
+        this.taxes = taxes;
+    }
+
 }
