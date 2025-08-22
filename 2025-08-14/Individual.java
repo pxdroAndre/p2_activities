@@ -1,34 +1,27 @@
-import java.util.Scanner;
-
-public abstract class TaxPayer
+public class Individual extends TaxPayer
 {
-    private String name;
-    private double annualIncome;
-    private double taxes;
+    private double HealthExpenditures;
 
-    abstract void tax();
-
-    public final String getName() {
-        return name;
-    }
-    public final void setName(String name) {
-        this.name = name;
-    }
-
-    public final double getAnnualIncome() {
-        return annualIncome;
-    }
-
-    public final void setAnnualIncome(double annualIncome) {
-        this.annualIncome = annualIncome;
+    @Override
+    void tax()
+    {
+        double tax;
+        if (getAnnualIncome() <= 20000.00)
+        {
+            tax = (this.getAnnualIncome() * 0.15) - (this.getHealthExpenditures() * 0.5);
+        }
+        else
+        {
+            tax = (this.getAnnualIncome() * 0.25) - (this.getHealthExpenditures() * 0.5);
+        }
+        this.setTaxes(tax);
     }
 
-    public final double getTaxes() {
-        return taxes;
+    public double getHealthExpenditures() {
+        return HealthExpenditures;
     }
 
-    public final void setTaxes(double taxes) {
-        this.taxes = taxes;
+    public void setHealthExpenditures(double healthExpenditures) {
+        HealthExpenditures = healthExpenditures;
     }
-
 }
