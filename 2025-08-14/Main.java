@@ -10,20 +10,27 @@ public class Main
         Scanner scan = new Scanner(System.in);
         System.out.print("Enter the number of tax payers: ");
         int counter = scan.nextInt();
+        ArrayList <TaxPayer> taxPayerList = new ArrayList<TaxPayer>();
 
         for (int i = 1; i <= counter; i++)
         {
             System.out.println("Tax payer #" + i + " data:");
             System.out.print("Individual or company? (i/c) ");
+            scan.nextLine();
             String ans = scan.nextLine();
-            List <TaxPayer> taxPayerList = new ArrayList<TaxPayer>();
 
             if (Objects.equals(ans, "i"))
             {
-                Individual person = new Individual();
+                System.out.print("Name: ");
                 String name = scan.nextLine();
+
+                System.out.print("Anual Income: ");
                 double income = scan.nextDouble();
+
+                System.out.print("Health Expenditures: ");
                 double expenditures = scan.nextDouble();
+
+                Individual person = new Individual();
                 person.setName(name);
                 person.setAnnualIncome(income);
                 person.setHealthExpenditures(expenditures);
@@ -33,10 +40,16 @@ public class Main
             }
             else
             {
-                Company company = new Company();
+                System.out.print("Name: ");
                 String name = scan.nextLine();
+
+                System.out.print("Anual Income: ");
                 double income = scan.nextDouble();
+
+                System.out.print("Number of Employees: ");
                 int employees = scan.nextInt();
+
+                Company company = new Company();
                 company.setName(name);
                 company.setAnnualIncome(income);
                 company.setNumEmployees(employees);
@@ -44,6 +57,16 @@ public class Main
                 taxPayerList.add(company);
             }
         }
+
+        System.out.println("TAXES PAID:");
+        double totalTaxes = 0.00;
+        for (TaxPayer taxPayer : taxPayerList)
+        {
+            System.out.println(taxPayer.getName() + ": $" + taxPayer.getTaxes());
+            totalTaxes += taxPayer.getTaxes();
+        }
+        System.out.println();
+        System.out.println("TOTAL TAXES: $" + totalTaxes);
 
     }
 }
