@@ -1,9 +1,7 @@
 import java.util.Scanner;
 
-public class Main
+public class Bank
 {
-
-
     public static void main (String[] args)
     {
         int numAccount;
@@ -16,11 +14,12 @@ public class Main
 
         System.out.print("Number: ");
         numAccount = sc.nextInt();
+        sc.nextLine();
 
         System.out.print("Holder: ");
         holder = sc.nextLine();
 
-        System.out.print("Intial balance: ");
+        System.out.print("Initial balance: ");
         initialBalance = sc.nextDouble();
 
         System.out.print("Withdraw limit: ");
@@ -31,15 +30,16 @@ public class Main
         try
         {
             System.out.print("Enter amount for withdraw: ");
-            sc.nextDouble();
+            double value = sc.nextDouble();
+            account.withdraw(value);
         }
-        catch (Exception e)
+        catch (WithdrawException e)
         {
-
+            System.out.println("Withdraw error: " + e.getMessage());
         }
         finally
         {
-
+            System.out.println("Operation finished");
         }
 
     }

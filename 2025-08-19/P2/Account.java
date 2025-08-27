@@ -5,14 +5,21 @@ public class Account
     private double balance;
     private double withdrawLimit;
 
-    public void deposit(double value)
+    public void withdraw (double value) throws WithdrawException
     {
-        this.setBalance(value + this.getBalance());
-    }
 
-    public void withdraw (double value)
-    {
-        this.setBalance(value - this.getBalance());
+        if (value > this.withdrawLimit)
+        {
+            throw new WithdrawException("The amount exceeds the limit");
+        }
+        if (value > this.balance)
+        {
+            throw new WithdrawException("Not enough balance");
+
+        }
+
+        this.balance -= value;
+        System.out.println("New balance: " + this.balance);
     }
 
 
@@ -22,46 +29,5 @@ public class Account
         this.number = number;
         this.balance = balance;
         this.withdrawLimit = withdrawLimit;
-    }
-
-
-    public double getWithdrawLimit()
-    {
-        return withdrawLimit;
-    }
-
-    public void setWithdrawLimit(double withdrawLimit)
-    {
-        this.withdrawLimit = withdrawLimit;
-    }
-
-    public double getBalance()
-    {
-        return balance;
-    }
-
-    public void setBalance(double balance)
-    {
-        this.balance = balance;
-    }
-
-    public String getHolder()
-    {
-        return holder;
-    }
-
-    public void setHolder(String holder)
-    {
-        this.holder = holder;
-    }
-
-    public int getNumber()
-    {
-        return number;
-    }
-
-    public void setNumber(int number)
-    {
-        this.number = number;
     }
 }
