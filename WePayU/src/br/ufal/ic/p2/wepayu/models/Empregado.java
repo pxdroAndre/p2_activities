@@ -2,11 +2,15 @@ package br.ufal.ic.p2.wepayu.models;
 
 import br.ufal.ic.p2.wepayu.Exception.EmpregadoNaoExisteException;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class Empregado {
     private String nome;
     private String endereco;
     private String tipo;
     private int salario;
+
 
     public Empregado(String nome, String endereco, String tipo, int salario) throws EmpregadoNaoExisteException {
         this.nome = nome;
@@ -14,6 +18,12 @@ public class Empregado {
         this.tipo = tipo;
         this.salario = salario;
     }
+
+    // hashmap de empregados
+
+
+    // funcao para zerar o sistema, ou seja, zerar os empregados registrados
+
 
     public String getNome() {
         return nome;
