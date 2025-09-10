@@ -4,12 +4,18 @@ import br.ufal.ic.p2.wepayu.Exception.EmpregadoNaoExisteException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Locale;
+import java.text.NumberFormat;
 
 public class SistemaFolha
 {
     //criação do hashmap de empregados e id
     private int id = 1;
     private Map<String, Empregado> empregados = new HashMap<>();
+
+    //locale do BR para formatar o número
+    Locale localeBrasil = new Locale("pt", "BR");
+    NumberFormat formatador = NumberFormat.getNumberInstance(localeBrasil);
+
     // função de zerar sistema
     public void zerarSistema ()
     {
@@ -32,6 +38,10 @@ public class SistemaFolha
     // funcao para pegar atributo do empregado
     public String getAtributoEmpregado (String emp, String atributo) throws EmpregadoNaoExisteException
     {
+        //ajustando a formatação dos numeros
+        formatador.setGroupingUsed(false);
+        formatador.setMinimumFractionDigits(2);
+        // lendo o dado do empregado
         Empregado empregado = empregados.get(emp);
         if (empregado == null) throw new EmpregadoNaoExisteException();
         else
@@ -41,7 +51,7 @@ public class SistemaFolha
                 case "nome" -> empregado.getNome();
                 case "endereco" -> empregado.getEndereco();
                 case "tipo" -> empregado.getTipo();
-                case "salario" -> String.format(Locale.GERMAN,"%,.2f" ,empregado.getSalario());
+                case "salario" -> String.valueOf(formatador.format(empregado.getSalario()));
                 case "sindicalizado" -> String.valueOf(empregado.getSindicalizado());
                 default -> "none";
             };
