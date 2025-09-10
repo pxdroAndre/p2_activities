@@ -10,6 +10,7 @@ public class Empregado {
     private String endereco;
     private String tipo;
     private int salario;
+    private boolean sindicalizado;
 
 
     public Empregado(String nome, String endereco, String tipo, int salario)
@@ -18,6 +19,7 @@ public class Empregado {
         this.endereco = endereco;
         this.tipo = tipo;
         this.salario = salario;
+        sindicalizado = false;
     }
 
     public String getNome() {
@@ -36,4 +38,5 @@ public class Empregado {
         return salario;
     }
 
+    public boolean getSindicalizado(){ return sindicalizado;}
 }

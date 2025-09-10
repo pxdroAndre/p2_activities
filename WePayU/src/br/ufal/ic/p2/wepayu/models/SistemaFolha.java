@@ -40,6 +40,7 @@ public class SistemaFolha
                 case "endereco" -> empregado.getEndereco();
                 case "tipo" -> empregado.getTipo();
                 case "salario" -> String.valueOf(empregado.getSalario() + ",00");
+                case "sindicalizado" -> String.valueOf(empregado.getSindicalizado());
                 default -> "none";
             };
         }
