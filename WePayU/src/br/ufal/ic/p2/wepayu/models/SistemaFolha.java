@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Locale;
 import java.text.NumberFormat;
+import java.util.Objects;
 
 public class SistemaFolha
 {
@@ -70,9 +71,17 @@ public class SistemaFolha
         //ajustando a formatação dos numeros
         formatador.setGroupingUsed(false);
         formatador.setMinimumFractionDigits(2);
-        // lendo o dado do empregado
+
+        // lendo o dado do empregado e verificando se existe
         Empregado empregado = empregados.get(emp);
         if (empregado == null) throw new EmpregadoNaoExisteException();
+
+        // verificando se eh comissionado
+        if (Objects.equals(empregado.getTipo(), "comissionado") && (Objects.equals(atributo, "comissao"))
+                && (empregado instanceof EmpregadoComissionado comissionado))
+        {
+            return String.valueOf(formatador.format(comissionado.getComissao()));
+        }
         else
         {
             return switch (atributo)
@@ -82,6 +91,7 @@ public class SistemaFolha
                 case "tipo" -> empregado.getTipo();
                 case "salario" -> String.valueOf(formatador.format(empregado.getSalario()));
                 case "sindicalizado" -> String.valueOf(empregado.getSindicalizado());
+
                 default -> "none";
             };
         }

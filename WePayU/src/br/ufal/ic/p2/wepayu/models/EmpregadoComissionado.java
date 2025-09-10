@@ -8,4 +8,5 @@ public class EmpregadoComissionado extends Empregado
         super(nome, endereco, tipo, salario);
         this.comissao = comissao;
     }
+    public double getComissao(){return comissao;};
 }

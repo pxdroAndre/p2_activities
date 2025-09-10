@@ -37,6 +37,9 @@ public class Empregado {
     public double getSalario() {
         return salario;
     }
+    public double  getComissao() {
+        return getComissao();
+    }
 
     public boolean getSindicalizado(){ return sindicalizado;}
 }
