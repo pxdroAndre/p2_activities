@@ -1,9 +1,9 @@
 package br.ufal.ic.p2.wepayu.models;
 
 import br.ufal.ic.p2.wepayu.Exception.EmpregadoNaoExisteException;
-
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Locale;
 
 public class SistemaFolha
 {
@@ -18,10 +18,12 @@ public class SistemaFolha
     }
 
     // metodo para criar empregado
-    public String criarEmpregado (String nome, String endereco, String tipo, int salario)
+    public String criarEmpregado (String nome, String endereco, String tipo, String sal)
     {
         // transformando o id em string
         String novoID = String.valueOf(id);
+        sal = sal.replace(',', '.');
+        double salario = Double.parseDouble(sal);
         Empregado novoEmpregado = new Empregado(nome, endereco, tipo, salario);
         empregados.put(novoID, novoEmpregado); //adicionando no hashmap
         id++;
@@ -39,7 +41,7 @@ public class SistemaFolha
                 case "nome" -> empregado.getNome();
                 case "endereco" -> empregado.getEndereco();
                 case "tipo" -> empregado.getTipo();
-                case "salario" -> String.valueOf(empregado.getSalario() + ",00");
+                case "salario" -> String.format(Locale.GERMAN,"%,.2f" ,empregado.getSalario());
                 case "sindicalizado" -> String.valueOf(empregado.getSindicalizado());
                 default -> "none";
             };

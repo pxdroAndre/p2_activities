@@ -25,7 +25,7 @@ public class Facade
     }
 
     // metodo para zerar o sistema
-    public String criarEmpregado (String nome, String endereco, String tipo, int salario)
+    public String criarEmpregado (String nome, String endereco, String tipo, String salario)
     {
         return sistema.criarEmpregado(nome, endereco, tipo, salario);
     }

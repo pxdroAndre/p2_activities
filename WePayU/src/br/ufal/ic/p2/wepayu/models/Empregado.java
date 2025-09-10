@@ -9,11 +9,11 @@ public class Empregado {
     private String nome;
     private String endereco;
     private String tipo;
-    private int salario;
+    private double salario;
     private boolean sindicalizado;
 
 
-    public Empregado(String nome, String endereco, String tipo, int salario)
+    public Empregado(String nome, String endereco, String tipo, double salario)
     {
         this.nome = nome;
         this.endereco = endereco;
@@ -34,7 +34,7 @@ public class Empregado {
         return tipo;
     }
 
-    public int getSalario() {
+    public double getSalario() {
         return salario;
     }
 
