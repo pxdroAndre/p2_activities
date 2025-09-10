@@ -1,6 +1,11 @@
 package br.ufal.ic.p2.wepayu.models;
 
-public class EmpregadoComissionado
+public class EmpregadoComissionado extends Empregado
 {
+    private double comissao;
 
+    public EmpregadoComissionado(String nome, String endereco, String tipo, double salario, double comissao) {
+        super(nome, endereco, tipo, salario);
+        this.comissao = comissao;
+    }
 }

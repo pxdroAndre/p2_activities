@@ -24,9 +24,16 @@ public class Facade
         return sistema.getAtributoEmpregado(emp, atributo);
     }
 
-    // metodo para zerar o sistema
+    // metodo para criar empregados nao comissionados
     public String criarEmpregado (String nome, String endereco, String tipo, String salario)
     {
         return sistema.criarEmpregado(nome, endereco, tipo, salario);
     }
+    // metodo para criar empregados comissionados
+    public String criarEmpregado (String nome, String endereco, String tipo, String salario, String comissao)
+    {
+
+        return sistema.criarEmpregado(nome, endereco, tipo, salario, comissao);
+    }
 }
+

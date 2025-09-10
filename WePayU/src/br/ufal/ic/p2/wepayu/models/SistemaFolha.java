@@ -23,15 +23,44 @@ public class SistemaFolha
         id = 1;
     }
 
-    // metodo para criar empregado
+    // metodo para criar empregado nao comissionado
     public String criarEmpregado (String nome, String endereco, String tipo, String sal)
     {
         // transformando o id em string
         String novoID = String.valueOf(id);
+        // corrige a formatação do double
         sal = sal.replace(',', '.');
         double salario = Double.parseDouble(sal);
-        Empregado novoEmpregado = new Empregado(nome, endereco, tipo, salario);
-        empregados.put(novoID, novoEmpregado); //adicionando no hashmap
+        // cria o empregado
+        switch (tipo)
+        {
+            case "assalariado":
+                EmpregadoAssalariado novoAssalariado = new EmpregadoAssalariado(nome, endereco, tipo, salario);
+                empregados.put(novoID, novoAssalariado); //adicionando no hashmap
+                break;
+            case "horista":
+                EmpregadoHorista novoHorista = new EmpregadoHorista(nome, endereco, tipo, salario);
+                empregados.put(novoID, novoHorista); //adicionando no hashmap
+                break;
+        };
+        id++;
+        return novoID;
+    }
+    // metodo para criar empregado comissionado
+    public String criarEmpregado (String nome, String endereco, String tipo, String sal, String comissao)
+    {
+        // transformando o id em string
+        String novoID = String.valueOf(id);
+        // corrige a formatação do double
+        sal = sal.replace(',', '.');
+        comissao = comissao.replace(',', '.');
+
+        double salario = Double.parseDouble(sal);
+        double com = Double.parseDouble(comissao);
+        // cria o empregado
+        EmpregadoComissionado novoComissionado = new EmpregadoComissionado(nome, endereco, tipo, salario, com);
+        empregados.put(novoID, novoComissionado); //adicionando no hashmap
+
         id++;
         return novoID;
     }
