@@ -1,5 +1,7 @@
 package br.ufal.ic.p2.wepayu.models;
 
+import br.ufal.ic.p2.wepayu.Exception.EmpregadoNaoExisteException;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -14,21 +16,16 @@ public class SistemaFolha
     }
 
     // funcao para pegar atributo do empregado
-    public String getAtributoEmpregado (String emp, String atributo)
+    public String getAtributoEmpregado (String emp, String atributo) throws EmpregadoNaoExisteException
     {
         Empregado empregado = empregados.get(emp);
-        switch (atributo)
+        return switch (atributo)
         {
-            case "nome":
-                return empregado.getNome();
-            case "endereco":
-                return empregado.getEndereco();
-            case "tipo":
-                return empregado.getTipo();
-            case "salario":
-                return String.valueOf(empregado.getSalario());
-            default:
-                throw new Exception()
-        }
+            case "nome" -> empregado.getNome();
+            case "endereco" -> empregado.getEndereco();
+            case "tipo" -> empregado.getTipo();
+            case "salario" -> String.valueOf(empregado.getSalario());
+            default -> "none";
+        };
     }
 }
