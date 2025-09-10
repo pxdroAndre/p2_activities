@@ -19,12 +19,6 @@ public class Empregado {
         this.salario = salario;
     }
 
-    // hashmap de empregados
-
-
-    // funcao para zerar o sistema, ou seja, zerar os empregados registrados
-
-
     public String getNome() {
         return nome;
     }

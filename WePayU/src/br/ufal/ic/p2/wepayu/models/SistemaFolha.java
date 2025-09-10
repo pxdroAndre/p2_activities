@@ -19,13 +19,18 @@ public class SistemaFolha
     public String getAtributoEmpregado (String emp, String atributo) throws EmpregadoNaoExisteException
     {
         Empregado empregado = empregados.get(emp);
-        return switch (atributo)
+        if (empregado == null) throw new EmpregadoNaoExisteException();
+        else
         {
-            case "nome" -> empregado.getNome();
-            case "endereco" -> empregado.getEndereco();
-            case "tipo" -> empregado.getTipo();
-            case "salario" -> String.valueOf(empregado.getSalario());
-            default -> "none";
-        };
+            return switch (atributo)
+            {
+                case "nome" -> empregado.getNome();
+                case "endereco" -> empregado.getEndereco();
+                case "tipo" -> empregado.getTipo();
+                case "salario" -> String.valueOf(empregado.getSalario());
+                default -> "none";
+            };
+        }
+
     }
 }

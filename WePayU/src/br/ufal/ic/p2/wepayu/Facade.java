@@ -19,9 +19,9 @@ public class Facade
     }
 
     // metodo para pegar algum atributo do empregado
-    public void getAtributoEmpregado (String emp, String atributo)
+    public String getAtributoEmpregado (String emp, String atributo) throws EmpregadoNaoExisteException
     {
-
+        return sistema.getAtributoEmpregado(emp, atributo);
     }
 
     // metodo para zerar o sistema
