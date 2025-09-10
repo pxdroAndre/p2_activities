@@ -39,7 +39,7 @@ public class SistemaFolha
                 case "nome" -> empregado.getNome();
                 case "endereco" -> empregado.getEndereco();
                 case "tipo" -> empregado.getTipo();
-                case "salario" -> String.valueOf(empregado.getSalario());
+                case "salario" -> String.valueOf(empregado.getSalario() + ",00");
                 default -> "none";
             };
         }
