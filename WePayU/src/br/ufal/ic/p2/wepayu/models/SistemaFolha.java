@@ -7,14 +7,26 @@ import java.util.Map;
 
 public class SistemaFolha
 {
-    //criação do hashmap de empregados
+    //criação do hashmap de empregados e id
+    private int id = 1;
     private Map<String, Empregado> empregados = new HashMap<>();
     // função de zerar sistema
     public void zerarSistema ()
     {
         empregados.clear();
+        id = 1;
     }
 
+    // metodo para criar empregado
+    public String criarEmpregado (String nome, String endereco, String tipo, int salario)
+    {
+        // transformando o id em string
+        String novoID = String.valueOf(id);
+        Empregado novoEmpregado = new Empregado(nome, endereco, tipo, salario);
+        empregados.put(novoID, novoEmpregado); //adicionando no hashmap
+        id++;
+        return novoID;
+    }
     // funcao para pegar atributo do empregado
     public String getAtributoEmpregado (String emp, String atributo) throws EmpregadoNaoExisteException
     {

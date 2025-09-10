@@ -12,7 +12,8 @@ public class Empregado {
     private int salario;
 
 
-    public Empregado(String nome, String endereco, String tipo, int salario) throws EmpregadoNaoExisteException {
+    public Empregado(String nome, String endereco, String tipo, int salario)
+    {
         this.nome = nome;
         this.endereco = endereco;
         this.tipo = tipo;
