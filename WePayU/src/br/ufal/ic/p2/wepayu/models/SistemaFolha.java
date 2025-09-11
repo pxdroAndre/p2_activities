@@ -13,7 +13,7 @@ public class SistemaFolha
 {
     //criação do hashmap de empregados e id
     private int id = 1;
-    private Map<String, Empregado> empregados = new HashMap<>();
+    private final Map<String, Empregado> empregados = new HashMap<>();
 
     //locale do BR para formatar o número
     Locale localeBrasil = new Locale("pt", "BR");
@@ -25,13 +25,28 @@ public class SistemaFolha
         empregados.clear();
         id = 1;
     }
-
+    // metodo para achar as excecoes especificas dos tipos nao comissionados
     public static void acharExcecoes (String nome, String endereco, String tipo, String sal) throws CampoValidoException
     {
-        // checando nome nulo
+        // checando campo nulo
         if (Objects.equals(nome, "")) throw new CampoValidoException("Nome nao pode ser nulo.");
         if (Objects.equals(endereco, "")) throw new CampoValidoException("Endereco nao pode ser nulo.");
-        // checando validez
+        if (Objects.equals(sal, "")) throw new CampoValidoException("Salario nao pode ser nulo.");
+        // checa se o salario eh numerico
+        try
+        {
+            // corrige a formatação do double
+            sal = sal.replace(',', '.');
+            double salario = Double.parseDouble(sal);
+            if (salario < 0) throw new CampoValidoException("Salario deve ser nao-negativo.");
+        }
+        catch (NumberFormatException e)
+        {
+            throw new CampoValidoException("Salario deve ser numerico.");
+        }
+
+
+        // checando validez do tipo
         if (Objects.equals(tipo, "comissionado")) throw new CampoValidoException("Tipo nao aplicavel.");
         if ((!Objects.equals(tipo, "horista")) &&
                 (!Objects.equals(tipo, "assalariado")) )
@@ -67,19 +82,36 @@ public class SistemaFolha
         id++;
         return novoID;
     }
+    // metodo para achar excecoes do tipo comissionado
     public static void acharExcecoes (String nome, String endereco, String tipo, String sal, String comissao)
             throws CampoValidoException
     {
-        // checando nome nulo
-        if (Objects.equals(nome, "")) throw new CampoValidoException("Nome nao pode ser nulo.");
-        if (Objects.equals(endereco, "")) throw new CampoValidoException("Endereco nao pode ser nulo.");
-
-        // checando validez
-        if ((!Objects.equals(tipo, "comissionado")) &&
-                (!Objects.equals(tipo, "horista")) &&
-                (!Objects.equals(tipo, "assalariado")) )
+        // valida a comissao
+        if (Objects.equals(comissao, "")) throw new CampoValidoException("Comissao nao pode ser nula.");
+        try
         {
-            throw new CampoValidoException("Tipo invalido.");
+            // corrige a formatação do double
+            comissao = comissao.replace(',', '.');
+            double com = Double.parseDouble(comissao);
+            if (com < 0.00) throw new CampoValidoException("Comissao deve ser nao-negativa.");
+        }
+        catch (NumberFormatException e)
+        {
+            throw new CampoValidoException("Comissao deve ser numerica.");
+        }
+        // valida o tipo
+        if ((!Objects.equals(tipo, "comissionado")))
+        {
+            throw new CampoValidoException("Tipo nao aplicavel.");
+        }
+        // valida as demais excecoes
+        try
+        {
+            SistemaFolha.acharExcecoes(nome, endereco, tipo, sal);
+        }
+        catch (Exception e)
+        {
+            return;
         }
     }
 
@@ -106,8 +138,22 @@ public class SistemaFolha
         return novoID;
     }
     // funcao para pegar atributo do empregado
-    public String getAtributoEmpregado (String emp, String atributo) throws EmpregadoNaoExisteException
+    public String getAtributoEmpregado (String emp, String atributo)
+            throws EmpregadoNaoExisteException, CampoValidoException
     {
+        // checando excecoes
+        if (Objects.equals(emp, "")) throw new CampoValidoException("Identificacao do empregado nao pode ser nula.");
+        if
+        (
+            (!Objects.equals(atributo, "nome")) && (!Objects.equals(atributo, "endereco"))
+            &&
+            (!Objects.equals(atributo, "tipo")) && (!Objects.equals(atributo, "salario"))
+            &&
+            (!Objects.equals(atributo, "sindicalizado")) && (!Objects.equals(atributo, "comissao"))
+        )
+        {
+            throw new CampoValidoException("Atributo nao existe.");
+        }
         //ajustando a formatação dos numeros
         formatador.setGroupingUsed(false);
         formatador.setMinimumFractionDigits(2);

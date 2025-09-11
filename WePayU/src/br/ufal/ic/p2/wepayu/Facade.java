@@ -14,7 +14,7 @@ public class Facade
     }
 
     // metodo para pegar algum atributo do empregado
-    public String getAtributoEmpregado (String emp, String atributo) throws EmpregadoNaoExisteException
+    public String getAtributoEmpregado (String emp, String atributo) throws EmpregadoNaoExisteException, CampoValidoException
     {
         return sistema.getAtributoEmpregado(emp, atributo);
     }
@@ -29,6 +29,11 @@ public class Facade
     {
 
         return sistema.criarEmpregado(nome, endereco, tipo, salario, comissao);
+    }
+
+    public void encerrarSistema ()
+    {
+
     }
 }
 
