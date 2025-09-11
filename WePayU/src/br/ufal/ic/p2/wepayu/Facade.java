@@ -1,14 +1,8 @@
 package br.ufal.ic.p2.wepayu;
 
 import br.ufal.ic.p2.wepayu.Exception.EmpregadoNaoExisteException;
-import br.ufal.ic.p2.wepayu.Exception.NomeNuloException;
-import br.ufal.ic.p2.wepayu.models.Empregado;
+import br.ufal.ic.p2.wepayu.Exception.CampoValidoException;
 import br.ufal.ic.p2.wepayu.models.SistemaFolha;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class Facade
 {
@@ -26,12 +20,12 @@ public class Facade
     }
 
     // metodo para criar empregados nao comissionados
-    public String criarEmpregado (String nome, String endereco, String tipo, String salario) throws NomeNuloException
+    public String criarEmpregado (String nome, String endereco, String tipo, String salario) throws CampoValidoException
     {
         return sistema.criarEmpregado(nome, endereco, tipo, salario);
     }
     // metodo para criar empregados comissionados
-    public String criarEmpregado (String nome, String endereco, String tipo, String salario, String comissao) throws  NomeNuloException
+    public String criarEmpregado (String nome, String endereco, String tipo, String salario, String comissao) throws CampoValidoException
     {
 
         return sistema.criarEmpregado(nome, endereco, tipo, salario, comissao);

@@ -1,7 +1,7 @@
 package br.ufal.ic.p2.wepayu.models;
 
 import br.ufal.ic.p2.wepayu.Exception.EmpregadoNaoExisteException;
-import br.ufal.ic.p2.wepayu.Exception.NomeNuloException;
+import br.ufal.ic.p2.wepayu.Exception.CampoValidoException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -26,10 +26,27 @@ public class SistemaFolha
         id = 1;
     }
 
-    // metodo para criar empregado nao comissionado
-    public String criarEmpregado (String nome, String endereco, String tipo, String sal) throws NomeNuloException
+    public static void acharExcecoes (String nome, String endereco, String tipo, String sal) throws CampoValidoException
     {
-        if (Objects.equals(nome, "")) throw new NomeNuloException();
+        // checando nome nulo
+        if (Objects.equals(nome, "")) throw new CampoValidoException("Nome nao pode ser nulo.");
+        if (Objects.equals(endereco, "")) throw new CampoValidoException("Endereco nao pode ser nulo.");
+        // checando validez
+        if (Objects.equals(tipo, "comissionado")) throw new CampoValidoException("Tipo nao aplicavel.");
+        if ((!Objects.equals(tipo, "horista")) &&
+                (!Objects.equals(tipo, "assalariado")) )
+        {
+            throw new CampoValidoException("Tipo invalido.");
+        }
+    }
+
+    // metodo para criar empregado nao comissionado
+    public String criarEmpregado (String nome, String endereco, String tipo, String sal)
+            throws CampoValidoException
+    {
+        // checando excecoes
+        SistemaFolha.acharExcecoes(nome, endereco, tipo, sal);
+
         // transformando o id em string
         String novoID = String.valueOf(id);
         // corrige a formatação do double
@@ -50,20 +67,37 @@ public class SistemaFolha
         id++;
         return novoID;
     }
-    // metodo para criar empregado comissionado
-    public String criarEmpregado (String nome, String endereco, String tipo, String sal, String comissao) throws NomeNuloException
+    public static void acharExcecoes (String nome, String endereco, String tipo, String sal, String comissao)
+            throws CampoValidoException
     {
         // checando nome nulo
-        if (Objects.equals(nome, "")) throw new NomeNuloException();
+        if (Objects.equals(nome, "")) throw new CampoValidoException("Nome nao pode ser nulo.");
+        if (Objects.equals(endereco, "")) throw new CampoValidoException("Endereco nao pode ser nulo.");
+
+        // checando validez
+        if ((!Objects.equals(tipo, "comissionado")) &&
+                (!Objects.equals(tipo, "horista")) &&
+                (!Objects.equals(tipo, "assalariado")) )
+        {
+            throw new CampoValidoException("Tipo invalido.");
+        }
+    }
+
+    // metodo para criar empregado comissionado
+    public String criarEmpregado (String nome, String endereco, String tipo, String sal, String comissao) throws CampoValidoException
+    {
+        // checando exceções
+        SistemaFolha.acharExcecoes(nome, endereco, tipo, sal, comissao);
 
         // transformando o id em string
         String novoID = String.valueOf(id);
+
         // corrige a formatação do double
         sal = sal.replace(',', '.');
         comissao = comissao.replace(',', '.');
-
         double salario = Double.parseDouble(sal);
         double com = Double.parseDouble(comissao);
+
         // cria o empregado
         EmpregadoComissionado novoComissionado = new EmpregadoComissionado(nome, endereco, tipo, salario, com);
         empregados.put(novoID, novoComissionado); //adicionando no hashmap
