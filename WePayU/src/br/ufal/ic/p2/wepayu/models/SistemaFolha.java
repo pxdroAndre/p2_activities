@@ -12,20 +12,45 @@ import java.beans.XMLEncoder;
 import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;
 import java.io.FileNotFoundException;
+import java.beans.XMLDecoder;
+import java.io.FileInputStream;
 
 public class SistemaFolha
 {
 
     //criação do hashmap de empregados e id
     private int id = 1;
-    private final Map<String, Empregado> empregados = new HashMap<>();
+    private Map<String, Empregado> empregados = new HashMap<>();
 
     //locale do BR para formatar o número
     Locale localeBrasil = new Locale("pt", "BR");
     NumberFormat formatador = NumberFormat.getNumberInstance(localeBrasil);
 
     // construtor
-    public SistemaFolha(){}
+    public SistemaFolha()
+    {
+        try
+        {
+            // tenta abrir o XML
+            FileInputStream fis = new FileInputStream("database.xml");
+
+            // instancia o decoder
+            XMLDecoder decoder = new XMLDecoder(fis);
+
+            // recriacao do hashmap
+            this.empregados = (Map<String, Empregado>) decoder.readObject();
+
+            // correcao da contagem de id
+            this.id = this.empregados.size() + 1;
+
+            decoder.close();
+        }
+        catch (FileNotFoundException e)
+        {
+            this.empregados = new HashMap<>();
+            this.id = 1;
+        }
+    }
 
     // função de zerar sistema
     public void zerarSistema ()
