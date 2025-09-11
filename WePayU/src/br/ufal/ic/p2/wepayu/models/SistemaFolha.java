@@ -8,9 +8,14 @@ import java.util.Map;
 import java.util.Locale;
 import java.text.NumberFormat;
 import java.util.Objects;
+import java.beans.XMLEncoder;
+import java.io.BufferedOutputStream;
+import java.io.FileOutputStream;
+import java.io.FileNotFoundException;
 
 public class SistemaFolha
 {
+
     //criação do hashmap de empregados e id
     private int id = 1;
     private final Map<String, Empregado> empregados = new HashMap<>();
@@ -19,11 +24,37 @@ public class SistemaFolha
     Locale localeBrasil = new Locale("pt", "BR");
     NumberFormat formatador = NumberFormat.getNumberInstance(localeBrasil);
 
+    // construtor
+    public SistemaFolha(){}
+
     // função de zerar sistema
     public void zerarSistema ()
     {
         empregados.clear();
         id = 1;
+    }
+
+    // metodo de encerrar sistema
+    public void encerrarSistema ()
+    {
+        try
+        {
+            // definindo arquivo de saida
+            FileOutputStream fos = new FileOutputStream("database.xml");
+            BufferedOutputStream bos = new BufferedOutputStream(fos);
+
+            // criando o encoder
+            XMLEncoder encoder = new XMLEncoder(bos);
+
+            //escrevendo o hashMap
+            encoder.writeObject(this.empregados);
+            //encerra p encoder
+            encoder.close();
+        }
+        catch (FileNotFoundException e)
+        {
+            e.printStackTrace();
+        }
     }
     // metodo para achar as excecoes especificas dos tipos nao comissionados
     public static void acharExcecoes (String nome, String endereco, String tipo, String sal) throws CampoValidoException

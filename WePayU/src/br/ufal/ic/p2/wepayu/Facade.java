@@ -33,7 +33,7 @@ public class Facade
 
     public void encerrarSistema ()
     {
-
+        sistema.encerrarSistema();
     }
 }
 

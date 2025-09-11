@@ -6,4 +6,5 @@ public class EmpregadoAssalariado extends Empregado
     {
         super(nome, endereco, tipo, salario);
     }
+    public EmpregadoAssalariado(){}
 }

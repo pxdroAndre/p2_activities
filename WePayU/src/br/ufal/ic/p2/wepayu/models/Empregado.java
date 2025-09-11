@@ -12,6 +12,7 @@ public class Empregado {
     private double salario;
     private boolean sindicalizado;
 
+    public Empregado(){}
 
     public Empregado(String nome, String endereco, String tipo, double salario)
     {
@@ -21,6 +22,32 @@ public class Empregado {
         this.salario = salario;
         sindicalizado = false;
     }
+
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
+    public void setEndereco(String endereco) {
+        this.endereco = endereco;
+    }
+
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
+    }
+
+    public void setSalario(double salario) {
+        this.salario = salario;
+    }
+
+    public boolean isSindicalizado() {
+        return sindicalizado;
+    }
+
+    public void setSindicalizado(boolean sindicalizado) {
+        this.sindicalizado = sindicalizado;
+    }
+
+
 
     public String getNome() {
         return nome;
@@ -36,9 +63,6 @@ public class Empregado {
 
     public double getSalario() {
         return salario;
-    }
-    public double  getComissao() {
-        return getComissao();
     }
 
     public boolean getSindicalizado(){ return sindicalizado;}
