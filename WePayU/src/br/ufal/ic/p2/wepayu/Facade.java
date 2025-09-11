@@ -1,6 +1,7 @@
 package br.ufal.ic.p2.wepayu;
 
 import br.ufal.ic.p2.wepayu.Exception.EmpregadoNaoExisteException;
+import br.ufal.ic.p2.wepayu.Exception.NomeNuloException;
 import br.ufal.ic.p2.wepayu.models.Empregado;
 import br.ufal.ic.p2.wepayu.models.SistemaFolha;
 
@@ -25,12 +26,12 @@ public class Facade
     }
 
     // metodo para criar empregados nao comissionados
-    public String criarEmpregado (String nome, String endereco, String tipo, String salario)
+    public String criarEmpregado (String nome, String endereco, String tipo, String salario) throws NomeNuloException
     {
         return sistema.criarEmpregado(nome, endereco, tipo, salario);
     }
     // metodo para criar empregados comissionados
-    public String criarEmpregado (String nome, String endereco, String tipo, String salario, String comissao)
+    public String criarEmpregado (String nome, String endereco, String tipo, String salario, String comissao) throws  NomeNuloException
     {
 
         return sistema.criarEmpregado(nome, endereco, tipo, salario, comissao);

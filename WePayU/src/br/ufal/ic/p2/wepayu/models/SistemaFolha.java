@@ -1,6 +1,8 @@
 package br.ufal.ic.p2.wepayu.models;
 
 import br.ufal.ic.p2.wepayu.Exception.EmpregadoNaoExisteException;
+import br.ufal.ic.p2.wepayu.Exception.NomeNuloException;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Locale;
@@ -25,8 +27,9 @@ public class SistemaFolha
     }
 
     // metodo para criar empregado nao comissionado
-    public String criarEmpregado (String nome, String endereco, String tipo, String sal)
+    public String criarEmpregado (String nome, String endereco, String tipo, String sal) throws NomeNuloException
     {
+        if (Objects.equals(nome, "")) throw new NomeNuloException();
         // transformando o id em string
         String novoID = String.valueOf(id);
         // corrige a formatação do double
@@ -48,8 +51,11 @@ public class SistemaFolha
         return novoID;
     }
     // metodo para criar empregado comissionado
-    public String criarEmpregado (String nome, String endereco, String tipo, String sal, String comissao)
+    public String criarEmpregado (String nome, String endereco, String tipo, String sal, String comissao) throws NomeNuloException
     {
+        // checando nome nulo
+        if (Objects.equals(nome, "")) throw new NomeNuloException();
+
         // transformando o id em string
         String novoID = String.valueOf(id);
         // corrige a formatação do double
