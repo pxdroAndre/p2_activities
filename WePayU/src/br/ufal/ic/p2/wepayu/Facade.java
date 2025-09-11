@@ -35,5 +35,10 @@ public class Facade
     {
         sistema.encerrarSistema();
     }
+
+    public String getEmpregadoPorNome (String nome, int id)
+    {
+        return sistema.getEmpregadoPorNome(nome, id);
+    }
 }
 

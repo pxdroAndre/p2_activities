@@ -239,4 +239,9 @@ public class SistemaFolha
         }
 
     }
+
+    public String getEmpregadoPorNome (String nome, int id)
+    {
+        return "1";
+    }
 }
