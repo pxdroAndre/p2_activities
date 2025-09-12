@@ -4,6 +4,7 @@ import br.ufal.ic.p2.wepayu.Exception.EmpregadoNaoExisteException;
 import br.ufal.ic.p2.wepayu.Exception.CampoValidoException;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Locale;
@@ -281,19 +282,29 @@ public class SistemaFolha
 
     public void lancaCartao (String id, String data, String horas) throws CampoValidoException
     {
+        // checando se o id ta preenchido
+        if (Objects.equals(id, "")) throw new CampoValidoException("Identificacao do empregado nao pode ser nula.");
         // checando se eh horista
         Empregado empregado = empregados.get(id);
-        // corrige a formatação do double
-        horas = horas.replace(',', '.');
-        double h = Double.parseDouble(horas);
+        if (empregado == null) throw new CampoValidoException("Empregado nao existe."); // busca o empregado e verifica se existe
+
         if (empregado instanceof EmpregadoHorista horista)
         {
-            if (h <= 0) throw new CampoValidoException("Horas devem ser positivas.");
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/yyyy");
-            LocalDate d = LocalDate.parse(data, formatter);
-            horista.lancaCartao(d, h);
+            // corrige a formatação do double
+            horas = horas.replace(',', '.');
+            double h = Double.parseDouble(horas);
+            if (h <= 0) throw new CampoValidoException("Horas devem ser positivas."); // checa se eh positivo
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/yyyy"); // formata as datas
+            try {
+                LocalDate d = LocalDate.parse(data, formatter);
+                horista.lancaCartao(d, h); //lanca o cartao
+            }
+            catch (DateTimeParseException e)
+            {
+                throw new CampoValidoException("Data invalida.");
+            }
         }
-        else throw new CampoValidoException("Empregado nao eh horista");
+        else throw new CampoValidoException("Empregado nao eh horista.");
     }
 
     public int getHorasNormaisTrabalhadas (String id, String inicio, String fim) throws  CampoValidoException, EmpregadoNaoExisteException
