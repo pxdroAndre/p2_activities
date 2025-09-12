@@ -2,6 +2,7 @@ package br.ufal.ic.p2.wepayu;
 
 import br.ufal.ic.p2.wepayu.Exception.EmpregadoNaoExisteException;
 import br.ufal.ic.p2.wepayu.Exception.CampoValidoException;
+import br.ufal.ic.p2.wepayu.models.EmpregadoComissionado;
 import br.ufal.ic.p2.wepayu.models.SistemaFolha;
 
 public class Facade
@@ -39,6 +40,10 @@ public class Facade
     public String getEmpregadoPorNome (String nome, int id) throws CampoValidoException
     {
         return sistema.getEmpregadoPorNome(nome, id);
+    }
+
+    public void removerEmpregado (String emp) throws EmpregadoNaoExisteException, CampoValidoException {
+        sistema.removerEmpregado(emp);
     }
 }
 

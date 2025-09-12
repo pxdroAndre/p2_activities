@@ -265,4 +265,14 @@ public class SistemaFolha
         // Retorna o ID do empregado na posição do índice solicitado (ajustado para 0-based).
         return matchingIds.get(indice - 1);
     }
+
+    public void removerEmpregado (String id) throws EmpregadoNaoExisteException, CampoValidoException
+    {
+        // checando se o id ta preenchido
+        if (Objects.equals(id, "")) throw new CampoValidoException("Identificacao do empregado nao pode ser nula.");
+        // lendo o dado do empregado e verificando se existe
+        Empregado empregado = empregados.get(id);
+        if (empregado == null) throw new EmpregadoNaoExisteException();
+        this.empregados.remove(id); // remove do Hash
+    }
 }
