@@ -55,6 +55,7 @@ public class SistemaFolha
     // função de zerar sistema
     public void zerarSistema ()
     {
+
         empregados.clear();
         id = 1;
     }
@@ -274,5 +275,17 @@ public class SistemaFolha
         Empregado empregado = empregados.get(id);
         if (empregado == null) throw new EmpregadoNaoExisteException();
         this.empregados.remove(id); // remove do Hash
+    }
+
+    public int getHorasNormaisTrabalhadas (String id, String inicio, String fim) throws  CampoValidoException, EmpregadoNaoExisteException
+    {
+        // checando se o id ta preenchido
+        if (Objects.equals(id, "")) throw new CampoValidoException("Identificacao do empregado nao pode ser nula.");
+        // lendo o dado do empregado e verificando se existe
+        Empregado empregado = empregados.get(id);
+        if (empregado == null) throw new EmpregadoNaoExisteException();
+        // checando se eh horista
+        if (empregado instanceof EmpregadoHorista horista) return horista.getHorasNormaisTrabalhadas(inicio, fim);
+        else throw new CampoValidoException("Empregado nao eh horista");
     }
 }
