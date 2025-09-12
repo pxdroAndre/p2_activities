@@ -279,16 +279,19 @@ public class SistemaFolha
         this.empregados.remove(id); // remove do Hash
     }
 
-    public void lancaCartao (String id, String data, int horas) throws CampoValidoException
+    public void lancaCartao (String id, String data, String horas) throws CampoValidoException
     {
         // checando se eh horista
         Empregado empregado = empregados.get(id);
+        // corrige a formatação do double
+        horas = horas.replace(',', '.');
+        double h = Double.parseDouble(horas);
         if (empregado instanceof EmpregadoHorista horista)
         {
-            if (horas <= 0) throw new CampoValidoException("Horas devem ser positivas.");
+            if (h <= 0) throw new CampoValidoException("Horas devem ser positivas.");
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/yyyy");
             LocalDate d = LocalDate.parse(data, formatter);
-            horista.lancaCartao(d, horas);
+            horista.lancaCartao(d, h);
         }
         else throw new CampoValidoException("Empregado nao eh horista");
     }

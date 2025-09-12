@@ -7,15 +7,15 @@ public class CartaoPonto
     public CartaoPonto(){}
 
     LocalDate data;
-    int horas;
+    double horas;
 
-    public CartaoPonto(LocalDate data, int horas)
+    public CartaoPonto(LocalDate data, double horas)
     {
         this.data = data;
         this.horas = horas;
     }
 
-    public int getHoras() {
+    public double getHoras() {
         return horas;
     }
 
@@ -27,7 +27,7 @@ public class CartaoPonto
         this.data = data;
     }
 
-    public void setHoras(int horas) {
+    public void setHoras(double horas) {
         this.horas = horas;
     }
 

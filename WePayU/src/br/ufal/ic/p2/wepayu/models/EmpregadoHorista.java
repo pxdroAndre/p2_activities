@@ -30,7 +30,7 @@ public class EmpregadoHorista extends Empregado
         this.horasNormais = horasNormais;
     }
 
-    public void lancaCartao (LocalDate data, int horas)
+    public void lancaCartao (LocalDate data, double horas)
     {
         CartaoPonto novoCartao = new CartaoPonto(data, horas);
         cartoesDePonto.add(novoCartao);
