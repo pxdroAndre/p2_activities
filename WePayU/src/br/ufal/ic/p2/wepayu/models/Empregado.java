@@ -12,6 +12,7 @@ public class Empregado {
     private double salario;
     private boolean sindicalizado;
 
+
     public Empregado(){}
 
     public Empregado(String nome, String endereco, String tipo, double salario)

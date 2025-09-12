@@ -9,4 +9,8 @@ public class EmpregadoComissionado extends Empregado
         this.comissao = comissao;
     }
     public double getComissao(){return comissao;};
+
+    public void setComissao(double comissao) {
+        this.comissao = comissao;
+    }
 }

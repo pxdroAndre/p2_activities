@@ -222,7 +222,8 @@ public class SistemaFolha
         if (Objects.equals(empregado.getTipo(), "comissionado") && (Objects.equals(atributo, "comissao"))
                 && (empregado instanceof EmpregadoComissionado comissionado))
         {
-            return String.valueOf(formatador.format(comissionado.getComissao()));
+            String retorno = String.valueOf(formatador.format(comissionado.getComissao()));
+            return retorno;
         }
         else
         {
