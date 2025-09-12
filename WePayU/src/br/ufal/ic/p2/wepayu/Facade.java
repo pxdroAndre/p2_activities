@@ -49,5 +49,10 @@ public class Facade
     {
         return sistema.getHorasNormaisTrabalhadas(emp, dataInicial, dataFinal);
     }
+
+    public void lancaCartao (String emp, String data, int horas) throws CampoValidoException
+    {
+        sistema.lancaCartao(emp, data, horas);
+    }
 }
 

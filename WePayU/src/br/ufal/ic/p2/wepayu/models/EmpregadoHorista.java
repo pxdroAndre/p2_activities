@@ -1,4 +1,5 @@
 package br.ufal.ic.p2.wepayu.models;
+import java.time.LocalDate;
 import java.util.ArrayList;
 
 public class EmpregadoHorista extends Empregado
@@ -27,6 +28,12 @@ public class EmpregadoHorista extends Empregado
 
     public void setHorasNormais(int horasNormais) {
         this.horasNormais = horasNormais;
+    }
+
+    public void lancaCartao (LocalDate data, int horas)
+    {
+        CartaoPonto novoCartao = new CartaoPonto(data, horas);
+        cartoesDePonto.add(novoCartao);
     }
 
     public int getHorasNormaisTrabalhadas (String inicio, String fim)

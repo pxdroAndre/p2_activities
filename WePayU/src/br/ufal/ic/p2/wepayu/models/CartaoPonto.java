@@ -5,8 +5,15 @@ import java.time.LocalDate;
 public class CartaoPonto
 {
     public CartaoPonto(){}
+
     LocalDate data;
     int horas;
+
+    public CartaoPonto(LocalDate data, int horas)
+    {
+        this.data = data;
+        this.horas = horas;
+    }
 
     public int getHoras() {
         return horas;

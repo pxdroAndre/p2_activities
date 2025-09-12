@@ -3,6 +3,7 @@ package br.ufal.ic.p2.wepayu.models;
 import br.ufal.ic.p2.wepayu.Exception.EmpregadoNaoExisteException;
 import br.ufal.ic.p2.wepayu.Exception.CampoValidoException;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Locale;
@@ -14,6 +15,7 @@ import java.io.FileOutputStream;
 import java.io.FileNotFoundException;
 import java.beans.XMLDecoder;
 import java.io.FileInputStream;
+import java.time.format.DateTimeFormatter;
 
 public class SistemaFolha
 {
@@ -275,6 +277,20 @@ public class SistemaFolha
         Empregado empregado = empregados.get(id);
         if (empregado == null) throw new EmpregadoNaoExisteException();
         this.empregados.remove(id); // remove do Hash
+    }
+
+    public void lancaCartao (String id, String data, int horas) throws CampoValidoException
+    {
+        // checando se eh horista
+        Empregado empregado = empregados.get(id);
+        if (empregado instanceof EmpregadoHorista horista)
+        {
+            if (horas <= 0) throw new CampoValidoException("Horas devem ser positivas.");
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/yyyy");
+            LocalDate d = LocalDate.parse(data, formatter);
+            horista.lancaCartao(d, horas);
+        }
+        else throw new CampoValidoException("Empregado nao eh horista");
     }
 
     public int getHorasNormaisTrabalhadas (String id, String inicio, String fim) throws  CampoValidoException, EmpregadoNaoExisteException
