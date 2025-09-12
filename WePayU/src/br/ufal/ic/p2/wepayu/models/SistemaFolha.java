@@ -240,8 +240,28 @@ public class SistemaFolha
 
     }
 
-    public String getEmpregadoPorNome (String nome, int id)
+    public String getEmpregadoPorNome (String nome, int indice) throws CampoValidoException
     {
-        return "1";
+        // Cria uma lista para armazenar os IDs dos empregados que correspondem ao nome fornecido.
+        java.util.List<String> matchingIds = new java.util.ArrayList<>();
+
+        // Itera sobre o mapa de empregados para encontrar correspondências de nome.
+        for (java.util.Map.Entry<String, Empregado> entry : empregados.entrySet()) {
+            if (entry.getValue().getNome().equals(nome)) {
+                matchingIds.add(entry.getKey());
+            }
+        }
+
+        // Ordena a lista de IDs em ordem crescente. Isso garante que a seleção pelo índice
+        // seja previsível e consistente, baseada na ordem de criação dos empregados.
+        matchingIds.sort((id1, id2) -> Integer.compare(Integer.parseInt(id1), Integer.parseInt(id2)));
+
+        // Verifica se o índice fornecido eh valido
+        if (indice > matchingIds.size() || indice <= 0) {
+            throw new CampoValidoException("Nao ha empregado com esse nome.");
+        }
+
+        // Retorna o ID do empregado na posição do índice solicitado (ajustado para 0-based).
+        return matchingIds.get(indice - 1);
     }
 }

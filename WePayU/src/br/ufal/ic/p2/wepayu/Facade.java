@@ -36,7 +36,7 @@ public class Facade
         sistema.encerrarSistema();
     }
 
-    public String getEmpregadoPorNome (String nome, int id)
+    public String getEmpregadoPorNome (String nome, int id) throws CampoValidoException
     {
         return sistema.getEmpregadoPorNome(nome, id);
     }
