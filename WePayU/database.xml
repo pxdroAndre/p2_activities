@@ -3,7 +3,37 @@
  <object class="java.util.HashMap">
   <void method="put">
    <string>1</string>
-   <object class="br.ufal.ic.p2.wepayu.models.EmpregadoHorista">
+   <object class="br.ufal.ic.p2.wepayu.models.EmpregadoHorista" id="EmpregadoHorista0">
+    <void property="cartoesDePonto">
+     <void method="add">
+      <object class="br.ufal.ic.p2.wepayu.models.CartaoPonto">
+       <void property="horas">
+        <string>8</string>
+       </void>
+      </object>
+     </void>
+     <void method="add">
+      <object class="br.ufal.ic.p2.wepayu.models.CartaoPonto">
+       <void property="horas">
+        <string>8.5</string>
+       </void>
+      </object>
+     </void>
+     <void method="add">
+      <object class="br.ufal.ic.p2.wepayu.models.CartaoPonto">
+       <void property="horas">
+        <string>9</string>
+       </void>
+      </object>
+     </void>
+     <void method="add">
+      <object class="br.ufal.ic.p2.wepayu.models.CartaoPonto">
+       <void property="horas">
+        <string>6</string>
+       </void>
+      </object>
+     </void>
+    </void>
     <void property="endereco">
      <string>Rua dos Jooes, 333 - Campina Grande</string>
     </void>
@@ -20,7 +50,16 @@
   </void>
   <void method="put">
    <string>2</string>
-   <object class="br.ufal.ic.p2.wepayu.models.EmpregadoHorista">
+   <object class="br.ufal.ic.p2.wepayu.models.EmpregadoHorista" id="EmpregadoHorista1">
+    <void property="cartoesDePonto">
+     <void method="add">
+      <object class="br.ufal.ic.p2.wepayu.models.CartaoPonto">
+       <void property="horas">
+        <string>10</string>
+       </void>
+      </object>
+     </void>
+    </void>
     <void property="endereco">
      <string>Rua das Marias, 333 - Campina Grande</string>
     </void>

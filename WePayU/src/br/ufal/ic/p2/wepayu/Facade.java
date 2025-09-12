@@ -45,7 +45,7 @@ public class Facade
     public void removerEmpregado (String emp) throws EmpregadoNaoExisteException, CampoValidoException {
         sistema.removerEmpregado(emp);
     }
-    public int getHorasNormaisTrabalhadas (String emp, String dataInicial, String dataFinal) throws CampoValidoException, EmpregadoNaoExisteException
+    public String getHorasNormaisTrabalhadas (String emp, String dataInicial, String dataFinal) throws CampoValidoException, EmpregadoNaoExisteException
     {
         return sistema.getHorasNormaisTrabalhadas(emp, dataInicial, dataFinal);
     }
