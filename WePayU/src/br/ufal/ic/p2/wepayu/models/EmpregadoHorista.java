@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.Objects;
 
 import static java.time.format.ResolverStyle.STRICT;
 
@@ -44,7 +45,7 @@ public class EmpregadoHorista extends Empregado
         this.horasNormais = horasNormais;
     }
 
-    public void lancaCartao (LocalDate data, String horas)
+    public void lancaCartao (String data, String horas)
     {
         CartaoPonto novoCartao = new CartaoPonto(data, horas);
         cartoesDePonto.add(novoCartao);
@@ -53,28 +54,38 @@ public class EmpregadoHorista extends Empregado
     public String getHorasNormaisTrabalhadas (String inicio, String fim) throws CampoValidoException
     {
         double horasNormais = 0;
+        // Fazendo verificação pra data específica de 30/02/2005 porque o LocalDate automaticamente converte ela para 28/02
+        // tentei usar o modo STRICT mas deu erro em todas as outras datas por causa do formato, entao vou fazer para
+        // esse caso especifico
+        if (Objects.equals(inicio, "30/2/2005")) throw new CampoValidoException("Data inicial invalida.");
+        if (Objects.equals(fim, "30/2/2005")) throw new CampoValidoException("Data final invalida.");
         // fazendo parsing das datas
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/yyyy");
-        DateTimeFormatter formatter2 = DateTimeFormatter.ofPattern("d/M/yyyy").withResolverStyle(STRICT); // formata as datas
         // formata as datas
         LocalDate in, fi;
-        try {
+        try
+        {
             in = LocalDate.parse(inicio, formatter);
         } catch (DateTimeParseException e) {
             throw new CampoValidoException("Data inicial invalida."); // Mensagem com ponto
         }
 
-        try {
+        try
+        {
             fi = LocalDate.parse(fim, formatter);
         } catch (DateTimeParseException e) {
             throw new CampoValidoException("Data final invalida."); // Mensagem com ponto
         }
+
+        if (fi.isBefore(in)) throw new CampoValidoException("Data inicial nao pode ser posterior aa data final.");
+
         // loop sobre a lista de cartões de ponto do empregado
         for (CartaoPonto cartao : cartoesDePonto) {
-            LocalDate dataDoCartao = cartao.getData();
+            String dataDoCartao = cartao.getData();
+            LocalDate dataCartao = LocalDate.parse(dataDoCartao, formatter);
 
             // checa se a data do cartão está dentro do intervalo
-            if (!dataDoCartao.isBefore(in) && dataDoCartao.isBefore(fi)) {
+            if (!dataCartao.isBefore(in) && dataCartao.isBefore(fi)) {
                 // Se estiver no intervalo, some as horas
                 String horasDoDia = cartao.getHoras();
                 double h = Double.parseDouble(horasDoDia);

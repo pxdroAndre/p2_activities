@@ -6,10 +6,10 @@ public class CartaoPonto
 {
     public CartaoPonto(){}
 
-    LocalDate data;
+    String data;
     String horas;
 
-    public CartaoPonto(LocalDate data, String horas)
+    public CartaoPonto(String data, String horas)
     {
         this.data = data;
         this.horas = horas;
@@ -19,11 +19,11 @@ public class CartaoPonto
         return horas;
     }
 
-    public LocalDate getData() {
+    public String getData() {
         return data;
     }
 
-    public void setData(LocalDate data) {
+    public void setData(String data) {
         this.data = data;
     }
 

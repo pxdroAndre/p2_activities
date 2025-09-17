@@ -297,7 +297,7 @@ public class SistemaFolha
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/yyyy"); // formata as datas
             try {
                 LocalDate d = LocalDate.parse(data, formatter);
-                horista.lancaCartao(d, horas); //lanca o cartao
+                horista.lancaCartao(data, horas); //lanca o cartao
             }
             catch (DateTimeParseException e)
             {
