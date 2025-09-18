@@ -282,6 +282,7 @@ public class SistemaFolha
 
     public void lancaCartao (String id, String data, String horas) throws CampoValidoException
     {
+        if (!EmpregadoHorista.validarData(data)) throw new CampoValidoException("Data invalida.");
         // checando se o id ta preenchido
         if (Objects.equals(id, "")) throw new CampoValidoException("Identificacao do empregado nao pode ser nula.");
         // checando se eh horista
@@ -295,14 +296,9 @@ public class SistemaFolha
             double h = Double.parseDouble(horas);
             if (h <= 0) throw new CampoValidoException("Horas devem ser positivas."); // checa se eh positivo
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/yyyy"); // formata as datas
-            try
-            {
-                horista.lancaCartao(data, horas); //lanca o cartao
-            }
-            catch (DateTimeParseException e)
-            {
-                throw new CampoValidoException("Data invalida.");
-            }
+            horista.lancaCartao(data, horas); //lanca o cartao
+
+
         }
         else throw new CampoValidoException("Empregado nao eh horista.");
     }

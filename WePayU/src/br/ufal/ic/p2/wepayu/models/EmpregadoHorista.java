@@ -49,17 +49,38 @@ public class EmpregadoHorista extends Empregado
         cartoesDePonto.add(novoCartao);
     }
 
+    public static boolean validarData(String dataStr) {
+        // 1. Quebra a string "1/13/2005" em um array: ["1", "13", "2005"]
+        String[] partes = dataStr.split("/");
+
+        // 2. Pega a parte do mês (o elemento no índice 1)
+        String diaStr = partes[0];
+        String mesStr = partes[1];
+
+        // 3. Converte a string do mês para um número inteiro
+        int dia = Integer.parseInt(diaStr);
+        int mes = Integer.parseInt(mesStr);
+
+        // 4. Verifica se o mês está no intervalo válido
+        if (mes >= 1 && mes <= 12)
+        {
+            if (Objects.equals(mes, 2))
+            {
+                return dia <= 29;
+            }
+            return true;
+        }
+        return false;
+    }
+
     public String getHorasNormaisTrabalhadas (String inicio, String fim) throws CampoValidoException
     {
         double horasNormais = 0;
-        // Fazendo verificação pra data específica de 30/02/2005 porque o LocalDate automaticamente converte ela para 28/02
-        // tentei usar o modo STRICT mas deu erro em todas as outras datas por causa do formato, entao vou fazer para
-        // esse caso especifico
-        if (Objects.equals(inicio, "30/2/2005")) throw new CampoValidoException("Data inicial invalida.");
-        if (Objects.equals(fim, "30/2/2005")) throw new CampoValidoException("Data final invalida.");
         // fazendo parsing das datas
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/yyyy");
         // formata as datas
+        if (!EmpregadoHorista.validarData(inicio)) throw new CampoValidoException("Data inicial invalida.");
+        if (!EmpregadoHorista.validarData(fim)) throw new CampoValidoException("Data final invalida.");
         LocalDate in, fi;
         try
         {
@@ -109,16 +130,14 @@ public class EmpregadoHorista extends Empregado
     public String getHorasExtrasTrabalhadas (String inicio, String fim) throws CampoValidoException
     {
         double horasExtras = 0;
-        // Fazendo verificação pra data específica de 30/02/2005 porque o LocalDate automaticamente converte ela para 28/02
-        // tentei usar o modo STRICT mas deu erro em todas as outras datas por causa do formato, entao vou fazer para
-        // esse caso especifico
-        if (Objects.equals(inicio, "30/2/2005")) throw new CampoValidoException("Data inicial invalida.");
-        if (Objects.equals(fim, "30/2/2005")) throw new CampoValidoException("Data final invalida.");
+
         // fazendo parsing das datas
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/yyyy");
         // formata as datas
         LocalDate in, fi;
         // valida as datas
+        if (!EmpregadoHorista.validarData(inicio)) throw new CampoValidoException("Data inicial invalida.");
+        if (!EmpregadoHorista.validarData(fim)) throw new CampoValidoException("Data final invalida.");
         try
         {
             in = LocalDate.parse(inicio, formatter);
