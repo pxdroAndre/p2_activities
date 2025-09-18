@@ -353,4 +353,16 @@ public class SistemaFolha
         EmpregadoComissionado comissionado = SistemaFolha.excecoesLancamento(empregados, emp, data, valor); //identificando o empregado pelo id
         comissionado.lancaVenda(valor, data);
     }
+
+    public String getVendas (String emp, String inicio, String fim) throws CampoValidoException, EmpregadoNaoExisteException
+    {
+        // checando se o id ta preenchido
+        if (Objects.equals(emp, "")) throw new CampoValidoException("Identificacao do empregado nao pode ser nula.");
+        // lendo o dado do empregado e verificando se existe
+        Empregado empregado = empregados.get(emp);
+        if (empregado == null) throw new EmpregadoNaoExisteException();
+        // checando se eh comissinoado
+        if (empregado instanceof EmpregadoComissionado comissionado) return comissionado.getVendas(inicio, fim);
+        else throw new CampoValidoException("Empregado nao eh comissionado.");
+    }
 }

@@ -61,5 +61,10 @@ public class Facade
     {
         sistema.lancaVenda(emp, data, valor);
     }
+
+    public String getVendasRealizadas (String emp, String dataInicial, String dataFinal) throws CampoValidoException, EmpregadoNaoExisteException
+    {
+        return sistema.getVendas(emp, dataInicial, dataFinal);
+    }
 }
 
