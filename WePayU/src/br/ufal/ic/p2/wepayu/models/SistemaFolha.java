@@ -295,8 +295,8 @@ public class SistemaFolha
             double h = Double.parseDouble(horas);
             if (h <= 0) throw new CampoValidoException("Horas devem ser positivas."); // checa se eh positivo
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/yyyy"); // formata as datas
-            try {
-                LocalDate d = LocalDate.parse(data, formatter);
+            try
+            {
                 horista.lancaCartao(data, horas); //lanca o cartao
             }
             catch (DateTimeParseException e)
@@ -316,6 +316,18 @@ public class SistemaFolha
         if (empregado == null) throw new EmpregadoNaoExisteException();
         // checando se eh horista
         if (empregado instanceof EmpregadoHorista horista) return horista.getHorasNormaisTrabalhadas(inicio, fim);
+        else throw new CampoValidoException("Empregado nao eh horista.");
+    }
+
+    public String getHorasExtrasTrabalhadas (String id, String inicio, String fim) throws  CampoValidoException, EmpregadoNaoExisteException
+    {
+        // checando se o id ta preenchido
+        if (Objects.equals(id, "")) throw new CampoValidoException("Identificacao do empregado nao pode ser nula.");
+        // lendo o dado do empregado e verificando se existe
+        Empregado empregado = empregados.get(id);
+        if (empregado == null) throw new EmpregadoNaoExisteException();
+        // checando se eh horista
+        if (empregado instanceof EmpregadoHorista horista) return horista.getHorasExtrasTrabalhadas(inicio, fim);
         else throw new CampoValidoException("Empregado nao eh horista.");
     }
 }
