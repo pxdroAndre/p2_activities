@@ -17,6 +17,15 @@ public class EmpregadoComissionado extends Empregado
         super(nome, endereco, tipo, salario);
         this.comissao = comissao;
     }
+
+    public ArrayList<ResultadoDeVenda> getVendas() {
+        return vendas;
+    }
+
+    public void setVendas(ArrayList<ResultadoDeVenda> vendas) {
+        this.vendas = vendas;
+    }
+
     public double getComissao(){return comissao;};
 
     public void setComissao(double comissao) {
@@ -63,7 +72,7 @@ public class EmpregadoComissionado extends Empregado
             if (!dataVenda.isBefore(in) && dataVenda.isBefore(fi)) {
                 // Se estiver no intervalo, some as vendas
                 String valorDaVenda = venda.getValor();
-                valorDaVenda = valorDaVenda.replace('.', ',');
+                valorDaVenda = valorDaVenda.replace(',', '.');
                 double v = Double.parseDouble(valorDaVenda);
                 totalVendas += v;
             }
