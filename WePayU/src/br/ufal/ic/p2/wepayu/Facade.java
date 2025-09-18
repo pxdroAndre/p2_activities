@@ -57,5 +57,9 @@ public class Facade
     {
         sistema.lancaCartao(emp, data, horas);
     }
+    public void lancaVenda (String emp, String data, String valor) throws CampoValidoException
+    {
+        sistema.lancaVenda(emp, data, valor);
+    }
 }
 

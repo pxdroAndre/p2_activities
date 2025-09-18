@@ -280,6 +280,27 @@ public class SistemaFolha
         this.empregados.remove(id); // remove do Hash
     }
 
+    public static EmpregadoComissionado excecoesLancamento (Map<String, Empregado> empregados, String id, String data, String valor) throws CampoValidoException
+    {
+        // verifica se a data é válida
+        if (!EmpregadoHorista.validarData(data)) throw new CampoValidoException("Data invalida.");
+        // checando se o id ta preenchido
+        if (Objects.equals(id, "")) throw new CampoValidoException("Identificacao do empregado nao pode ser nula.");
+        // checando se eh comissionado
+        Empregado empregado = empregados.get(id);
+        if (empregado == null) throw new CampoValidoException("Empregado nao existe."); // busca o empregado e verifica se existe
+
+        if (empregado instanceof EmpregadoComissionado comissionado)
+        {
+            // validando o valor
+            valor = valor.replace(',', '.');
+            double v = Double.parseDouble(valor);
+            if (v <= 0.00) throw new CampoValidoException("Valor deve ser positivo."); // checa se eh positivo
+        }
+        else throw new CampoValidoException("Empregado nao eh comissionado.");
+        return comissionado;
+    }
+
     public void lancaCartao (String id, String data, String horas) throws CampoValidoException
     {
         if (!EmpregadoHorista.validarData(data)) throw new CampoValidoException("Data invalida.");
@@ -325,5 +346,11 @@ public class SistemaFolha
         // checando se eh horista
         if (empregado instanceof EmpregadoHorista horista) return horista.getHorasExtrasTrabalhadas(inicio, fim);
         else throw new CampoValidoException("Empregado nao eh horista.");
+    }
+
+    public void lancaVenda (String emp, String data, String valor) throws CampoValidoException
+    {
+        EmpregadoComissionado comissionado = SistemaFolha.excecoesLancamento(empregados, emp, data, valor); //identificando o empregado pelo id
+        comissionado.lancaVenda(valor, data);
     }
 }
