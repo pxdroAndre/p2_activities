@@ -423,29 +423,53 @@ public class SistemaFolha
                     throw new CampoValidoException("Salario deve ser numerico.");
                 }
                 break;
+            case "metodoPagamento":
+                if (valor == null || (!valor.equals("emMaos") && !valor.equals("correios") && !valor.equals("banco"))) {
+                    throw new CampoValidoException("Metodo de pagamento invalido.");
+                }
+                if (valor.equals("banco")) {
+                    if (banco == null || banco.isEmpty()) throw new CampoValidoException("Banco nao pode ser nulo.");
+                    if (agencia == null || agencia.isEmpty()) throw new CampoValidoException("Agencia nao pode ser nulo.");
+                    if (contaCorrente == null || contaCorrente.isEmpty()) throw new CampoValidoException("Conta corrente nao pode ser nulo.");
+                    empregado.setMetodoPagamento("banco");
+                    empregado.setBanco(banco);
+                    empregado.setAgencia(agencia);
+                    empregado.setContaCorrente(contaCorrente);
+                } else {
+                    empregado.setMetodoPagamento(valor);
+                    empregado.setBanco(null);
+                    empregado.setAgencia(null);
+                    empregado.setContaCorrente(null);
+                }
+                break;
             case "tipo":
                 if (valor == null || valor.isEmpty()) throw new CampoValidoException("Tipo invalido.");
                 Empregado novoEmpregado = null;
+                // A alteração de salário junto com tipo não é suportada pela assinatura atual,
+                // mas a mudança de tipo e a cópia de atributos funcionarão.
+                double salarioParaNovoTipo = empregado.getSalario();
                 switch(valor) {
                     case "horista":
-                        novoEmpregado = new EmpregadoHorista(empregado.getNome(), empregado.getEndereco(), valor, empregado.getSalario());
+                        novoEmpregado = new EmpregadoHorista(empregado.getNome(), empregado.getEndereco(), valor, salarioParaNovoTipo);
                         break;
                     case "assalariado":
-                        novoEmpregado = new EmpregadoAssalariado(empregado.getNome(), empregado.getEndereco(), valor, empregado.getSalario());
+                        novoEmpregado = new EmpregadoAssalariado(empregado.getNome(), empregado.getEndereco(), valor, salarioParaNovoTipo);
                         break;
                     case "comissionado":
                         if (comissao == null || comissao.isEmpty()) throw new CampoValidoException("Comissao nao pode ser nula.");
                         double com = Double.parseDouble(comissao.replace(',', '.'));
-                        novoEmpregado = new EmpregadoComissionado(empregado.getNome(), empregado.getEndereco(), valor, empregado.getSalario(), com);
+                        novoEmpregado = new EmpregadoComissionado(empregado.getNome(), empregado.getEndereco(), valor, salarioParaNovoTipo, com);
                         break;
                     default:
                         throw new CampoValidoException("Tipo invalido.");
                 }
-                // Copia os dados de sindicato e pagamento
                 novoEmpregado.setSindicalizado(empregado.isSindicalizado());
                 novoEmpregado.setIdSindicato(empregado.getIdSindicato());
                 novoEmpregado.setTaxaSindical(empregado.getTaxaSindical());
-                // Faltaria copiar o método de pagamento
+                novoEmpregado.setMetodoPagamento(empregado.getMetodoPagamento());
+                novoEmpregado.setBanco(empregado.getBanco());
+                novoEmpregado.setAgencia(empregado.getAgencia());
+                novoEmpregado.setContaCorrente(empregado.getContaCorrente());
                 empregados.put(emp, novoEmpregado);
                 break;
             case "comissao":
@@ -463,18 +487,31 @@ public class SistemaFolha
                 }
                 break;
             case "sindicalizado":
+                if (valor == null || (!valor.equalsIgnoreCase("true") && !valor.equalsIgnoreCase("false"))) {
+                    throw new CampoValidoException("Valor deve ser true ou false.");
+                }
                 boolean ehSindicalizado = Boolean.parseBoolean(valor);
                 if (ehSindicalizado) {
                     if (idSindicato == null || idSindicato.isEmpty()) throw new CampoValidoException("Identificacao do sindicato nao pode ser nula.");
                     if (taxaSindical == null || taxaSindical.isEmpty()) throw new CampoValidoException("Taxa sindical nao pode ser nula.");
-                    for (Empregado e : empregados.values()) {
-                        if (e.getIdSindicato() != null && e.getIdSindicato().equals(idSindicato)) {
+
+                    for (Map.Entry<String, Empregado> entry : empregados.entrySet()) {
+                        if (!entry.getKey().equals(emp) && entry.getValue().isSindicalizado() && idSindicato.equals(entry.getValue().getIdSindicato())) {
                             throw new CampoValidoException("Ha outro empregado com esta identificacao de sindicato");
                         }
                     }
+
+                    try {
+                        double taxa = Double.parseDouble(taxaSindical.replace(',', '.'));
+                        if (taxa < 0) {
+                            throw new CampoValidoException("Taxa sindical deve ser nao-negativa.");
+                        }
+                        empregado.setTaxaSindical(taxa);
+                    } catch (NumberFormatException e) {
+                        throw new CampoValidoException("Taxa sindical deve ser numerica.");
+                    }
                     empregado.setSindicalizado(true);
                     empregado.setIdSindicato(idSindicato);
-                    empregado.setTaxaSindical(Double.parseDouble(taxaSindical.replace(',', '.')));
                 } else {
                     empregado.setSindicalizado(false);
                     empregado.setIdSindicato(null);

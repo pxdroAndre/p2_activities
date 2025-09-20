@@ -10,17 +10,11 @@
     <void property="endereco">
      <string>Rua dos Jooes, 333 - Campina Grande</string>
     </void>
-    <void property="idSindicato">
-     <string>s123</string>
-    </void>
     <void property="nome">
      <string>Joao da Silva</string>
     </void>
     <void property="salario">
      <double>500.0</double>
-    </void>
-    <void property="sindicalizado">
-     <boolean>true</boolean>
     </void>
     <void property="tipo">
      <string>comissionado</string>
