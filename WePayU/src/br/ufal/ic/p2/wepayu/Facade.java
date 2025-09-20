@@ -67,14 +67,24 @@ public class Facade
         return sistema.getVendas(emp, dataInicial, dataFinal);
     }
 
-    public void alteraEmpregado(String emp, String atributo, String valor,
-                                String idSindicato, String taxaSindical) throws CampoValidoException
-    {
-        sistema.alteraEmpregado(emp, atributo, valor, idSindicato, taxaSindical);
+    // Para alterar atributos simples (nome, endereco, salario, etc.)
+    public void alteraEmpregado(String emp, String atributo, String valor) throws Exception {
+        sistema.alteraEmpregado(emp, atributo, valor, null, null, null, null, null, null);
     }
-    public void alteraEmpregado(String emp, String atributo, String valor) throws CampoValidoException
-    {
-        sistema.alteraEmpregado(emp, atributo, valor);
+
+    // Para alterar o tipo para comissionado
+    public void alteraEmpregado(String emp, String atributo, String valor, String comissao) throws Exception {
+        sistema.alteraEmpregado(emp, atributo, valor, null, null, comissao, null, null, null);
+    }
+
+    // Para alterar o status de sindicalizado
+    public void alteraEmpregado(String emp, String atributo, boolean valor, String idSindicato, String taxaSindical) throws Exception {
+        sistema.alteraEmpregado(emp, atributo, String.valueOf(valor), idSindicato, taxaSindical, null, null, null, null);
+    }
+
+    // Para alterar o método de pagamento para banco
+    public void alteraEmpregado(String emp, String atributo, String valor, String banco, String agencia, String contaCorrente) throws Exception {
+        sistema.alteraEmpregado(emp, atributo, valor, null, null, null, banco, agencia, contaCorrente);
     }
 
     public void lancaTaxaServico(String membro, String data, String valor) throws CampoValidoException

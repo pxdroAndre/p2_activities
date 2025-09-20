@@ -14,7 +14,42 @@ public class Empregado {
     private String idSindicato;
     private double taxaSindical;
     private ArrayList<TaxaServico> taxasServico = new ArrayList<>();
+    private String metodoPagamento = "emMaos"; // Valor default conforme os testes
+    private String banco;
+    private String agencia;
+    private String contaCorrente;
 
+    public String getContaCorrente() {
+        return contaCorrente;
+    }
+
+    public void setContaCorrente(String contaCorrente) {
+        this.contaCorrente = contaCorrente;
+    }
+
+    public String getAgencia() {
+        return agencia;
+    }
+
+    public void setAgencia(String agencia) {
+        this.agencia = agencia;
+    }
+
+    public String getBanco() {
+        return banco;
+    }
+
+    public void setBanco(String banco) {
+        this.banco = banco;
+    }
+
+    public String getMetodoPagamento() {
+        return metodoPagamento;
+    }
+
+    public void setMetodoPagamento(String metodoPagamento) {
+        this.metodoPagamento = metodoPagamento;
+    }
 
     public Empregado(){}
 

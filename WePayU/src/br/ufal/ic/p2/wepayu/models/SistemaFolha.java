@@ -199,21 +199,24 @@ public class SistemaFolha
     }
     // funcao para pegar atributo do empregado
     public String getAtributoEmpregado (String emp, String atributo)
-            throws EmpregadoNaoExisteException, CampoValidoException
-    {
+            throws EmpregadoNaoExisteException, CampoValidoException {
         // checando excecoes
         if (Objects.equals(emp, "")) throw new CampoValidoException("Identificacao do empregado nao pode ser nula.");
-        if
-        (
-            (!Objects.equals(atributo, "nome")) && (!Objects.equals(atributo, "endereco"))
-            &&
-            (!Objects.equals(atributo, "tipo")) && (!Objects.equals(atributo, "salario"))
-            &&
-            (!Objects.equals(atributo, "sindicalizado")) && (!Objects.equals(atributo, "comissao"))
-        )
-        {
-            throw new CampoValidoException("Atributo nao existe.");
-        }
+//        if
+//        (
+//            (!Objects.equals(atributo, "nome")) && (!Objects.equals(atributo, "endereco"))
+//            &&
+//            (!Objects.equals(atributo, "tipo")) && (!Objects.equals(atributo, "salario"))
+//            &&
+//            (!Objects.equals(atributo, "sindicalizado")) && (!Objects.equals(atributo, "comissao"))
+//            &&
+//            (!Objects.equals(atributo, "metodoPagamento")) && (!Objects.equals(atributo, "banco"))
+//            &&
+//            (!Objects.equals(atributo, "agencia")) && (!Objects.equals(atributo, "contaCorrente"))
+//        )
+//        {
+//            throw new CampoValidoException("Atributo nao existe.");
+//        }
         //ajustando a formatação dos numeros
         formatador.setGroupingUsed(false);
         formatador.setMinimumFractionDigits(2);
@@ -222,29 +225,52 @@ public class SistemaFolha
         Empregado empregado = empregados.get(emp);
         if (empregado == null) throw new EmpregadoNaoExisteException();
 
-        // verificando se eh comissionado
-        if (Objects.equals(empregado.getTipo(), "comissionado") && (Objects.equals(atributo, "comissao"))
-                && (empregado instanceof EmpregadoComissionado comissionado))
-        {
-            String retorno = String.valueOf(formatador.format(comissionado.getComissao()));
-            return retorno;
-        }
-        else
-        {
-            return switch (atributo)
-            {
-                case "nome" -> empregado.getNome();
-                case "endereco" -> empregado.getEndereco();
-                case "tipo" -> empregado.getTipo();
-                case "salario" -> String.valueOf(formatador.format(empregado.getSalario()));
-                case "sindicalizado" -> String.valueOf(empregado.getSindicalizado());
+        switch (atributo) {
+            case "nome":
+                return empregado.getNome();
+            case "endereco":
+                return empregado.getEndereco();
+            case "tipo":
+                return empregado.getTipo();
+            case "salario":
+                return formatador.format(empregado.getSalario());
+            case "sindicalizado":
+                return String.valueOf(empregado.isSindicalizado());
+            case "comissao":
+                if (empregado instanceof EmpregadoComissionado) {
+                    return formatador.format(((EmpregadoComissionado) empregado).getComissao());
+                }
+                throw new CampoValidoException("Empregado nao eh comissionado.");
+            case "idSindicato":
+                if (!empregado.isSindicalizado()) throw new CampoValidoException("Empregado nao eh sindicalizado.");
+                return empregado.getIdSindicato();
+            case "taxaSindical":
+                if (!empregado.isSindicalizado()) throw new CampoValidoException("Empregado nao eh sindicalizado.");
+                return formatador.format(empregado.getTaxaSindical());
+            case "metodoPagamento":
+                return empregado.getMetodoPagamento();
+            case "banco":
+                if (!"banco".equals(empregado.getMetodoPagamento())) {
+                    throw new CampoValidoException("Empregado nao recebe em banco.");
+                }
+                return empregado.getBanco();
+            case "agencia":
+                if (!"banco".equals(empregado.getMetodoPagamento())) {
+                    throw new CampoValidoException("Empregado nao recebe em banco.");
+                }
+                return empregado.getAgencia();
+            case "contaCorrente":
+                if (!"banco".equals(empregado.getMetodoPagamento())) {
+                    throw new CampoValidoException("Empregado nao recebe em banco.");
+                }
+                return empregado.getContaCorrente();
+            // --- Fim da implementação solicitada ---
 
-                default -> "none";
-            };
-        }
+            default:
+                throw new CampoValidoException("Atributo nao existe.");
 
+        }
     }
-
     public String getEmpregadoPorNome (String nome, int indice) throws CampoValidoException
     {
         // Cria uma lista para armazenar os IDs dos empregados que correspondem ao nome fornecido.
@@ -365,32 +391,99 @@ public class SistemaFolha
         if (empregado instanceof EmpregadoComissionado comissionado) return comissionado.getVendas(inicio, fim);
         else throw new CampoValidoException("Empregado nao eh comissionado.");
     }
-    public void alteraEmpregado(String id, String atributo, String valor,
-                                String idSindicato, String taxaSindical) throws CampoValidoException
-    {
-        Empregado empregado = empregados.get(id);
 
-        if (atributo.equals("sindicalizado")) {
-            if (valor.equals("true")) {
-                // VERIFICAÇÃO
-                for (Empregado e : empregados.values()) {
-                    if (e.getIdSindicato() != null && e.getIdSindicato().equals(idSindicato)) {
-                        throw new CampoValidoException("Ha outro empregado com esta identificacao de sindicato");
-                    }
-                }
-                empregado.setSindicalizado(true);
-                empregado.setIdSindicato(idSindicato);
-                empregado.setTaxaSindical(Double.parseDouble(taxaSindical.replace(',', '.')));
-            } else {
-                empregado.setSindicalizado(false);
-                empregado.setIdSindicato(null);
-                empregado.setTaxaSindical(0);
-            }
+    public void alteraEmpregado(String emp, String atributo, String valor,
+                                String idSindicato, String taxaSindical,
+                                String comissao, String banco, String agencia, String contaCorrente) throws CampoValidoException, EmpregadoNaoExisteException {
+
+        if (emp == null || emp.isEmpty()) {
+            throw new CampoValidoException("Identificacao do empregado nao pode ser nula.");
         }
-    }
-    public void alteraEmpregado(String id, String atributo, String valor) throws CampoValidoException
-    {
+        Empregado empregado = empregados.get(emp);
+        if (empregado == null) {
+            throw new EmpregadoNaoExisteException();
+        }
 
+        switch (atributo) {
+            case "nome":
+                if (valor == null || valor.isEmpty()) throw new CampoValidoException("Nome nao pode ser nulo.");
+                empregado.setNome(valor);
+                break;
+            case "endereco":
+                if (valor == null || valor.isEmpty()) throw new CampoValidoException("Endereco nao pode ser nulo.");
+                empregado.setEndereco(valor);
+                break;
+            case "salario":
+                if (valor == null || valor.isEmpty()) throw new CampoValidoException("Salario nao pode ser nulo.");
+                try {
+                    double novoSalario = Double.parseDouble(valor.replace(',', '.'));
+                    if (novoSalario < 0) throw new CampoValidoException("Salario deve ser nao-negativo.");
+                    empregado.setSalario(novoSalario);
+                } catch (NumberFormatException e) {
+                    throw new CampoValidoException("Salario deve ser numerico.");
+                }
+                break;
+            case "tipo":
+                if (valor == null || valor.isEmpty()) throw new CampoValidoException("Tipo invalido.");
+                Empregado novoEmpregado = null;
+                switch(valor) {
+                    case "horista":
+                        novoEmpregado = new EmpregadoHorista(empregado.getNome(), empregado.getEndereco(), valor, empregado.getSalario());
+                        break;
+                    case "assalariado":
+                        novoEmpregado = new EmpregadoAssalariado(empregado.getNome(), empregado.getEndereco(), valor, empregado.getSalario());
+                        break;
+                    case "comissionado":
+                        if (comissao == null || comissao.isEmpty()) throw new CampoValidoException("Comissao nao pode ser nula.");
+                        double com = Double.parseDouble(comissao.replace(',', '.'));
+                        novoEmpregado = new EmpregadoComissionado(empregado.getNome(), empregado.getEndereco(), valor, empregado.getSalario(), com);
+                        break;
+                    default:
+                        throw new CampoValidoException("Tipo invalido.");
+                }
+                // Copia os dados de sindicato e pagamento
+                novoEmpregado.setSindicalizado(empregado.isSindicalizado());
+                novoEmpregado.setIdSindicato(empregado.getIdSindicato());
+                novoEmpregado.setTaxaSindical(empregado.getTaxaSindical());
+                // Faltaria copiar o método de pagamento
+                empregados.put(emp, novoEmpregado);
+                break;
+            case "comissao":
+                if (empregado instanceof EmpregadoComissionado) {
+                    if (valor == null || valor.isEmpty()) throw new CampoValidoException("Comissao nao pode ser nula.");
+                    try {
+                        double novaComissao = Double.parseDouble(valor.replace(',', '.'));
+                        if (novaComissao < 0) throw new CampoValidoException("Comissao deve ser nao-negativa.");
+                        ((EmpregadoComissionado) empregado).setComissao(novaComissao);
+                    } catch (NumberFormatException e) {
+                        throw new CampoValidoException("Comissao deve ser numerica.");
+                    }
+                } else {
+                    throw new CampoValidoException("Empregado nao eh comissionado.");
+                }
+                break;
+            case "sindicalizado":
+                boolean ehSindicalizado = Boolean.parseBoolean(valor);
+                if (ehSindicalizado) {
+                    if (idSindicato == null || idSindicato.isEmpty()) throw new CampoValidoException("Identificacao do sindicato nao pode ser nula.");
+                    if (taxaSindical == null || taxaSindical.isEmpty()) throw new CampoValidoException("Taxa sindical nao pode ser nula.");
+                    for (Empregado e : empregados.values()) {
+                        if (e.getIdSindicato() != null && e.getIdSindicato().equals(idSindicato)) {
+                            throw new CampoValidoException("Ha outro empregado com esta identificacao de sindicato");
+                        }
+                    }
+                    empregado.setSindicalizado(true);
+                    empregado.setIdSindicato(idSindicato);
+                    empregado.setTaxaSindical(Double.parseDouble(taxaSindical.replace(',', '.')));
+                } else {
+                    empregado.setSindicalizado(false);
+                    empregado.setIdSindicato(null);
+                    empregado.setTaxaSindical(0);
+                }
+                break;
+            default:
+                throw new CampoValidoException("Atributo nao existe.");
+        }
     }
 
     public void lancaTaxaServico (String membro, String data, String valor) throws CampoValidoException
