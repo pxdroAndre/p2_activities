@@ -61,6 +61,8 @@ public class EmpregadoHorista extends Empregado
         int dia = Integer.parseInt(diaStr);
         int mes = Integer.parseInt(mesStr);
 
+        if (dia <= 0 || dia >= 32) return false;
+
         // 4. Verifica se o mês está no intervalo válido
         if (mes >= 1 && mes <= 12)
         {

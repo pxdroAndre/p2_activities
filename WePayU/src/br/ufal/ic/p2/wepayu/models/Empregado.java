@@ -1,9 +1,9 @@
 package br.ufal.ic.p2.wepayu.models;
 
 import br.ufal.ic.p2.wepayu.Exception.EmpregadoNaoExisteException;
-
 import java.util.HashMap;
 import java.util.Map;
+import java.util.ArrayList; // Adicione esta importação
 
 public class Empregado {
     private String nome;
@@ -11,6 +11,9 @@ public class Empregado {
     private String tipo;
     private double salario;
     private boolean sindicalizado;
+    private String idSindicato;
+    private double taxaSindical;
+    private ArrayList<TaxaServico> taxasServico = new ArrayList<>();
 
 
     public Empregado(){}
@@ -48,7 +51,29 @@ public class Empregado {
         this.sindicalizado = sindicalizado;
     }
 
+    public String getIdSindicato() {
+        return idSindicato;
+    }
 
+    public void setIdSindicato(String idSindicato) {
+        this.idSindicato = idSindicato;
+    }
+
+    public double getTaxaSindical() {
+        return taxaSindical;
+    }
+
+    public void setTaxaSindical(double taxaSindical) {
+        this.taxaSindical = taxaSindical;
+    }
+
+    public ArrayList<TaxaServico> getTaxasServico() {
+        return taxasServico;
+    }
+
+    public void setTaxasServico(ArrayList<TaxaServico> taxasServico) {
+        this.taxasServico = taxasServico;
+    }
 
     public String getNome() {
         return nome;

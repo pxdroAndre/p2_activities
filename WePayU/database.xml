@@ -10,67 +10,76 @@
     <void property="endereco">
      <string>Rua dos Jooes, 333 - Campina Grande</string>
     </void>
+    <void property="idSindicato">
+     <string>s128</string>
+    </void>
     <void property="nome">
      <string>Joao da Silva</string>
     </void>
     <void property="salario">
-     <double>1300.0</double>
+     <double>2300.0</double>
     </void>
-    <void property="tipo">
-     <string>comissionado</string>
+    <void property="sindicalizado">
+     <boolean>true</boolean>
     </void>
-    <void property="vendas">
+    <void property="taxaSindical">
+     <double>1.0</double>
+    </void>
+    <void property="taxasServico">
      <void method="add">
-      <object class="br.ufal.ic.p2.wepayu.models.ResultadoDeVenda">
+      <object class="br.ufal.ic.p2.wepayu.models.TaxaServico">
        <void property="data">
         <string>1/1/2005</string>
        </void>
        <void property="valor">
-        <string>800</string>
+        <string>80</string>
        </void>
       </object>
      </void>
      <void method="add">
-      <object class="br.ufal.ic.p2.wepayu.models.ResultadoDeVenda">
+      <object class="br.ufal.ic.p2.wepayu.models.TaxaServico">
        <void property="data">
         <string>2/1/2005</string>
        </void>
        <void property="valor">
-        <string>850,5</string>
+        <string>85,5</string>
        </void>
       </object>
      </void>
      <void method="add">
-      <object class="br.ufal.ic.p2.wepayu.models.ResultadoDeVenda">
+      <object class="br.ufal.ic.p2.wepayu.models.TaxaServico">
        <void property="data">
         <string>3/1/2005</string>
        </void>
        <void property="valor">
-        <string>900</string>
+        <string>90</string>
        </void>
       </object>
      </void>
      <void method="add">
-      <object class="br.ufal.ic.p2.wepayu.models.ResultadoDeVenda">
+      <object class="br.ufal.ic.p2.wepayu.models.TaxaServico">
        <void property="data">
         <string>4/1/2005</string>
        </void>
        <void property="valor">
-        <string>600</string>
+        <string>60</string>
        </void>
       </object>
      </void>
+    </void>
+    <void property="tipo">
+     <string>comissionado</string>
     </void>
    </object>
   </void>
   <void method="put">
    <string>2</string>
-   <object class="br.ufal.ic.p2.wepayu.models.EmpregadoComissionado" id="EmpregadoComissionado1">
-    <void property="comissao">
-     <double>0.05</double>
-    </void>
+   <object class="br.ufal.ic.p2.wepayu.models.EmpregadoAssalariado" id="EmpregadoAssalariado0">
     <void property="endereco">
      <string>Rua das Marias, 333 - Campina Grande</string>
+    </void>
+    <void property="idSindicato">
+     <string>s129</string>
     </void>
     <void property="nome">
      <string>Mariazinha</string>
@@ -78,20 +87,26 @@
     <void property="salario">
      <double>2300.0</double>
     </void>
-    <void property="tipo">
-     <string>comissionado</string>
+    <void property="sindicalizado">
+     <boolean>true</boolean>
     </void>
-    <void property="vendas">
+    <void property="taxaSindical">
+     <double>1.0</double>
+    </void>
+    <void property="taxasServico">
      <void method="add">
-      <object class="br.ufal.ic.p2.wepayu.models.ResultadoDeVenda">
+      <object class="br.ufal.ic.p2.wepayu.models.TaxaServico">
        <void property="data">
         <string>3/1/2005</string>
        </void>
        <void property="valor">
-        <string>1000</string>
+        <string>100</string>
        </void>
       </object>
      </void>
+    </void>
+    <void property="tipo">
+     <string>assalariado</string>
     </void>
    </object>
   </void>
@@ -101,11 +116,20 @@
     <void property="endereco">
      <string>Rua dos Bufoes, 333 - Campina Grande</string>
     </void>
+    <void property="idSindicato">
+     <string>s130</string>
+    </void>
     <void property="nome">
      <string>Gaiato Vendedor</string>
     </void>
     <void property="salario">
-     <double>13.0</double>
+     <double>1300.0</double>
+    </void>
+    <void property="sindicalizado">
+     <boolean>true</boolean>
+    </void>
+    <void property="taxaSindical">
+     <double>1.0</double>
     </void>
     <void property="tipo">
      <string>horista</string>
@@ -114,7 +138,7 @@
   </void>
   <void method="put">
    <string>4</string>
-   <object class="br.ufal.ic.p2.wepayu.models.EmpregadoAssalariado">
+   <object class="br.ufal.ic.p2.wepayu.models.EmpregadoHorista">
     <void property="endereco">
      <string>Rua das Marias, 333 - Campina Grande</string>
     </void>
@@ -122,10 +146,10 @@
      <string>Gorete</string>
     </void>
     <void property="salario">
-     <double>2300.0</double>
+     <double>1300.0</double>
     </void>
     <void property="tipo">
-     <string>assalariado</string>
+     <string>horista</string>
     </void>
    </object>
   </void>

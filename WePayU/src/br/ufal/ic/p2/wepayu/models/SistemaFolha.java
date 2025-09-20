@@ -365,4 +365,81 @@ public class SistemaFolha
         if (empregado instanceof EmpregadoComissionado comissionado) return comissionado.getVendas(inicio, fim);
         else throw new CampoValidoException("Empregado nao eh comissionado.");
     }
+    public void alteraEmpregado(String id, String atributo, String valor,
+                                String idSindicato, String taxaSindical) throws CampoValidoException
+    {
+        Empregado empregado = empregados.get(id);
+
+        if (atributo.equals("sindicalizado")) {
+            if (valor.equals("true")) {
+                // VERIFICAÇÃO
+                for (Empregado e : empregados.values()) {
+                    if (e.getIdSindicato() != null && e.getIdSindicato().equals(idSindicato)) {
+                        throw new CampoValidoException("Ha outro empregado com esta identificacao de sindicato");
+                    }
+                }
+                empregado.setSindicalizado(true);
+                empregado.setIdSindicato(idSindicato);
+                empregado.setTaxaSindical(Double.parseDouble(taxaSindical.replace(',', '.')));
+            } else {
+                empregado.setSindicalizado(false);
+                empregado.setIdSindicato(null);
+                empregado.setTaxaSindical(0);
+            }
+        }
+    }
+    public void alteraEmpregado(String id, String atributo, String valor) throws CampoValidoException
+    {
+
+    }
+
+    public void lancaTaxaServico (String membro, String data, String valor) throws CampoValidoException
+    {
+        // Validações de erro
+        if (membro.isEmpty()) throw new CampoValidoException("Identificacao do membro nao pode ser nula.");
+        if (!EmpregadoHorista.validarData(data)) throw new CampoValidoException("Data invalida.");
+        double valorNumerico = Double.parseDouble(valor.replace(',', '.'));
+        if (valorNumerico <= 0) throw new CampoValidoException("Valor deve ser positivo.");
+
+        Empregado empregadoAlvo = null;
+        // Encontra o empregado pelo ID do Sindicato
+        for (Empregado e : empregados.values()) {
+            if (e.isSindicalizado() && membro.equals(e.getIdSindicato())) {
+                empregadoAlvo = e;
+                break;
+            }
+        }
+
+        if (empregadoAlvo == null) throw new CampoValidoException("Membro nao existe.");
+
+        // Cria e adiciona a taxa de serviço
+        TaxaServico novaTaxa = new TaxaServico(data, valor);
+        empregadoAlvo.getTaxasServico().add(novaTaxa);
+    }
+
+    public String getTaxasServico(String emp, String dataInicial, String dataFinal) throws CampoValidoException {
+        Empregado empregado = empregados.get(emp);
+        if (empregado == null) { /* Lançar erro de empregado não existe */ }
+        if (!empregado.isSindicalizado()) throw new CampoValidoException("Empregado nao eh sindicalizado.");
+        if (!EmpregadoHorista.validarData(dataInicial)) throw new CampoValidoException("Data inicial invalida.");
+        if (!EmpregadoHorista.validarData(dataFinal)) throw new CampoValidoException("Data final invalida.");
+
+        // A lógica de validação de datas e iteração é quase idêntica à de getVendas
+        double totalTaxas = 0;
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/yyyy");
+        LocalDate inicio = LocalDate.parse(dataInicial, formatter);
+        LocalDate fim = LocalDate.parse(dataFinal, formatter);
+
+        if(fim.isBefore(inicio)) throw new CampoValidoException("Data inicial nao pode ser posterior aa data final.");
+
+        for (TaxaServico taxa : empregado.getTaxasServico()) {
+            LocalDate dataTaxa = LocalDate.parse(taxa.getData(), formatter);
+            if (!dataTaxa.isBefore(inicio) && dataTaxa.isBefore(fim)) {
+                totalTaxas += Double.parseDouble(taxa.getValor().replace(',', '.'));
+            }
+        }
+
+        // Formata o resultado para o padrão brasileiro
+        return String.format(new Locale("pt", "BR"), "%.2f", totalTaxas);
+    }
 }
