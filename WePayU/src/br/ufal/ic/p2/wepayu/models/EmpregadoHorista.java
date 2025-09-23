@@ -7,80 +7,149 @@ import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Objects;
 
+/**
+ * Representa um empregado do tipo Horista.
+ * <p>
+ * Empregados horistas são remunerados com base no número de horas trabalhadas,
+ * registradas através de {@link CartaoPonto}. Esta classe gerencia os cartões de ponto
+ * e calcula as horas normais e extras trabalhadas em um período.
+ * </p>
+ * @see Empregado
+ * @see CartaoPonto
+ * @author pxdroAndre
+ * @version 1.0
+ */
 public class EmpregadoHorista extends Empregado
 {
     private ArrayList <CartaoPonto> cartoesDePonto = new ArrayList<>();
     private int horasNormais;
     private int horasExtras;
 
+    /**
+     * Define a lista de cartões de ponto do empregado.
+     * @param cartoesDePonto A nova lista de cartões de ponto.
+     */
     public void setCartoesDePonto(ArrayList<CartaoPonto> cartoesDePonto) {
         this.cartoesDePonto = cartoesDePonto;
     }
 
+    /**
+     * Construtor padrão.
+     * Utilizado para a criação de instâncias via persistência XML.
+     */
     public EmpregadoHorista (){}
+
+    /**
+     * Construtor para criar um novo empregado horista.
+     *
+     * @param nome O nome completo do empregado.
+     * @param endereco O endereço do empregado.
+     * @param tipo O tipo de contrato, que deve ser "horista".
+     * @param salario O valor da remuneração por hora de trabalho.
+     */
     public EmpregadoHorista (String nome, String endereco, String tipo, double salario)
     {
         super(nome, endereco, tipo, salario);
     }
 
+    /**
+     * Retorna o total de horas extras acumuladas (pode não ser usado diretamente).
+     * @return O total de horas extras.
+     */
     public int getHorasExtras() {
         return horasExtras;
     }
 
+    /**
+     * Retorna a lista de todos os cartões de ponto associados a este empregado.
+     * @return Uma {@code ArrayList} de objetos {@link CartaoPonto}.
+     */
     public ArrayList<CartaoPonto> getCartoesDePonto() {
         return cartoesDePonto;
     }
 
+    /**
+     * Define o total de horas extras.
+     * @param horasExtras O novo total de horas extras.
+     */
     public void setHorasExtras(int horasExtras) {
         this.horasExtras = horasExtras;
     }
 
+    /**
+     * Retorna o total de horas normais acumuladas (pode não ser usado diretamente).
+     * @return O total de horas normais.
+     */
     public int getHorasNormais() {
         return horasNormais;
     }
 
+    /**
+     * Define o total de horas normais.
+     * @param horasNormais O novo total de horas normais.
+     */
     public void setHorasNormais(int horasNormais) {
         this.horasNormais = horasNormais;
     }
 
+    /**
+     * Cria e adiciona um novo cartão de ponto à lista do empregado.
+     *
+     * @param data A data do registro de trabalho.
+     * @param horas O total de horas trabalhadas no dia.
+     */
     public void lancaCartao (String data, String horas)
     {
         CartaoPonto novoCartao = new CartaoPonto(data, horas);
         cartoesDePonto.add(novoCartao);
     }
 
+    /**
+     * Valida se uma string de data está em um formato plausível (d/M/yyyy).
+     * <p>
+     * Verifica se o dia e o mês estão dentro de intervalos válidos.
+     * </p>
+     * @param dataStr A data em formato de String a ser validada.
+     * @return {@code true} se a data for válida, {@code false} caso contrário.
+     */
     public static boolean validarData(String dataStr) {
-        // 1. Quebra a string "1/13/2005" em um array: ["1", "13", "2005"]
         String[] partes = dataStr.split("/");
+        if (partes.length != 3) return false;
 
-        // 2. Pega a parte do mês (o elemento no índice 1)
         String diaStr = partes[0];
         String mesStr = partes[1];
 
-        // 3. Converte a string do mês para um número inteiro
         int dia = Integer.parseInt(diaStr);
         int mes = Integer.parseInt(mesStr);
 
-        if (dia <= 0 || dia >= 32) return false;
+        if (dia <= 0 || dia > 31) return false;
 
-        // 4. Verifica se o mês está no intervalo válido
         if (mes >= 1 && mes <= 12)
         {
-            if (Objects.equals(mes, 2))
+            if (mes == 2)
             {
-                return dia <= 29;
+                return dia <= 29; // Simplificação para anos bissextos
             }
             return true;
         }
         return false;
     }
 
+    /**
+     * Calcula o total de horas normais trabalhadas em um determinado período.
+     * <p>
+     * Horas normais são limitadas a 8 por dia. O que excede é considerado hora extra.
+     * </p>
+     * @param inicio A data inicial do período no formato "d/M/yyyy".
+     * @param fim A data final do período no formato "d/M/yyyy".
+     * @return O total de horas normais formatado como String.
+     * @throws CampoValidoException se as datas forem inválidas ou se a data inicial for posterior à final.
+     */
     public String getHorasNormaisTrabalhadas (String inicio, String fim) throws CampoValidoException
     {
         double horasNormais = 0;
-        // fazendo parsing das datas
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/yyyy");
-        // formata as datas
+
         if (!EmpregadoHorista.validarData(inicio)) throw new CampoValidoException("Data inicial invalida.");
         if (!EmpregadoHorista.validarData(fim)) throw new CampoValidoException("Data final invalida.");
         LocalDate in, fi;
@@ -88,27 +157,24 @@ public class EmpregadoHorista extends Empregado
         {
             in = LocalDate.parse(inicio, formatter);
         } catch (DateTimeParseException e) {
-            throw new CampoValidoException("Data inicial invalida."); // Mensagem com ponto
+            throw new CampoValidoException("Data inicial invalida.");
         }
 
         try
         {
             fi = LocalDate.parse(fim, formatter);
         } catch (DateTimeParseException e) {
-            throw new CampoValidoException("Data final invalida."); // Mensagem com ponto
+            throw new CampoValidoException("Data final invalida.");
         }
 
         if (fi.isBefore(in)) throw new CampoValidoException("Data inicial nao pode ser posterior aa data final.");
 
-        // loop sobre a lista de cartões de ponto do empregado
         for (CartaoPonto cartao : cartoesDePonto) {
             String dataDoCartao = cartao.getData();
             LocalDate dataCartao = LocalDate.parse(dataDoCartao, formatter);
 
-            // checa se a data do cartão está dentro do intervalo
             if (!dataCartao.isBefore(in) && dataCartao.isBefore(fi)) {
-                // Se estiver no intervalo, some as horas
-                String horasDoDia = cartao.getHoras();
+                String horasDoDia = cartao.getHoras().replace(',', '.');
                 double h = Double.parseDouble(horasDoDia);
                 if (h > 8) {
                     horasNormais += 8;
@@ -117,27 +183,31 @@ public class EmpregadoHorista extends Empregado
                 }
             }
         }
-        // formatando para o retorno
         if (horasNormais % 1 == 0.0)
         {
-            Integer h =((int) horasNormais);
-            return String.valueOf(h);
+            return String.valueOf((int) horasNormais);
         }
         else {
-            String h = String.valueOf(horasNormais);
-            return h.replace('.', ',');
+            return String.valueOf(horasNormais).replace('.', ',');
         }
     }
 
+    /**
+     * Calcula o total de horas extras trabalhadas em um determinado período.
+     * <p>
+     * Horas extras são as horas trabalhadas que excedem 8 horas em um único dia.
+     * </p>
+     * @param inicio A data inicial do período no formato "d/M/yyyy".
+     * @param fim A data final do período no formato "d/M/yyyy".
+     * @return O total de horas extras formatado como String.
+     * @throws CampoValidoException se as datas forem inválidas ou se a data inicial for posterior à final.
+     */
     public String getHorasExtrasTrabalhadas (String inicio, String fim) throws CampoValidoException
     {
         double horasExtras = 0;
-
-        // fazendo parsing das datas
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/yyyy");
-        // formata as datas
         LocalDate in, fi;
-        // valida as datas
+
         if (!EmpregadoHorista.validarData(inicio)) throw new CampoValidoException("Data inicial invalida.");
         if (!EmpregadoHorista.validarData(fim)) throw new CampoValidoException("Data final invalida.");
         try
@@ -145,40 +215,34 @@ public class EmpregadoHorista extends Empregado
             in = LocalDate.parse(inicio, formatter);
         } catch (DateTimeParseException e)
         {
-            throw new CampoValidoException("Data inicial invalida."); // Mensagem com ponto
+            throw new CampoValidoException("Data inicial invalida.");
         }
         try
         {
             fi = LocalDate.parse(fim, formatter);
         } catch (DateTimeParseException e) {
-            throw new CampoValidoException("Data final invalida."); // Mensagem com ponto
+            throw new CampoValidoException("Data final invalida.");
         }
 
         if (fi.isBefore(in)) throw new CampoValidoException("Data inicial nao pode ser posterior aa data final.");
 
-        // loop sobre a lista de cartões de ponto do empregado
         for (CartaoPonto cartao : cartoesDePonto)
         {
             String dataDoCartao = cartao.getData();
             LocalDate dataCartao = LocalDate.parse(dataDoCartao, formatter);
-            // checa se a data do cartão está dentro do intervalo
+
             if (!dataCartao.isBefore(in) && dataCartao.isBefore(fi)) {
-                // Se estiver no intervalo, some as horas
-                String horasExtrasDoDia = cartao.getHorasExtras();
-                horasExtrasDoDia = horasExtrasDoDia.replace(",", ".");
+                String horasExtrasDoDia = cartao.getHorasExtras().replace(",", ".");
                 double h = Double.parseDouble(horasExtrasDoDia);
                 horasExtras += h;
             }
         }
-        // formatando para o retorno
         if (horasExtras % 1 == 0.0)
         {
-            int h =((int) horasExtras);
-            return String.valueOf(h);
+            return String.valueOf((int) horasExtras);
         }
         else {
-            String h = String.valueOf(horasExtras);
-            return h.replace('.', ',');
+            return String.valueOf(horasExtras).replace('.', ',');
         }
     }
 }

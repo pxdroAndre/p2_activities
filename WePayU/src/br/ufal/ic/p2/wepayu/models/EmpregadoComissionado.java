@@ -7,37 +7,95 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 
+/**
+ * Representa um empregado do tipo Comissionado.
+ * <p>
+ * Empregados comissionados recebem um salário base acrescido de uma comissão
+ * percentual sobre suas vendas. Esta classe gerencia os dados de comissão e
+ * a lista de vendas realizadas.
+ * </p>
+ * @see Empregado
+ * @see ResultadoDeVenda
+ * @author pxdroAndre
+ * @version 1.0
+ */
 public class EmpregadoComissionado extends Empregado
 {
     private double comissao;
     private ArrayList<ResultadoDeVenda> vendas = new ArrayList<>();
+
+    /**
+     * Construtor padrão.
+     * <p>
+     * Utilizado para a criação de instâncias via persistência XML.
+     * </p>
+     */
     public EmpregadoComissionado(){}
 
+    /**
+     * Construtor para criar um novo empregado comissionado.
+     *
+     * @param nome O nome completo do empregado.
+     * @param endereco O endereço do empregado.
+     * @param tipo O tipo de contrato, que deve ser "comissionado".
+     * @param salario O salário base do empregado.
+     * @param comissao A taxa de comissão sobre as vendas (ex: 0.05 para 5%).
+     */
     public EmpregadoComissionado(String nome, String endereco, String tipo, double salario, double comissao) {
         super(nome, endereco, tipo, salario);
         this.comissao = comissao;
     }
 
+    /**
+     * Retorna a lista de todas as vendas realizadas pelo empregado.
+     * @return Uma {@code ArrayList} de objetos {@link ResultadoDeVenda}.
+     */
     public ArrayList<ResultadoDeVenda> getVendas() {
         return vendas;
     }
 
+    /**
+     * Define a lista de vendas do empregado.
+     * @param vendas A nova lista de vendas.
+     */
     public void setVendas(ArrayList<ResultadoDeVenda> vendas) {
         this.vendas = vendas;
     }
 
+    /**
+     * Retorna a taxa de comissão do empregado.
+     * @return A taxa de comissão como um {@code double}.
+     */
     public double getComissao(){return comissao;};
 
+    /**
+     * Define a taxa de comissão do empregado.
+     * @param comissao A nova taxa de comissão (ex: 0.05 para 5%).
+     */
     public void setComissao(double comissao) {
         this.comissao = comissao;
     }
 
+    /**
+     * Adiciona um novo registro de venda à lista do empregado.
+     *
+     * @param valor O valor da venda realizada.
+     * @param data  A data em que a venda ocorreu.
+     */
     public void lancaVenda (String valor, String data)
     {
         ResultadoDeVenda venda = new ResultadoDeVenda(data, valor); // criando um objeto de venda
         vendas.add(venda); // adicionando no array
     }
 
+    /**
+     * Calcula e retorna o valor total de vendas realizadas em um determinado período.
+     *
+     * @param inicio A data inicial do período, em formato "d/M/yyyy".
+     * @param fim    A data final do período, em formato "d/M/yyyy".
+     * @return O valor total das vendas no período, formatado como String com duas casas decimais.
+     * @throws CampoValidoException Se as datas forem inválidas ou se a data inicial for posterior à final.
+     */
     public String getVendas (String inicio, String fim) throws CampoValidoException
     {
         double totalVendas = 0;
@@ -79,6 +137,5 @@ public class EmpregadoComissionado extends Empregado
         }
         // formatando para o retorno
         return String.format("%.2f", totalVendas);
-
     }
 }
