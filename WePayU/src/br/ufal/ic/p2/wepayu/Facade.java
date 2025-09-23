@@ -252,7 +252,7 @@ public class Facade
      * @return O total das taxas de serviço como String.
      * @throws CampoValidoException se o empregado não for sindicalizado ou as datas forem inválidas.
      */
-    public String getTaxasServico (String emp, String dataInicial, String dataFinal) throws CampoValidoException
+    public String getTaxasServico (String emp, String dataInicial, String dataFinal) throws CampoValidoException, EmpregadoNaoExisteException
     {
         return sistema.getTaxasServico(emp, dataInicial, dataFinal);
     }
@@ -264,7 +264,8 @@ public class Facade
      * @return O valor total formatado como String.
      * @throws Exception se ocorrer um erro durante o cálculo.
      */
-    public String totalFolha(String data) throws Exception {
+    public String totalFolha(String data) throws Exception
+    {
         return sistema.totalFolha(data);
     }
 

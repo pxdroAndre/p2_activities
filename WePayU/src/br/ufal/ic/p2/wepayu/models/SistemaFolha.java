@@ -712,10 +712,10 @@ public class SistemaFolha
      * @return O valor total das taxas formatado como String.
      * @throws CampoValidoException Se o empregado não for sindicalizado ou as datas forem inválidas.
      */
-    public String getTaxasServico(String emp, String dataInicial, String dataFinal) throws CampoValidoException
+    public String getTaxasServico(String emp, String dataInicial, String dataFinal) throws CampoValidoException, EmpregadoNaoExisteException
     {
         Empregado empregado = empregados.get(emp);
-        if (empregado == null) { /* Lançar erro de empregado não existe */ }
+        if (empregado == null) { throw new EmpregadoNaoExisteException(); }
         if (!empregado.isSindicalizado()) throw new CampoValidoException("Empregado nao eh sindicalizado.");
         if (!EmpregadoHorista.validarData(dataInicial)) throw new CampoValidoException("Data inicial invalida.");
         if (!EmpregadoHorista.validarData(dataFinal)) throw new CampoValidoException("Data final invalida.");
@@ -739,6 +739,50 @@ public class SistemaFolha
         return String.format(new Locale("pt", "BR"), "%.2f", totalTaxas);
     }
 
+    /**
+     * Retorna true ou false dependendo se o empregado deve receber naquela data ou não
+     * @param empregado O empregado a ser verificado
+     * @param dataAtual A data a ser testada
+     * @return o retorno booleano se o empregado deve receber ou não
+     */
+    private boolean deveReceber(Empregado empregado, LocalDate dataAtual)
+    {
+        String tipo = empregado.getTipo();
+
+        switch (tipo)
+        {
+            case "horista":
+                // Horistas recebem toda sexta-feira
+                return dataAtual.getDayOfWeek() == java.time.DayOfWeek.FRIDAY;
+
+            case "assalariado":
+                // Assalariados recebem no último dia do mês
+                // A verificação `isEqual` compara se a data atual é o último dia do mês.
+                return dataAtual.isEqual(dataAtual.withDayOfMonth(dataAtual.lengthOfMonth()));
+
+            case "comissionado":
+                // Comissionados recebem a cada 2 sextas-feiras[cite: 210].
+                // Os testes (us7.txt) mostram que o primeiro pagamento ocorre na segunda sexta-feira do ano.
+                // A partir daí, o pagamento é quinzenal.
+                if (dataAtual.getDayOfWeek() != java.time.DayOfWeek.FRIDAY)
+                {
+                    return false; // Se não for sexta-feira, não há pagamento.
+                }
+
+                // Define uma data de referência para o primeiro pagamento (a 2ª sexta de 2005)
+                LocalDate primeiroPagamento = LocalDate.of(2005, 1, 14);
+
+                // Calcula o número de semanas entre a data de referência e a data atual
+                long semanasDesdeReferencia = java.time.temporal.ChronoUnit.WEEKS.between(primeiroPagamento, dataAtual);
+
+                // Se o número de semanas for par, significa que está no ciclo de 2 semanas.
+                return semanasDesdeReferencia >= 0 && semanasDesdeReferencia % 2 == 0;
+
+            default:
+                return false;
+        }
+
+    }
 
     /**
      * Calcula o valor total da folha de pagamento para uma data específica.
@@ -752,12 +796,20 @@ public class SistemaFolha
         double total = 0.0;
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/yyyy");
         LocalDate dataAtual = LocalDate.parse(data, formatter);
+        if (!EmpregadoHorista.validarData(data)) throw new CampoValidoException("Data invalida.");
 
         for (Empregado empregado : empregados.values())
         {
-
+            if(deveReceber(empregado, dataAtual))
+            {
+                total += Empregado.calculaSalario(empregado, data);
+            }
         }
-        return "0,00"; // Retorno temporário
+
+        // formata o retorno para string
+        formatador.setGroupingUsed(false);
+        formatador.setMinimumFractionDigits(2);
+        return formatador.format(total);
     }
 
     /**

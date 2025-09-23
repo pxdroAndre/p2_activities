@@ -1,5 +1,6 @@
 package br.ufal.ic.p2.wepayu.models;
 
+import br.ufal.ic.p2.wepayu.Exception.CampoValidoException;
 import br.ufal.ic.p2.wepayu.Exception.EmpregadoNaoExisteException;
 import java.util.HashMap;
 import java.util.Map;
@@ -13,7 +14,7 @@ import java.util.ArrayList;
  * tipos mais específicos de empregados como {@link EmpregadoHorista},
  * {@link EmpregadoAssalariado}, e {@link EmpregadoComissionado}.
  * </p>
- * @author Mr. Dude
+ * @author pxdroAndre
  * @version 1.0
  */
 public class Empregado {
@@ -134,6 +135,7 @@ public class Empregado {
         this.tipo = tipo;
         this.salario = salario;
         this.sindicalizado = false;
+        this.ultimoPagamento = "1/1/2005";
     }
 
     /**
@@ -270,4 +272,44 @@ public class Empregado {
      * @deprecated Use o método {@link #isSindicalizado()} para seguir as convenções de nomenclatura Java para booleanos.
      */
     public boolean getSindicalizado(){ return sindicalizado;}
+
+
+    /**
+     * Retorna o salario do empregado
+     * @param empregado Empregado a ter o salario analisado
+     * @return retorna o valor do seu salario
+     */
+    public static double calculaSalario (Empregado empregado, String data) throws CampoValidoException
+    {
+        double salario = 0.00;
+        String sal;
+        String tipo = empregado.getTipo();
+        switch (tipo)
+        {
+            case "horista":
+                EmpregadoHorista emp = (EmpregadoHorista) empregado;
+                String normal = emp.getHorasNormaisTrabalhadas(emp.getUltimoPagamento(), data);
+                String extras = emp.getHorasExtrasTrabalhadas(emp.getUltimoPagamento(), data);
+                normal = normal.replace(",", ".");
+                extras = extras.replace(",", ".");
+                double horasNormais = Double.parseDouble(normal);
+                double horasExtras = Double.parseDouble(extras);
+                double salarioHora = empregado.getSalario(); // O salário para horista é a taxa por hora
+                salario = (horasNormais * salarioHora) + (horasExtras * salarioHora * 1.5); // 1.5x para horas extras
+                break;
+
+            case "comissionado":
+                EmpregadoComissionado com = (EmpregadoComissionado) empregado;
+                String vendas = com.getVendas(com.getUltimoPagamento(), data);
+                vendas = vendas.replace(",", ".");
+                salario = com.getSalario() + (Double.parseDouble(vendas) * com.getComissao());
+                break;
+
+            case "assalariado":
+                salario = empregado.getSalario();
+                break;
+        }
+        return salario;
+    }
+
 }

@@ -100,6 +100,10 @@ public class EmpregadoHorista extends Empregado
      */
     public void lancaCartao (String data, String horas)
     {
+        if(cartoesDePonto.isEmpty())
+        {
+            this.setUltimoPagamento(data);
+        }
         CartaoPonto novoCartao = new CartaoPonto(data, horas);
         cartoesDePonto.add(novoCartao);
     }
