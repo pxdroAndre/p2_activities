@@ -1,5 +1,7 @@
 package br.ufal.ic.p2.wepayu.models;
 
+import java.time.LocalDate;
+
 /**
  * Representa um empregado do tipo Assalariado.
  * <p>
@@ -32,4 +34,6 @@ public class EmpregadoAssalariado extends Empregado
      * </p>
      */
     public EmpregadoAssalariado(){}
+
+
 }

@@ -138,4 +138,12 @@ public class EmpregadoComissionado extends Empregado
         // formatando para o retorno
         return String.format("%.2f", totalVendas);
     }
+
+    /**
+     * Metodo para calcular o salario bruto do empregado comissionado
+     * @param dataInicial data onde começa a calcular o salario
+     * @param dataFinal data onde termina a calcular o salario
+     * @return
+     */
+
 }

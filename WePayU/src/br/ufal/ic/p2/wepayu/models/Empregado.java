@@ -282,7 +282,6 @@ public class Empregado {
     public static double calculaSalario (Empregado empregado, String data) throws CampoValidoException
     {
         double salario = 0.00;
-        String sal;
         String tipo = empregado.getTipo();
         switch (tipo)
         {
@@ -295,7 +294,7 @@ public class Empregado {
                 double horasNormais = Double.parseDouble(normal);
                 double horasExtras = Double.parseDouble(extras);
                 double salarioHora = empregado.getSalario(); // O salário para horista é a taxa por hora
-                salario = (horasNormais * salarioHora) + (horasExtras * salarioHora * 1.5); // 1.5x para horas extras
+                salario = (horasNormais * salarioHora) + (horasExtras * (salarioHora * 1.5)); // 1.5x para horas extras
                 break;
 
             case "comissionado":

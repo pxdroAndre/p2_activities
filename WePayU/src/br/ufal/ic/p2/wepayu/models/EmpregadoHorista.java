@@ -249,4 +249,7 @@ public class EmpregadoHorista extends Empregado
             return String.valueOf(horasExtras).replace('.', ',');
         }
     }
+
+
+
 }
