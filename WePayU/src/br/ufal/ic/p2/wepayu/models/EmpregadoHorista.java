@@ -250,6 +250,20 @@ public class EmpregadoHorista extends Empregado
         }
     }
 
+    public double calcularSalario (String data) throws CampoValidoException
+    {
+        double salario = 0.0;
+        String normal = this.getHorasNormaisTrabalhadas(this.getUltimoPagamento(), data);
+        String extras = this.getHorasExtrasTrabalhadas(this.getUltimoPagamento(), data);
+        normal = normal.replace(",", ".");
+        extras = extras.replace(",", ".");
+        double horasNormais = Double.parseDouble(normal);
+        double horasExtras = Double.parseDouble(extras);
+        double salarioHora = this.getSalario(); // O salário para horista é a taxa por hora
+        salario = (horasNormais * salarioHora) + (horasExtras * (salarioHora * 1.5));
+        return salario;
+    }
+
 
 
 }

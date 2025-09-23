@@ -283,31 +283,21 @@ public class Empregado {
     {
         double salario = 0.00;
         String tipo = empregado.getTipo();
-        switch (tipo)
+        salario = switch (tipo)
         {
-            case "horista":
+            case "horista" ->
+            {
                 EmpregadoHorista emp = (EmpregadoHorista) empregado;
-                String normal = emp.getHorasNormaisTrabalhadas(emp.getUltimoPagamento(), data);
-                String extras = emp.getHorasExtrasTrabalhadas(emp.getUltimoPagamento(), data);
-                normal = normal.replace(",", ".");
-                extras = extras.replace(",", ".");
-                double horasNormais = Double.parseDouble(normal);
-                double horasExtras = Double.parseDouble(extras);
-                double salarioHora = empregado.getSalario(); // O salário para horista é a taxa por hora
-                salario = (horasNormais * salarioHora) + (horasExtras * (salarioHora * 1.5)); // 1.5x para horas extras
-                break;
-
-            case "comissionado":
+                yield emp.calcularSalario(data);
+            }
+            case "comissionado" ->
+            {
                 EmpregadoComissionado com = (EmpregadoComissionado) empregado;
-                String vendas = com.getVendas(com.getUltimoPagamento(), data);
-                vendas = vendas.replace(",", ".");
-                salario = com.getSalario() + (Double.parseDouble(vendas) * com.getComissao());
-                break;
-
-            case "assalariado":
-                salario = empregado.getSalario();
-                break;
-        }
+                yield com.calcularSalario(data);
+            }
+            case "assalariado" -> empregado.getSalario();
+            default -> salario;
+        };
         return salario;
     }
 

@@ -139,11 +139,15 @@ public class EmpregadoComissionado extends Empregado
         return String.format("%.2f", totalVendas);
     }
 
-    /**
-     * Metodo para calcular o salario bruto do empregado comissionado
-     * @param dataInicial data onde começa a calcular o salario
-     * @param dataFinal data onde termina a calcular o salario
-     * @return
-     */
+
+    public double calcularSalario (String data) throws CampoValidoException
+    {
+        double salario = 0.00;
+        String vendas = this.getVendas(this.getUltimoPagamento(), data);
+        vendas = vendas.replace(",", ".");
+        salario = (this.getSalario() * (12.00/52.00)) + (Double.parseDouble(vendas) * this.getComissao());
+        return salario;
+    }
+
 
 }
