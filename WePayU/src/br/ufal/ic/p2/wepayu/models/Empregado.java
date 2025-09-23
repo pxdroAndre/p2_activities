@@ -5,6 +5,7 @@ import br.ufal.ic.p2.wepayu.Exception.EmpregadoNaoExisteException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ArrayList;
+import java.util.Objects;
 
 /**
  * Representa a entidade base de um empregado no sistema de folha de pagamento.
@@ -135,7 +136,8 @@ public class Empregado {
         this.tipo = tipo;
         this.salario = salario;
         this.sindicalizado = false;
-        this.ultimoPagamento = "1/1/2005";
+        if (!Objects.equals(tipo, "comissionado")) this.ultimoPagamento = "1/1/2005";
+        else this.ultimoPagamento = "1/1/2023";
     }
 
     /**

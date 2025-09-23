@@ -766,8 +766,9 @@ public class SistemaFolha
                     return false; // Se não for sexta-feira, não há pagamento.
                 }
 
-                // Define uma data de referência para o primeiro pagamento (a 2ª sexta de 2005)
-                LocalDate primeiroPagamento = LocalDate.of(2005, 1, 14);
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/yyyy");
+                LocalDate primeiroPagamento = LocalDate.parse(empregado.getUltimoPagamento(), formatter);
+
 
                 // Calcula o número de semanas entre a data de referência e a data atual
                 long semanasDesdeReferencia = java.time.temporal.ChronoUnit.WEEKS.between(primeiroPagamento, dataAtual);
