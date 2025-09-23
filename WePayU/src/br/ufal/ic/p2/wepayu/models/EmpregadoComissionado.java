@@ -142,11 +142,13 @@ public class EmpregadoComissionado extends Empregado
 
     public double calcularSalario (String data) throws CampoValidoException
     {
-        double salario = 0.00;
+
         String vendas = this.getVendas(this.getUltimoPagamento(), data);
-        vendas = vendas.replace(",", ".");
-        salario = (this.getSalario() * (12.00/52.00)) + (Double.parseDouble(vendas) * this.getComissao());
-        return salario;
+        double parteFixa = (this.getSalario() * 12) / 26.0;
+        double valorVendas = Double.parseDouble(vendas.replace(",", "."));
+        double valorComissao = valorVendas * this.getComissao();
+        return parteFixa + valorComissao;
+
     }
 
 

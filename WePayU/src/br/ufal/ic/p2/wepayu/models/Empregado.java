@@ -137,7 +137,7 @@ public class Empregado {
         this.salario = salario;
         this.sindicalizado = false;
         if (!Objects.equals(tipo, "comissionado")) this.ultimoPagamento = "1/1/2005";
-        else this.ultimoPagamento = "1/1/2023";
+        else this.ultimoPagamento = "1/1/2005";
     }
 
     /**

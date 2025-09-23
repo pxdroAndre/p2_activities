@@ -774,7 +774,7 @@ public class SistemaFolha
                 long semanasDesdeReferencia = java.time.temporal.ChronoUnit.WEEKS.between(primeiroPagamento, dataAtual);
 
                 // Se o número de semanas for par, significa que está no ciclo de 2 semanas.
-                return semanasDesdeReferencia >= 0 && semanasDesdeReferencia % 2 == 0;
+                return semanasDesdeReferencia > 0 && semanasDesdeReferencia % 2 == 0;
 
             default:
                 return false;
