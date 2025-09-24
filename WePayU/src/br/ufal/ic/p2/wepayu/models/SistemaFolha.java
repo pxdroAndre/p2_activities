@@ -26,8 +26,7 @@ import java.time.format.DateTimeFormatter;
  * @author pxdroAndre
  * @version 1.0
  */
-public class SistemaFolha
-{
+public class SistemaFolha {
 
     //criação do hashmap de empregados e id
     private int id = 1;
@@ -44,10 +43,8 @@ public class SistemaFolha
      * Se o arquivo não for encontrado, inicializa um sistema vazio.
      * </p>
      */
-    public SistemaFolha()
-    {
-        try
-        {
+    public SistemaFolha() {
+        try {
             // tenta abrir o XML
             FileInputStream fis = new FileInputStream("database.xml");
 
@@ -61,9 +58,7 @@ public class SistemaFolha
             this.id = this.empregados.size() + 1;
 
             decoder.close();
-        }
-        catch (FileNotFoundException e)
-        {
+        } catch (FileNotFoundException e) {
             this.empregados = new HashMap<>();
             this.id = 1;
         }
@@ -75,8 +70,7 @@ public class SistemaFolha
      * Remove todos os empregados do mapa e reinicia o contador de IDs.
      * </p>
      */
-    public void zerarSistema ()
-    {
+    public void zerarSistema() {
 
         empregados.clear();
         id = 1;
@@ -88,10 +82,8 @@ public class SistemaFolha
      * Serializa o mapa de empregados para o arquivo "database.xml".
      * </p>
      */
-    public void encerrarSistema ()
-    {
-        try
-        {
+    public void encerrarSistema() {
+        try {
             // definindo arquivo de saida
             FileOutputStream fos = new FileOutputStream("database.xml");
             BufferedOutputStream bos = new BufferedOutputStream(fos);
@@ -103,9 +95,7 @@ public class SistemaFolha
             encoder.writeObject(this.empregados);
             //encerra p encoder
             encoder.close();
-        }
-        catch (FileNotFoundException e)
-        {
+        } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
     }
@@ -114,28 +104,24 @@ public class SistemaFolha
     /**
      * Valida os dados de entrada para a criação de empregados não comissionados.
      *
-     * @param nome O nome do empregado.
+     * @param nome     O nome do empregado.
      * @param endereco O endereço do empregado.
-     * @param tipo O tipo de contrato ("horista" ou "assalariado").
-     * @param sal O salário em formato String.
+     * @param tipo     O tipo de contrato ("horista" ou "assalariado").
+     * @param sal      O salário em formato String.
      * @throws CampoValidoException Se qualquer um dos dados for inválido.
      */
-    public static void acharExcecoes (String nome, String endereco, String tipo, String sal) throws CampoValidoException
-    {
+    public static void acharExcecoes(String nome, String endereco, String tipo, String sal) throws CampoValidoException {
         // checando campo nulo
         if (Objects.equals(nome, "")) throw new CampoValidoException("Nome nao pode ser nulo.");
         if (Objects.equals(endereco, "")) throw new CampoValidoException("Endereco nao pode ser nulo.");
         if (Objects.equals(sal, "")) throw new CampoValidoException("Salario nao pode ser nulo.");
         // checa se o salario eh numerico
-        try
-        {
+        try {
             // corrige a formatação do double
             sal = sal.replace(',', '.');
             double salario = Double.parseDouble(sal);
             if (salario < 0) throw new CampoValidoException("Salario deve ser nao-negativo.");
-        }
-        catch (NumberFormatException e)
-        {
+        } catch (NumberFormatException e) {
             throw new CampoValidoException("Salario deve ser numerico.");
         }
 
@@ -143,8 +129,7 @@ public class SistemaFolha
         // checando validez do tipo
         if (Objects.equals(tipo, "comissionado")) throw new CampoValidoException("Tipo nao aplicavel.");
         if ((!Objects.equals(tipo, "horista")) &&
-                (!Objects.equals(tipo, "assalariado")) )
-        {
+                (!Objects.equals(tipo, "assalariado"))) {
             throw new CampoValidoException("Tipo invalido.");
         }
     }
@@ -152,16 +137,15 @@ public class SistemaFolha
     /**
      * Cria um novo empregado não comissionado (horista ou assalariado).
      *
-     * @param nome O nome do empregado.
+     * @param nome     O nome do empregado.
      * @param endereco O endereço do empregado.
-     * @param tipo O tipo de contrato.
-     * @param sal O salário.
+     * @param tipo     O tipo de contrato.
+     * @param sal      O salário.
      * @return O ID do novo empregado criado.
      * @throws CampoValidoException Se os dados de entrada forem inválidos.
      */
-    public String criarEmpregado (String nome, String endereco, String tipo, String sal)
-            throws CampoValidoException
-    {
+    public String criarEmpregado(String nome, String endereco, String tipo, String sal)
+            throws CampoValidoException {
         // checando excecoes
         SistemaFolha.acharExcecoes(nome, endereco, tipo, sal);
 
@@ -171,8 +155,7 @@ public class SistemaFolha
         sal = sal.replace(',', '.');
         double salario = Double.parseDouble(sal);
         // cria o empregado
-        switch (tipo)
-        {
+        switch (tipo) {
             case "assalariado":
                 EmpregadoAssalariado novoAssalariado = new EmpregadoAssalariado(nome, endereco, tipo, salario);
                 empregados.put(novoID, novoAssalariado); //adicionando no hashmap
@@ -181,48 +164,42 @@ public class SistemaFolha
                 EmpregadoHorista novoHorista = new EmpregadoHorista(nome, endereco, tipo, salario);
                 empregados.put(novoID, novoHorista); //adicionando no hashmap
                 break;
-        };
+        }
+        ;
         id++;
         return novoID;
     }
+
     /**
      * Valida os dados de entrada para a criação de empregados comissionados.
      *
-     * @param nome O nome do empregado.
+     * @param nome     O nome do empregado.
      * @param endereco O endereço do empregado.
-     * @param tipo O tipo de contrato ("comissionado").
-     * @param sal O salário base.
+     * @param tipo     O tipo de contrato ("comissionado").
+     * @param sal      O salário base.
      * @param comissao A taxa de comissão.
      * @throws CampoValidoException Se qualquer um dos dados for inválido.
      */
-    public static void acharExcecoes (String nome, String endereco, String tipo, String sal, String comissao)
-            throws CampoValidoException
-    {
+    public static void acharExcecoes(String nome, String endereco, String tipo, String sal, String comissao)
+            throws CampoValidoException {
         // valida a comissao
         if (Objects.equals(comissao, "")) throw new CampoValidoException("Comissao nao pode ser nula.");
-        try
-        {
+        try {
             // corrige a formatação do double
             comissao = comissao.replace(',', '.');
             double com = Double.parseDouble(comissao);
             if (com < 0.00) throw new CampoValidoException("Comissao deve ser nao-negativa.");
-        }
-        catch (NumberFormatException e)
-        {
+        } catch (NumberFormatException e) {
             throw new CampoValidoException("Comissao deve ser numerica.");
         }
         // valida o tipo
-        if ((!Objects.equals(tipo, "comissionado")))
-        {
+        if ((!Objects.equals(tipo, "comissionado"))) {
             throw new CampoValidoException("Tipo nao aplicavel.");
         }
         // valida as demais excecoes
-        try
-        {
+        try {
             SistemaFolha.acharExcecoes(nome, endereco, tipo, sal);
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             return;
         }
     }
@@ -230,16 +207,15 @@ public class SistemaFolha
     /**
      * Cria um novo empregado comissionado.
      *
-     * @param nome O nome do empregado.
+     * @param nome     O nome do empregado.
      * @param endereco O endereço do empregado.
-     * @param tipo O tipo de contrato.
-     * @param sal O salário base.
+     * @param tipo     O tipo de contrato.
+     * @param sal      O salário base.
      * @param comissao A taxa de comissão.
      * @return O ID do novo empregado criado.
      * @throws CampoValidoException Se os dados de entrada forem inválidos.
      */
-    public String criarEmpregado (String nome, String endereco, String tipo, String sal, String comissao) throws CampoValidoException
-    {
+    public String criarEmpregado(String nome, String endereco, String tipo, String sal, String comissao) throws CampoValidoException {
         // checando exceções
         SistemaFolha.acharExcecoes(nome, endereco, tipo, sal, comissao);
 
@@ -259,16 +235,17 @@ public class SistemaFolha
         id++;
         return novoID;
     }
+
     /**
      * Recupera o valor de um atributo específico de um empregado.
      *
-     * @param emp O ID do empregado.
+     * @param emp      O ID do empregado.
      * @param atributo O nome do atributo a ser recuperado.
      * @return O valor do atributo formatado como String.
      * @throws EmpregadoNaoExisteException Se o empregado com o ID fornecido não existir.
-     * @throws CampoValidoException Se o atributo solicitado não existir ou não for aplicável.
+     * @throws CampoValidoException        Se o atributo solicitado não existir ou não for aplicável.
      */
-    public String getAtributoEmpregado (String emp, String atributo)
+    public String getAtributoEmpregado(String emp, String atributo)
             throws EmpregadoNaoExisteException, CampoValidoException {
         // checando excecoes
         if (Objects.equals(emp, "")) throw new CampoValidoException("Identificacao do empregado nao pode ser nula.");
@@ -330,13 +307,12 @@ public class SistemaFolha
     /**
      * Busca um empregado pelo nome.
      *
-     * @param nome O nome a ser buscado.
+     * @param nome   O nome a ser buscado.
      * @param indice A ocorrência a ser retornada (ex: 1 para o primeiro encontrado).
      * @return O ID do empregado encontrado.
      * @throws CampoValidoException Se nenhum empregado for encontrado com o nome e índice especificados.
      */
-    public String getEmpregadoPorNome (String nome, int indice) throws CampoValidoException
-    {
+    public String getEmpregadoPorNome(String nome, int indice) throws CampoValidoException {
         // Cria uma lista para armazenar os IDs dos empregados que correspondem ao nome fornecido.
         java.util.List<String> matchingIds = new java.util.ArrayList<>();
 
@@ -365,10 +341,9 @@ public class SistemaFolha
      *
      * @param id O ID do empregado a ser removido.
      * @throws EmpregadoNaoExisteException Se o empregado não for encontrado.
-     * @throws CampoValidoException Se o ID fornecido for nulo ou vazio.
+     * @throws CampoValidoException        Se o ID fornecido for nulo ou vazio.
      */
-    public void removerEmpregado (String id) throws EmpregadoNaoExisteException, CampoValidoException
-    {
+    public void removerEmpregado(String id) throws EmpregadoNaoExisteException, CampoValidoException {
         // checando se o id ta preenchido
         if (Objects.equals(id, "")) throw new CampoValidoException("Identificacao do empregado nao pode ser nula.");
         // lendo o dado do empregado e verificando se existe
@@ -381,52 +356,49 @@ public class SistemaFolha
      * Valida os dados para o lançamento de uma venda.
      *
      * @param empregados O mapa de todos os empregados.
-     * @param id O ID do empregado que realizou a venda.
-     * @param data A data da venda.
-     * @param valor O valor da venda.
+     * @param id         O ID do empregado que realizou a venda.
+     * @param data       A data da venda.
+     * @param valor      O valor da venda.
      * @return O objeto {@link EmpregadoComissionado} correspondente ao ID.
      * @throws CampoValidoException Se algum dos dados for inválido.
      */
-    public static EmpregadoComissionado excecoesLancamento (Map<String, Empregado> empregados, String id, String data, String valor) throws CampoValidoException
-    {
+    public static EmpregadoComissionado excecoesLancamento(Map<String, Empregado> empregados, String id, String data, String valor) throws CampoValidoException {
         // verifica se a data é válida
         if (!EmpregadoHorista.validarData(data)) throw new CampoValidoException("Data invalida.");
         // checando se o id ta preenchido
         if (Objects.equals(id, "")) throw new CampoValidoException("Identificacao do empregado nao pode ser nula.");
         // checando se eh comissionado
         Empregado empregado = empregados.get(id);
-        if (empregado == null) throw new CampoValidoException("Empregado nao existe."); // busca o empregado e verifica se existe
+        if (empregado == null)
+            throw new CampoValidoException("Empregado nao existe."); // busca o empregado e verifica se existe
 
-        if (empregado instanceof EmpregadoComissionado comissionado)
-        {
+        if (empregado instanceof EmpregadoComissionado comissionado) {
             // validando o valor
             valor = valor.replace(',', '.');
             double v = Double.parseDouble(valor);
             if (v <= 0.00) throw new CampoValidoException("Valor deve ser positivo."); // checa se eh positivo
-        }
-        else throw new CampoValidoException("Empregado nao eh comissionado.");
+        } else throw new CampoValidoException("Empregado nao eh comissionado.");
         return comissionado;
     }
 
     /**
      * Lança um cartão de ponto para um empregado horista.
      *
-     * @param id O ID do empregado.
-     * @param data A data do registro de ponto.
+     * @param id    O ID do empregado.
+     * @param data  A data do registro de ponto.
      * @param horas O total de horas trabalhadas.
      * @throws CampoValidoException Se o empregado não for horista ou os dados forem inválidos.
      */
-    public void lancaCartao (String id, String data, String horas) throws CampoValidoException
-    {
+    public void lancaCartao(String id, String data, String horas) throws CampoValidoException {
         if (!EmpregadoHorista.validarData(data)) throw new CampoValidoException("Data invalida.");
         // checando se o id ta preenchido
         if (Objects.equals(id, "")) throw new CampoValidoException("Identificacao do empregado nao pode ser nula.");
         // checando se eh horista
         Empregado empregado = empregados.get(id);
-        if (empregado == null) throw new CampoValidoException("Empregado nao existe."); // busca o empregado e verifica se existe
+        if (empregado == null)
+            throw new CampoValidoException("Empregado nao existe."); // busca o empregado e verifica se existe
 
-        if (empregado instanceof EmpregadoHorista horista)
-        {
+        if (empregado instanceof EmpregadoHorista horista) {
             // corrige a formatação do double
             horas = horas.replace(',', '.');
             double h = Double.parseDouble(horas);
@@ -435,22 +407,20 @@ public class SistemaFolha
             horista.lancaCartao(data, horas); //lanca o cartao
 
 
-        }
-        else throw new CampoValidoException("Empregado nao eh horista.");
+        } else throw new CampoValidoException("Empregado nao eh horista.");
     }
 
     /**
      * Retorna o total de horas normais trabalhadas por um horista em um período.
      *
-     * @param id O ID do empregado.
+     * @param id     O ID do empregado.
      * @param inicio A data inicial do período.
-     * @param fim A data final do período.
+     * @param fim    A data final do período.
      * @return O total de horas normais como String.
-     * @throws CampoValidoException Se o empregado não for horista ou as datas forem inválidas.
+     * @throws CampoValidoException        Se o empregado não for horista ou as datas forem inválidas.
      * @throws EmpregadoNaoExisteException Se o empregado não for encontrado.
      */
-    public String getHorasNormaisTrabalhadas (String id, String inicio, String fim) throws  CampoValidoException, EmpregadoNaoExisteException
-    {
+    public String getHorasNormaisTrabalhadas(String id, String inicio, String fim) throws CampoValidoException, EmpregadoNaoExisteException {
         // checando se o id ta preenchido
         if (Objects.equals(id, "")) throw new CampoValidoException("Identificacao do empregado nao pode ser nula.");
         // lendo o dado do empregado e verificando se existe
@@ -464,15 +434,14 @@ public class SistemaFolha
     /**
      * Retorna o total de horas extras trabalhadas por um horista em um período.
      *
-     * @param id O ID do empregado.
+     * @param id     O ID do empregado.
      * @param inicio A data inicial do período.
-     * @param fim A data final do período.
+     * @param fim    A data final do período.
      * @return O total de horas extras como String.
-     * @throws CampoValidoException Se o empregado não for horista ou as datas forem inválidas.
+     * @throws CampoValidoException        Se o empregado não for horista ou as datas forem inválidas.
      * @throws EmpregadoNaoExisteException Se o empregado não for encontrado.
      */
-    public String getHorasExtrasTrabalhadas (String id, String inicio, String fim) throws  CampoValidoException, EmpregadoNaoExisteException
-    {
+    public String getHorasExtrasTrabalhadas(String id, String inicio, String fim) throws CampoValidoException, EmpregadoNaoExisteException {
         // checando se o id ta preenchido
         if (Objects.equals(id, "")) throw new CampoValidoException("Identificacao do empregado nao pode ser nula.");
         // lendo o dado do empregado e verificando se existe
@@ -487,13 +456,12 @@ public class SistemaFolha
     /**
      * Lança um resultado de venda para um empregado comissionado.
      *
-     * @param emp O ID do empregado.
-     * @param data A data da venda.
+     * @param emp   O ID do empregado.
+     * @param data  A data da venda.
      * @param valor O valor da venda.
      * @throws CampoValidoException Se o empregado não for comissionado ou os dados forem inválidos.
      */
-    public void lancaVenda (String emp, String data, String valor) throws CampoValidoException
-    {
+    public void lancaVenda(String emp, String data, String valor) throws CampoValidoException {
         EmpregadoComissionado comissionado = SistemaFolha.excecoesLancamento(empregados, emp, data, valor); //identificando o empregado pelo id
         comissionado.lancaVenda(valor, data);
     }
@@ -501,15 +469,14 @@ public class SistemaFolha
     /**
      * Retorna o total de vendas de um empregado comissionado em um período.
      *
-     * @param emp O ID do empregado.
+     * @param emp    O ID do empregado.
      * @param inicio A data inicial do período.
-     * @param fim A data final do período.
+     * @param fim    A data final do período.
      * @return O valor total das vendas como String.
-     * @throws CampoValidoException Se o empregado não for comissionado ou as datas forem inválidas.
+     * @throws CampoValidoException        Se o empregado não for comissionado ou as datas forem inválidas.
      * @throws EmpregadoNaoExisteException Se o empregado não for encontrado.
      */
-    public String getVendas (String emp, String inicio, String fim) throws CampoValidoException, EmpregadoNaoExisteException
-    {
+    public String getVendas(String emp, String inicio, String fim) throws CampoValidoException, EmpregadoNaoExisteException {
         // checando se o id ta preenchido
         if (Objects.equals(emp, "")) throw new CampoValidoException("Identificacao do empregado nao pode ser nula.");
         // lendo o dado do empregado e verificando se existe
@@ -526,14 +493,15 @@ public class SistemaFolha
      * Este é um método "mestre" que lida com todas as variações de alteração
      * de dados de um empregado, como nome, salário, tipo, status sindical, etc.
      * </p>
-     * @param emp O ID do empregado a ser alterado.
-     * @param atributo O nome do atributo a ser modificado.
-     * @param valor O novo valor principal para o atributo.
-     * @param idSindicato O ID do sindicato (usado se atributo="sindicalizado").
-     * @param taxaSindical A taxa sindical (usado se atributo="sindicalizado").
-     * @param comissao A comissão (usado se atributo="tipo" e valor="comissionado").
-     * @param banco O nome do banco (usado se atributo="metodoPagamento" e valor="banco").
-     * @param agencia A agência bancária (usado se atributo="metodoPagamento" e valor="banco").
+     *
+     * @param emp           O ID do empregado a ser alterado.
+     * @param atributo      O nome do atributo a ser modificado.
+     * @param valor         O novo valor principal para o atributo.
+     * @param idSindicato   O ID do sindicato (usado se atributo="sindicalizado").
+     * @param taxaSindical  A taxa sindical (usado se atributo="sindicalizado").
+     * @param comissao      A comissão (usado se atributo="tipo" e valor="comissionado").
+     * @param banco         O nome do banco (usado se atributo="metodoPagamento" e valor="banco").
+     * @param agencia       A agência bancária (usado se atributo="metodoPagamento" e valor="banco").
      * @param contaCorrente A conta corrente (usado se atributo="metodoPagamento" e valor="banco").
      * @throws Exception Se ocorrer um erro de validação ou o empregado não existir.
      */
@@ -574,8 +542,10 @@ public class SistemaFolha
                 }
                 if (valor.equals("banco")) {
                     if (banco == null || banco.isEmpty()) throw new CampoValidoException("Banco nao pode ser nulo.");
-                    if (agencia == null || agencia.isEmpty()) throw new CampoValidoException("Agencia nao pode ser nulo.");
-                    if (contaCorrente == null || contaCorrente.isEmpty()) throw new CampoValidoException("Conta corrente nao pode ser nulo.");
+                    if (agencia == null || agencia.isEmpty())
+                        throw new CampoValidoException("Agencia nao pode ser nulo.");
+                    if (contaCorrente == null || contaCorrente.isEmpty())
+                        throw new CampoValidoException("Conta corrente nao pode ser nulo.");
                     empregado.setMetodoPagamento("banco");
                     empregado.setBanco(banco);
                     empregado.setAgencia(agencia);
@@ -593,7 +563,7 @@ public class SistemaFolha
                 // A alteração de salário junto com tipo não é suportada pela assinatura atual,
                 // mas a mudança de tipo e a cópia de atributos funcionarão.
                 double salarioParaNovoTipo = empregado.getSalario();
-                switch(valor) {
+                switch (valor) {
                     case "horista":
                         novoEmpregado = new EmpregadoHorista(empregado.getNome(), empregado.getEndereco(), valor, salarioParaNovoTipo);
                         break;
@@ -601,7 +571,8 @@ public class SistemaFolha
                         novoEmpregado = new EmpregadoAssalariado(empregado.getNome(), empregado.getEndereco(), valor, salarioParaNovoTipo);
                         break;
                     case "comissionado":
-                        if (comissao == null || comissao.isEmpty()) throw new CampoValidoException("Comissao nao pode ser nula.");
+                        if (comissao == null || comissao.isEmpty())
+                            throw new CampoValidoException("Comissao nao pode ser nula.");
                         double com = Double.parseDouble(comissao.replace(',', '.'));
                         novoEmpregado = new EmpregadoComissionado(empregado.getNome(), empregado.getEndereco(), valor, salarioParaNovoTipo, com);
                         break;
@@ -637,8 +608,10 @@ public class SistemaFolha
                 }
                 boolean ehSindicalizado = Boolean.parseBoolean(valor);
                 if (ehSindicalizado) {
-                    if (idSindicato == null || idSindicato.isEmpty()) throw new CampoValidoException("Identificacao do sindicato nao pode ser nula.");
-                    if (taxaSindical == null || taxaSindical.isEmpty()) throw new CampoValidoException("Taxa sindical nao pode ser nula.");
+                    if (idSindicato == null || idSindicato.isEmpty())
+                        throw new CampoValidoException("Identificacao do sindicato nao pode ser nula.");
+                    if (taxaSindical == null || taxaSindical.isEmpty())
+                        throw new CampoValidoException("Taxa sindical nao pode ser nula.");
 
                     for (Map.Entry<String, Empregado> entry : empregados.entrySet()) {
                         if (!entry.getKey().equals(emp) && entry.getValue().isSindicalizado() && idSindicato.equals(entry.getValue().getIdSindicato())) {
@@ -672,12 +645,11 @@ public class SistemaFolha
      * Lança uma taxa de serviço para um membro do sindicato.
      *
      * @param membro O ID do sindicato do membro.
-     * @param data A data da cobrança da taxa.
-     * @param valor O valor da taxa de serviço.
+     * @param data   A data da cobrança da taxa.
+     * @param valor  O valor da taxa de serviço.
      * @throws CampoValidoException Se o membro não for encontrado ou os dados forem inválidos.
      */
-    public void lancaTaxaServico (String membro, String data, String valor) throws CampoValidoException
-    {
+    public void lancaTaxaServico(String membro, String data, String valor) throws CampoValidoException {
         // Validações de erro
         if (membro.isEmpty()) throw new CampoValidoException("Identificacao do membro nao pode ser nula.");
         if (!EmpregadoHorista.validarData(data)) throw new CampoValidoException("Data invalida.");
@@ -703,16 +675,17 @@ public class SistemaFolha
     /**
      * Retorna o total de taxas de serviço de um empregado em um período.
      *
-     * @param emp O ID do empregado.
+     * @param emp         O ID do empregado.
      * @param dataInicial A data inicial do período.
-     * @param dataFinal A data final do período.
+     * @param dataFinal   A data final do período.
      * @return O valor total das taxas formatado como String.
      * @throws CampoValidoException Se o empregado não for sindicalizado ou as datas forem inválidas.
      */
-    public String getTaxasServico(String emp, String dataInicial, String dataFinal) throws CampoValidoException, EmpregadoNaoExisteException
-    {
+    public String getTaxasServico(String emp, String dataInicial, String dataFinal) throws CampoValidoException, EmpregadoNaoExisteException {
         Empregado empregado = empregados.get(emp);
-        if (empregado == null) { throw new EmpregadoNaoExisteException(); }
+        if (empregado == null) {
+            throw new EmpregadoNaoExisteException();
+        }
         if (!empregado.isSindicalizado()) throw new CampoValidoException("Empregado nao eh sindicalizado.");
         if (!EmpregadoHorista.validarData(dataInicial)) throw new CampoValidoException("Data inicial invalida.");
         if (!EmpregadoHorista.validarData(dataFinal)) throw new CampoValidoException("Data final invalida.");
@@ -723,7 +696,7 @@ public class SistemaFolha
         LocalDate inicio = LocalDate.parse(dataInicial, formatter);
         LocalDate fim = LocalDate.parse(dataFinal, formatter);
 
-        if(fim.isBefore(inicio)) throw new CampoValidoException("Data inicial nao pode ser posterior aa data final.");
+        if (fim.isBefore(inicio)) throw new CampoValidoException("Data inicial nao pode ser posterior aa data final.");
 
         for (TaxaServico taxa : empregado.getTaxasServico()) {
             LocalDate dataTaxa = LocalDate.parse(taxa.getData(), formatter);
@@ -738,16 +711,15 @@ public class SistemaFolha
 
     /**
      * Retorna true ou false dependendo se o empregado deve receber naquela data ou não
+     *
      * @param empregado O empregado a ser verificado
      * @param dataAtual A data a ser testada
      * @return o retorno booleano se o empregado deve receber ou não
      */
-    private boolean deveReceber(Empregado empregado, LocalDate dataAtual)
-    {
+    private boolean deveReceber(Empregado empregado, LocalDate dataAtual) {
         String tipo = empregado.getTipo();
 
-        switch (tipo)
-        {
+        switch (tipo) {
             case "horista":
                 // Horistas recebem toda sexta-feira
                 return dataAtual.getDayOfWeek() == java.time.DayOfWeek.FRIDAY;
@@ -761,8 +733,7 @@ public class SistemaFolha
                 // Comissionados recebem a cada 2 sextas-feiras[cite: 210].
                 // Os testes (us7.txt) mostram que o primeiro pagamento ocorre na segunda sexta-feira do ano.
                 // A partir daí, o pagamento é quinzenal.
-                if (dataAtual.getDayOfWeek() != java.time.DayOfWeek.FRIDAY)
-                {
+                if (dataAtual.getDayOfWeek() != java.time.DayOfWeek.FRIDAY) {
                     return false; // Se não for sexta-feira, não há pagamento.
                 }
 
@@ -771,7 +742,7 @@ public class SistemaFolha
 
 
                 // Calcula o número de semanas entre a data de referência e a data atual
-                long semanasDesdeReferencia = java.time.temporal.ChronoUnit.WEEKS.between(primeiroPagamento, dataAtual);
+                long semanasDesdeReferencia = (java.time.temporal.ChronoUnit.WEEKS.between(primeiroPagamento, dataAtual)) + 1;
 
                 // Se o número de semanas for par, significa que está no ciclo de 2 semanas.
                 return semanasDesdeReferencia > 0 && semanasDesdeReferencia % 2 == 0;
@@ -789,8 +760,7 @@ public class SistemaFolha
      * @return O valor total bruto da folha, formatado como String.
      * @throws Exception Se ocorrer um erro durante o cálculo.
      */
-    public String totalFolha(String data) throws Exception
-    {
+    public String totalFolha(String data) throws Exception {
         double total = 0.0;
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/yyyy");
         LocalDate dataAtual = LocalDate.parse(data, formatter);
@@ -798,8 +768,7 @@ public class SistemaFolha
 
         for (Empregado empregado : empregados.values())
         {
-            if(deveReceber(empregado, dataAtual))
-            {
+            if (deveReceber(empregado, dataAtual)) {
                 total += Empregado.calculaSalario(empregado, data);
             }
         }
@@ -807,13 +776,14 @@ public class SistemaFolha
         // formata o retorno para string
         formatador.setGroupingUsed(false);
         formatador.setMinimumFractionDigits(2);
+        formatador.setMaximumFractionDigits(2);
         return formatador.format(total);
     }
 
     /**
      * Executa a folha de pagamento para uma data e gera um arquivo de saída.
      *
-     * @param data A data em que a folha deve ser rodada.
+     * @param data  A data em que a folha deve ser rodada.
      * @param saida O nome do arquivo de texto a ser gerado com o resumo da folha.
      * @throws Exception Se ocorrer um erro durante o processamento ou geração do arquivo.
      */
@@ -849,4 +819,5 @@ public class SistemaFolha
 
         gravarArq.close();
     }
+
 }

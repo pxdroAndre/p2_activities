@@ -144,7 +144,7 @@ public class EmpregadoComissionado extends Empregado
     {
 
         String vendas = this.getVendas(this.getUltimoPagamento(), data);
-        double parteFixa = (this.getSalario() * 12) / 26.0;
+        double parteFixa = (this.getSalario() * 12.0) / 26.0;
         double valorVendas = Double.parseDouble(vendas.replace(",", "."));
         double valorComissao = valorVendas * this.getComissao();
         return parteFixa + valorComissao;

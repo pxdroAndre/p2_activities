@@ -33,6 +33,7 @@ public class Empregado {
     private String contaCorrente;
     private String ultimoPagamento;
 
+
     /**
      * Retorna a data do último pagamento recebido pelo empregado.
      * @return A data do último pagamento em formato String.
