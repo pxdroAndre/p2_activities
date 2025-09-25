@@ -1,6 +1,7 @@
 package br.ufal.ic.p2.wepayu.models;
 import br.ufal.ic.p2.wepayu.Exception.CampoValidoException;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -22,8 +23,6 @@ import java.util.Objects;
 public class EmpregadoHorista extends Empregado
 {
     private ArrayList <CartaoPonto> cartoesDePonto = new ArrayList<>();
-    private int horasNormais;
-    private int horasExtras;
 
     /**
      * Define a lista de cartões de ponto do empregado.
@@ -53,14 +52,6 @@ public class EmpregadoHorista extends Empregado
     }
 
     /**
-     * Retorna o total de horas extras acumuladas (pode não ser usado diretamente).
-     * @return O total de horas extras.
-     */
-    public int getHorasExtras() {
-        return horasExtras;
-    }
-
-    /**
      * Retorna a lista de todos os cartões de ponto associados a este empregado.
      * @return Uma {@code ArrayList} de objetos {@link CartaoPonto}.
      */
@@ -68,29 +59,6 @@ public class EmpregadoHorista extends Empregado
         return cartoesDePonto;
     }
 
-    /**
-     * Define o total de horas extras.
-     * @param horasExtras O novo total de horas extras.
-     */
-    public void setHorasExtras(int horasExtras) {
-        this.horasExtras = horasExtras;
-    }
-
-    /**
-     * Retorna o total de horas normais acumuladas (pode não ser usado diretamente).
-     * @return O total de horas normais.
-     */
-    public int getHorasNormais() {
-        return horasNormais;
-    }
-
-    /**
-     * Define o total de horas normais.
-     * @param horasNormais O novo total de horas normais.
-     */
-    public void setHorasNormais(int horasNormais) {
-        this.horasNormais = horasNormais;
-    }
 
     /**
      * Cria e adiciona um novo cartão de ponto à lista do empregado.
@@ -250,20 +218,27 @@ public class EmpregadoHorista extends Empregado
         }
     }
 
-    public double calcularSalario (String data) throws CampoValidoException
-    {
-        double salario = 0.0;
-        String normal = this.getHorasNormaisTrabalhadas(this.getUltimoPagamento(), data);
-        String extras = this.getHorasExtrasTrabalhadas(this.getUltimoPagamento(), data);
-        normal = normal.replace(",", ".");
-        extras = extras.replace(",", ".");
-        double horasNormais = Double.parseDouble(normal);
-        double horasExtras = Double.parseDouble(extras);
-        double salarioHora = this.getSalario(); // O salário para horista é a taxa por hora
-        salario = (horasNormais * salarioHora) + (horasExtras * (salarioHora * 1.5));
-        return salario;
+    public BigDecimal calculaSalarioBruto(LocalDate dataInicial, LocalDate dataFinal) throws CampoValidoException {
+        BigDecimal horasNormais = BigDecimal.ZERO;
+        BigDecimal horasExtras = BigDecimal.ZERO;
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/yyyy");
+
+        for (CartaoPonto cartao : cartoesDePonto) {
+            LocalDate dataCartao = LocalDate.parse(cartao.getData(), formatter);
+            if (!dataCartao.isBefore(dataInicial) && !dataCartao.isAfter(dataFinal)) {
+                BigDecimal horasTrabalhadas = new BigDecimal(cartao.getHoras().replace(',', '.'));
+                if (horasTrabalhadas.compareTo(new BigDecimal("8")) > 0) {
+                    horasNormais = horasNormais.add(new BigDecimal("8"));
+                    horasExtras = horasExtras.add(horasTrabalhadas.subtract(new BigDecimal("8")));
+                } else {
+                    horasNormais = horasNormais.add(horasTrabalhadas);
+                }
+            }
+        }
+        BigDecimal salarioHora = getSalario();
+        BigDecimal multiplicadorExtra = new BigDecimal("1.5");
+        BigDecimal pagamentoNormal = horasNormais.multiply(salarioHora);
+        BigDecimal pagamentoExtra = horasExtras.multiply(salarioHora).multiply(multiplicadorExtra);
+        return pagamentoNormal.add(pagamentoExtra);
     }
-
-
-
 }

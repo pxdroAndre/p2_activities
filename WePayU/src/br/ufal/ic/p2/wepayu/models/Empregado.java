@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.ArrayList;
 import java.util.Objects;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 /**
  * Representa a entidade base de um empregado no sistema de folha de pagamento.
@@ -22,10 +24,10 @@ public class Empregado {
     private String nome;
     private String endereco;
     private String tipo;
-    private double salario;
+    private BigDecimal salario;
     private boolean sindicalizado;
     private String idSindicato;
-    private double taxaSindical;
+    private BigDecimal taxaSindical;
     private ArrayList<TaxaServico> taxasServico = new ArrayList<>();
     private String metodoPagamento = "emMaos"; // Valor default conforme os testes
     private String banco;
@@ -135,7 +137,7 @@ public class Empregado {
         this.nome = nome;
         this.endereco = endereco;
         this.tipo = tipo;
-        this.salario = salario;
+        this.salario = BigDecimal.valueOf(salario);
         this.sindicalizado = false;
         if (!Objects.equals(tipo, "comissionado")) this.ultimoPagamento = "1/1/2005";
         else this.ultimoPagamento = "1/1/2005";
@@ -169,7 +171,7 @@ public class Empregado {
      * Define o salário do empregado.
      * @param salario O novo valor de salário.
      */
-    public void setSalario(double salario) {
+    public void setSalario(BigDecimal salario) {
         this.salario = salario;
     }
 
@@ -209,7 +211,7 @@ public class Empregado {
      * Retorna o valor da taxa sindical.
      * @return O valor da taxa.
      */
-    public double getTaxaSindical() {
+    public BigDecimal getTaxaSindical() {
         return taxaSindical;
     }
 
@@ -217,7 +219,7 @@ public class Empregado {
      * Define o valor da taxa sindical.
      * @param taxaSindical O novo valor da taxa.
      */
-    public void setTaxaSindical(double taxaSindical) {
+    public void setTaxaSindical(BigDecimal taxaSindical) {
         this.taxaSindical = taxaSindical;
     }
 
@@ -265,7 +267,7 @@ public class Empregado {
      * Retorna o salário base do empregado.
      * @return O salário base.
      */
-    public double getSalario() {
+    public BigDecimal getSalario() {
         return salario;
     }
 
@@ -282,26 +284,63 @@ public class Empregado {
      * @param empregado Empregado a ter o salario analisado
      * @return retorna o valor do seu salario
      */
-    public static double calculaSalario (Empregado empregado, String data) throws CampoValidoException
-    {
-        double salario = 0.00;
+    /**
+     * Retorna o salario do empregado com cálculos precisos usando BigDecimal.
+     * @param empregado Empregado a ter o salario analisado.
+     * @param data A data final do período de pagamento.
+     * @return Retorna o valor do seu salario como um double.
+     */
+    /**
+     * Retorna o salario do empregado com cálculos precisos usando BigDecimal.
+     * @param empregado Empregado a ter o salario analisado.
+     * @param data A data final do período de pagamento.
+     * @return Retorna o valor do seu salario como um BigDecimal.
+     */
+    public static BigDecimal calculaSalarioBruto(Empregado empregado, String data) throws CampoValidoException {
         String tipo = empregado.getTipo();
-        salario = switch (tipo)
-        {
-            case "horista" ->
-            {
+        BigDecimal salarioFinal = BigDecimal.ZERO;
+
+        switch (tipo) {
+            case "horista" -> {
                 EmpregadoHorista emp = (EmpregadoHorista) empregado;
-                yield emp.calcularSalario(data);
+                String normalStr = emp.getHorasNormaisTrabalhadas(emp.getUltimoPagamento(), data).replace(",", ".");
+                String extrasStr = emp.getHorasExtrasTrabalhadas(emp.getUltimoPagamento(), data).replace(",", ".");
+
+                BigDecimal horasNormais = new BigDecimal(normalStr);
+                BigDecimal horasExtras = new BigDecimal(extrasStr);
+                BigDecimal salarioHora = empregado.getSalario();
+                BigDecimal multiplicadorExtra = new BigDecimal("1.5");
+
+                BigDecimal pagamentoNormal = horasNormais.multiply(salarioHora);
+                BigDecimal pagamentoExtra = horasExtras.multiply(salarioHora).multiply(multiplicadorExtra);
+
+                salarioFinal = pagamentoNormal.add(pagamentoExtra);
             }
-            case "comissionado" ->
-            {
+            case "comissionado" -> {
                 EmpregadoComissionado com = (EmpregadoComissionado) empregado;
-                yield com.calcularSalario(data);
+                String vendasStr = com.getVendas(com.getUltimoPagamento(), data).replace(",", ".");
+
+                BigDecimal salarioMensal = com.getSalario();
+                BigDecimal valorVendas = new BigDecimal(vendasStr);
+                BigDecimal comissaoPercentual = com.getComissao();
+
+                BigDecimal doze = new BigDecimal("12");
+                BigDecimal vinteSeis = new BigDecimal("26");
+
+                BigDecimal parteFixa = salarioMensal.multiply(doze)
+                        .divide(vinteSeis, 2, RoundingMode.DOWN);
+
+                BigDecimal valorComissao = valorVendas.multiply(comissaoPercentual);
+
+                salarioFinal = parteFixa.add(valorComissao);
             }
-            case "assalariado" -> empregado.getSalario();
-            default -> salario;
-        };
-        return salario;
+            case "assalariado" -> {
+                salarioFinal = empregado.getSalario();
+            }
+        }
+
+        // Retorna o BigDecimal com 2 casas decimais
+        return salarioFinal.setScale(2, RoundingMode.DOWN);
     }
 
 }

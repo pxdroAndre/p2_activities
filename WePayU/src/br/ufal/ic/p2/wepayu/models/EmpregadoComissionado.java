@@ -2,10 +2,14 @@ package br.ufal.ic.p2.wepayu.models;
 
 import br.ufal.ic.p2.wepayu.Exception.CampoValidoException;
 
+import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.Locale;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 /**
  * Representa um empregado do tipo Comissionado.
@@ -21,8 +25,10 @@ import java.util.ArrayList;
  */
 public class EmpregadoComissionado extends Empregado
 {
-    private double comissao;
+    private BigDecimal comissao;
     private ArrayList<ResultadoDeVenda> vendas = new ArrayList<>();
+    Locale localeBrasil = new Locale("pt", "BR");
+    NumberFormat formatador = NumberFormat.getNumberInstance(localeBrasil);
 
     /**
      * Construtor padrão.
@@ -43,7 +49,7 @@ public class EmpregadoComissionado extends Empregado
      */
     public EmpregadoComissionado(String nome, String endereco, String tipo, double salario, double comissao) {
         super(nome, endereco, tipo, salario);
-        this.comissao = comissao;
+        this.comissao = BigDecimal.valueOf(comissao);
     }
 
     /**
@@ -66,14 +72,14 @@ public class EmpregadoComissionado extends Empregado
      * Retorna a taxa de comissão do empregado.
      * @return A taxa de comissão como um {@code double}.
      */
-    public double getComissao(){return comissao;};
+    public BigDecimal getComissao(){return comissao;};
 
     /**
      * Define a taxa de comissão do empregado.
      * @param comissao A nova taxa de comissão (ex: 0.05 para 5%).
      */
     public void setComissao(double comissao) {
-        this.comissao = comissao;
+        this.comissao = BigDecimal.valueOf(comissao);
     }
 
     /**
@@ -135,21 +141,42 @@ public class EmpregadoComissionado extends Empregado
                 totalVendas += v;
             }
         }
-        // formatando para o retorno
-        return String.format("%.2f", totalVendas);
+        // formata o retorno para string
+        formatador.setGroupingUsed(false);
+        formatador.setMinimumFractionDigits(2);
+        formatador.setMaximumFractionDigits(2);
+        return formatador.format(totalVendas);
     }
 
 
-    public double calcularSalario (String data) throws CampoValidoException
-    {
+    /**
+     * Calcula o salario do comissionado
+     * @param dataInicial data inicial de analise
+     * @param dataFinal data final da analise
+     * @return retorna um double com o valor total a ser recebido naquela data
+     * @throws CampoValidoException
+     */
+    public BigDecimal calculaSalarioBruto(LocalDate dataInicial, LocalDate dataFinal) throws CampoValidoException {
+        // Lógica de cálculo correta e precisa
+        BigDecimal salarioMensal = getSalario();
+        BigDecimal doze = new BigDecimal("12");
+        BigDecimal vinteSeis = new BigDecimal("26");
 
-        String vendas = this.getVendas(this.getUltimoPagamento(), data);
-        double parteFixa = (this.getSalario() * 12.0) / 26.0;
-        double valorVendas = Double.parseDouble(vendas.replace(",", "."));
-        double valorComissao = valorVendas * this.getComissao();
-        return parteFixa + valorComissao;
+        // Parte fixa quinzenal
+        BigDecimal parteFixa = salarioMensal.multiply(doze).divide(vinteSeis, 2, RoundingMode.HALF_UP);
 
+        // Comissão sobre as vendas do período
+        BigDecimal totalVendas = BigDecimal.ZERO;
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/yyyy");
+        for (ResultadoDeVenda venda : vendas) {
+            LocalDate dataVenda = LocalDate.parse(venda.getData(), formatter);
+            if (!dataVenda.isBefore(dataInicial) && !dataVenda.isAfter(dataFinal)) {
+                totalVendas = totalVendas.add(new BigDecimal(venda.getValor().replace(',', '.')));
+            }
+        }
+        BigDecimal valorComissao = totalVendas.multiply(getComissao()).setScale(2, RoundingMode.HALF_DOWN);
+
+        return parteFixa.add(valorComissao);
     }
-
 
 }

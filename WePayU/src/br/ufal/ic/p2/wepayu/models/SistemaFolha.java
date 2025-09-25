@@ -4,6 +4,7 @@ import br.ufal.ic.p2.wepayu.Exception.EmpregadoNaoExisteException;
 import br.ufal.ic.p2.wepayu.Exception.CampoValidoException;
 
 import java.io.*;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.HashMap;
@@ -531,7 +532,7 @@ public class SistemaFolha {
                 try {
                     double novoSalario = Double.parseDouble(valor.replace(',', '.'));
                     if (novoSalario < 0) throw new CampoValidoException("Salario deve ser nao-negativo.");
-                    empregado.setSalario(novoSalario);
+                    empregado.setSalario(BigDecimal.valueOf(novoSalario));
                 } catch (NumberFormatException e) {
                     throw new CampoValidoException("Salario deve ser numerico.");
                 }
@@ -562,7 +563,7 @@ public class SistemaFolha {
                 Empregado novoEmpregado = null;
                 // A alteração de salário junto com tipo não é suportada pela assinatura atual,
                 // mas a mudança de tipo e a cópia de atributos funcionarão.
-                double salarioParaNovoTipo = empregado.getSalario();
+                double salarioParaNovoTipo = empregado.getSalario().doubleValue();
                 switch (valor) {
                     case "horista":
                         novoEmpregado = new EmpregadoHorista(empregado.getNome(), empregado.getEndereco(), valor, salarioParaNovoTipo);
@@ -624,7 +625,7 @@ public class SistemaFolha {
                         if (taxa < 0) {
                             throw new CampoValidoException("Taxa sindical deve ser nao-negativa.");
                         }
-                        empregado.setTaxaSindical(taxa);
+                        empregado.setTaxaSindical(BigDecimal.valueOf(taxa));
                     } catch (NumberFormatException e) {
                         throw new CampoValidoException("Taxa sindical deve ser numerica.");
                     }
@@ -633,7 +634,7 @@ public class SistemaFolha {
                 } else {
                     empregado.setSindicalizado(false);
                     empregado.setIdSindicato(null);
-                    empregado.setTaxaSindical(0);
+                    empregado.setTaxaSindical(BigDecimal.ZERO);
                 }
                 break;
             default:
@@ -761,25 +762,25 @@ public class SistemaFolha {
      * @throws Exception Se ocorrer um erro durante o cálculo.
      */
     public String totalFolha(String data) throws Exception {
-        double total = 0.0;
+        BigDecimal total = BigDecimal.ZERO;
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/yyyy");
         LocalDate dataAtual = LocalDate.parse(data, formatter);
-        if (!EmpregadoHorista.validarData(data)) throw new CampoValidoException("Data invalida.");
 
-        for (Empregado empregado : empregados.values())
-        {
+        for (Empregado empregado : empregados.values()) {
             if (deveReceber(empregado, dataAtual)) {
-                total += Empregado.calculaSalario(empregado, data);
+                LocalDate dataInicial = LocalDate.parse(empregado.getUltimoPagamento(), formatter);
+
+                // Chama o método do próprio objeto empregado
+                total = total.add(Empregado.calculaSalarioBruto(empregado, data));
             }
         }
 
-        // formata o retorno para string
+        NumberFormat formatador = NumberFormat.getInstance(new Locale("pt", "BR"));
         formatador.setGroupingUsed(false);
         formatador.setMinimumFractionDigits(2);
         formatador.setMaximumFractionDigits(2);
         return formatador.format(total);
     }
-
     /**
      * Executa a folha de pagamento para uma data e gera um arquivo de saída.
      *
