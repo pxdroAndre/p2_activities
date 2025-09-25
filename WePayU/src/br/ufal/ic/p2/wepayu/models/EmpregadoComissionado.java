@@ -151,30 +151,25 @@ public class EmpregadoComissionado extends Empregado
 
     /**
      * Calcula o salario do comissionado
-     * @param dataInicial data inicial de analise
-     * @param dataFinal data final da analise
-     * @return retorna um double com o valor total a ser recebido naquela data
-     * @throws CampoValidoException
+     * @param dataFinal data atual para ser calculado
+     * @return retorna um bigDecimal com o valor do salario do comissionado naquela data
+     * @throws CampoValidoException necessario para chamar o metodo getVendas
      */
-    public BigDecimal calculaSalarioBruto(LocalDate dataInicial, LocalDate dataFinal) throws CampoValidoException {
-        // Lógica de cálculo correta e precisa
-        BigDecimal salarioMensal = getSalario();
+    public BigDecimal calculaSalarioBruto(String dataFinal) throws CampoValidoException
+    {
+        String vendasStr = this.getVendas(this.getUltimoPagamento(), dataFinal).replace(",", ".");
+
+        BigDecimal salarioMensal = this.getSalario();
+        BigDecimal valorVendas = new BigDecimal(vendasStr);
+        BigDecimal comissaoPercentual = this.getComissao();
+
         BigDecimal doze = new BigDecimal("12");
         BigDecimal vinteSeis = new BigDecimal("26");
 
-        // Parte fixa quinzenal
-        BigDecimal parteFixa = salarioMensal.multiply(doze).divide(vinteSeis, 2, RoundingMode.HALF_UP);
+        BigDecimal parteFixa = salarioMensal.multiply(doze)
+                .divide(vinteSeis, 2, RoundingMode.DOWN);
 
-        // Comissão sobre as vendas do período
-        BigDecimal totalVendas = BigDecimal.ZERO;
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/yyyy");
-        for (ResultadoDeVenda venda : vendas) {
-            LocalDate dataVenda = LocalDate.parse(venda.getData(), formatter);
-            if (!dataVenda.isBefore(dataInicial) && !dataVenda.isAfter(dataFinal)) {
-                totalVendas = totalVendas.add(new BigDecimal(venda.getValor().replace(',', '.')));
-            }
-        }
-        BigDecimal valorComissao = totalVendas.multiply(getComissao()).setScale(2, RoundingMode.HALF_DOWN);
+        BigDecimal valorComissao = valorVendas.multiply(comissaoPercentual);
 
         return parteFixa.add(valorComissao);
     }

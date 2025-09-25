@@ -280,17 +280,6 @@ public class Empregado {
 
 
     /**
-     * Retorna o salario do empregado
-     * @param empregado Empregado a ter o salario analisado
-     * @return retorna o valor do seu salario
-     */
-    /**
-     * Retorna o salario do empregado com cálculos precisos usando BigDecimal.
-     * @param empregado Empregado a ter o salario analisado.
-     * @param data A data final do período de pagamento.
-     * @return Retorna o valor do seu salario como um double.
-     */
-    /**
      * Retorna o salario do empregado com cálculos precisos usando BigDecimal.
      * @param empregado Empregado a ter o salario analisado.
      * @param data A data final do período de pagamento.
@@ -303,36 +292,11 @@ public class Empregado {
         switch (tipo) {
             case "horista" -> {
                 EmpregadoHorista emp = (EmpregadoHorista) empregado;
-                String normalStr = emp.getHorasNormaisTrabalhadas(emp.getUltimoPagamento(), data).replace(",", ".");
-                String extrasStr = emp.getHorasExtrasTrabalhadas(emp.getUltimoPagamento(), data).replace(",", ".");
-
-                BigDecimal horasNormais = new BigDecimal(normalStr);
-                BigDecimal horasExtras = new BigDecimal(extrasStr);
-                BigDecimal salarioHora = empregado.getSalario();
-                BigDecimal multiplicadorExtra = new BigDecimal("1.5");
-
-                BigDecimal pagamentoNormal = horasNormais.multiply(salarioHora);
-                BigDecimal pagamentoExtra = horasExtras.multiply(salarioHora).multiply(multiplicadorExtra);
-
-                salarioFinal = pagamentoNormal.add(pagamentoExtra);
+                salarioFinal = emp.calculaSalarioBruto(data);
             }
             case "comissionado" -> {
                 EmpregadoComissionado com = (EmpregadoComissionado) empregado;
-                String vendasStr = com.getVendas(com.getUltimoPagamento(), data).replace(",", ".");
-
-                BigDecimal salarioMensal = com.getSalario();
-                BigDecimal valorVendas = new BigDecimal(vendasStr);
-                BigDecimal comissaoPercentual = com.getComissao();
-
-                BigDecimal doze = new BigDecimal("12");
-                BigDecimal vinteSeis = new BigDecimal("26");
-
-                BigDecimal parteFixa = salarioMensal.multiply(doze)
-                        .divide(vinteSeis, 2, RoundingMode.DOWN);
-
-                BigDecimal valorComissao = valorVendas.multiply(comissaoPercentual);
-
-                salarioFinal = parteFixa.add(valorComissao);
+                salarioFinal = com.calculaSalarioBruto(data);
             }
             case "assalariado" -> {
                 salarioFinal = empregado.getSalario();

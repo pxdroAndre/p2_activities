@@ -218,25 +218,15 @@ public class EmpregadoHorista extends Empregado
         }
     }
 
-    public BigDecimal calculaSalarioBruto(LocalDate dataInicial, LocalDate dataFinal) throws CampoValidoException {
-        BigDecimal horasNormais = BigDecimal.ZERO;
-        BigDecimal horasExtras = BigDecimal.ZERO;
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/yyyy");
+    public BigDecimal calculaSalarioBruto(String dataFinal) throws CampoValidoException {
+        String normalStr = this.getHorasNormaisTrabalhadas(this.getUltimoPagamento(), dataFinal).replace(",", ".");
+        String extrasStr = this.getHorasExtrasTrabalhadas(this.getUltimoPagamento(), dataFinal).replace(",", ".");
 
-        for (CartaoPonto cartao : cartoesDePonto) {
-            LocalDate dataCartao = LocalDate.parse(cartao.getData(), formatter);
-            if (!dataCartao.isBefore(dataInicial) && !dataCartao.isAfter(dataFinal)) {
-                BigDecimal horasTrabalhadas = new BigDecimal(cartao.getHoras().replace(',', '.'));
-                if (horasTrabalhadas.compareTo(new BigDecimal("8")) > 0) {
-                    horasNormais = horasNormais.add(new BigDecimal("8"));
-                    horasExtras = horasExtras.add(horasTrabalhadas.subtract(new BigDecimal("8")));
-                } else {
-                    horasNormais = horasNormais.add(horasTrabalhadas);
-                }
-            }
-        }
-        BigDecimal salarioHora = getSalario();
+        BigDecimal horasNormais = new BigDecimal(normalStr);
+        BigDecimal horasExtras = new BigDecimal(extrasStr);
+        BigDecimal salarioHora = this.getSalario();
         BigDecimal multiplicadorExtra = new BigDecimal("1.5");
+
         BigDecimal pagamentoNormal = horasNormais.multiply(salarioHora);
         BigDecimal pagamentoExtra = horasExtras.multiply(salarioHora).multiply(multiplicadorExtra);
         return pagamentoNormal.add(pagamentoExtra);
