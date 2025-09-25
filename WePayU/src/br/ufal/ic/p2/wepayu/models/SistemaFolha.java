@@ -717,7 +717,8 @@ public class SistemaFolha {
      * @param dataAtual A data a ser testada
      * @return o retorno booleano se o empregado deve receber ou não
      */
-    private boolean deveReceber(Empregado empregado, LocalDate dataAtual) {
+    private boolean deveReceber(Empregado empregado, LocalDate dataAtual)
+    {
         String tipo = empregado.getTipo();
 
         switch (tipo) {
@@ -741,9 +742,16 @@ public class SistemaFolha {
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/yyyy");
                 LocalDate primeiroPagamento = LocalDate.parse(empregado.getUltimoPagamento(), formatter);
 
-
+                long semanasDesdeReferencia;
                 // Calcula o número de semanas entre a data de referência e a data atual
-                long semanasDesdeReferencia = (java.time.temporal.ChronoUnit.WEEKS.between(primeiroPagamento, dataAtual)) + 1;
+                if (Objects.equals(empregado.getUltimoPagamento(),"1/1/2005"))
+                {
+                    semanasDesdeReferencia = (java.time.temporal.ChronoUnit.WEEKS.between(primeiroPagamento, dataAtual)) + 1;
+                }
+                else
+                {
+                    semanasDesdeReferencia = (java.time.temporal.ChronoUnit.WEEKS.between(primeiroPagamento, dataAtual));
+                }
 
                 // Se o número de semanas for par, significa que está no ciclo de 2 semanas.
                 return semanasDesdeReferencia > 0 && semanasDesdeReferencia % 2 == 0;
@@ -768,8 +776,6 @@ public class SistemaFolha {
 
         for (Empregado empregado : empregados.values()) {
             if (deveReceber(empregado, dataAtual)) {
-                LocalDate dataInicial = LocalDate.parse(empregado.getUltimoPagamento(), formatter);
-
                 // Chama o método do próprio objeto empregado
                 total = total.add(Empregado.calculaSalarioBruto(empregado, data));
             }
