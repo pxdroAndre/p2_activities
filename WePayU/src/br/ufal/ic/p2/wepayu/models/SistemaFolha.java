@@ -7,11 +7,8 @@ import java.io.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Locale;
+import java.util.*;
 import java.text.NumberFormat;
-import java.util.Objects;
 import java.beans.XMLEncoder;
 import java.beans.XMLDecoder;
 import java.time.format.DateTimeFormatter;
@@ -795,8 +792,12 @@ public class SistemaFolha {
      * @throws Exception Se ocorrer um erro durante o processamento ou geração do arquivo.
      */
     public void rodaFolha(String data, String saida) throws Exception {
+        ArrayList<EmpregadoAssalariado> Assalariados = new ArrayList<>();
+        ArrayList<EmpregadoComissionado> Comissionados = new ArrayList<>();
+        ArrayList<EmpregadoHorista> Horistas = new ArrayList<>();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/yyyy");
         LocalDate dataAtual = LocalDate.parse(data, formatter);
+        BigDecimal total = BigDecimal.ZERO;
 
         FileWriter arq = new FileWriter(saida);
         PrintWriter gravarArq = new PrintWriter(arq);
@@ -805,20 +806,31 @@ public class SistemaFolha {
         gravarArq.printf("FOLHA DE PAGAMENTO DO DIA %s\n", dataAtual);
         gravarArq.printf("====================================\n\n");
 
-        // ... (aqui entraria toda a lógica para separar por tipo, calcular e imprimir)
-        // Por simplicidade, o código completo de formatação é extenso, mas o fluxo é:
-        // 1. Iterar sobre os empregados
-        // 2. Verificar se `deveReceber`
-        // 3. Calcular `salarioBruto` e `descontos`
-        // 4. Armazenar os resultados em listas separadas por tipo
-        // 5. Imprimir cada seção (HORISTAS, ASSALARIADOS, COMISSIONADOS) com os totais
+        /*
+            FOR do pagamneto
+                . se o empregado deve receber naquele dia, coloca ele na lista final
+                . calcular o quanto ele deve receber e colocar para salvar para printar também
+            DEPOIS DO PAGAMENTO
+                . fazer loop nas listas mostrando os dados de quem recebeu
+        */
 
         // Exemplo simplificado de como seria o cálculo para um empregado
-        for (Empregado empregado : empregados.values()) {
-            if (deveReceber(empregado, dataAtual)) {
-                LocalDate dataInicial = LocalDate.parse(empregado.getUltimoPagamento(), formatter);
-                // Lógica de cálculo...
-
+        for (Empregado empregado : empregados.values())
+        {
+            if (deveReceber(empregado, dataAtual))
+            {
+                switch (empregado.getTipo())
+                {
+                    case "horista":
+                        Horistas.add((EmpregadoHorista) empregado);
+                        break;
+                    case "assalariado":
+                        Assalariados.add((EmpregadoAssalariado) empregado);
+                        break;
+                    case "comissionado":
+                        Comissionados.add((EmpregadoComissionado) empregado);
+                        break;
+                }
                 // ATUALIZA O ÚLTIMO PAGAMENTO
                 empregado.setUltimoPagamento(data);
             }
