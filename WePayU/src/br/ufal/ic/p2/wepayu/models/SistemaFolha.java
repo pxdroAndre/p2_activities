@@ -807,7 +807,7 @@ public class SistemaFolha {
         gravarArq.printf("====================================\n\n");
 
         /*
-            FOR do pagamneto
+            FOR do pagamento
                 . se o empregado deve receber naquele dia, coloca ele na lista final
                 . calcular o quanto ele deve receber e colocar para salvar para printar também
             DEPOIS DO PAGAMENTO
@@ -834,6 +834,19 @@ public class SistemaFolha {
                 // ATUALIZA O ÚLTIMO PAGAMENTO
                 empregado.setUltimoPagamento(data);
             }
+        }
+
+        gravarArq.printf("===============================================================================================================================\n" +
+                "===================== HORISTAS ================================================================================================\n" +
+                "===============================================================================================================================");
+        gravarArq.printf("\nNome                                 Horas Extra Salario Bruto Descontos Salario Liquido Metodo\n" +
+                "==================================== ===== ===== ============= ========= =============== ======================================");
+        for (EmpregadoHorista horista : Horistas)
+        {
+            BigDecimal sal = horista.calculaSalarioBruto(data);
+            String salario = sal.toString().replace(".", ",");
+            gravarArq.printf("\n%s                            %s     %s          %s      %s            %s %s",
+                    horista.getNome(), horista.getHorasNormaisTrabalhadas(horista.getUltimoPagamento(), data), horista.getHorasExtrasTrabalhadas(horista.getUltimoPagamento(), data), horista.getSalario(), horista.getTaxaSindical(), salario, horista.getMetodoPagamento());
         }
 
         gravarArq.close();

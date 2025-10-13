@@ -218,7 +218,8 @@ public class EmpregadoHorista extends Empregado
         }
     }
 
-    public BigDecimal calculaSalarioBruto(String dataFinal) throws CampoValidoException {
+    public BigDecimal calculaSalarioBruto(String dataFinal) throws CampoValidoException
+    {
         String normalStr = this.getHorasNormaisTrabalhadas(this.getUltimoPagamento(), dataFinal).replace(",", ".");
         String extrasStr = this.getHorasExtrasTrabalhadas(this.getUltimoPagamento(), dataFinal).replace(",", ".");
 
