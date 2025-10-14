@@ -827,7 +827,7 @@ public class SistemaFolha {
         comissionados.sort(Comparator.comparing(Empregado::getNome));
 
         try (PrintWriter gravarArq = new PrintWriter(new FileWriter(saida))) {
-            gravarArq.printf("FOLHA DE PAGAMENTO DO DIA %s\n", data);
+            gravarArq.printf("FOLHA DE PAGAMENTO DO DIA %s\n", dataAtual);
             gravarArq.printf("====================================\n\n");
 
             // Processamento e impressão dos horistas.
@@ -864,7 +864,7 @@ public class SistemaFolha {
                         formatarMetodoPagamento(horista));
                 horista.setUltimoPagamento(data);
             }
-            gravarArq.printf("\nTOTAL HORISTAS %28d %5d %8s %9s %15s\n", totalNormais, totalExtra, formatador.format(totalHoristas), formatador.format(totalDescontos),formatador.format(totalLiquido));
+            gravarArq.printf("\nTOTAL HORISTAS %27d %5d %13s %9s %15s\n", totalNormais, totalExtra, formatador.format(totalHoristas), formatador.format(totalDescontos),formatador.format(totalLiquido));
 
             // Processamento e impressão dos assalariados.
             gravarArq.printf("\n===============================================================================================================================\n");
@@ -931,8 +931,15 @@ public class SistemaFolha {
         BigDecimal taxaSindicalDiaria = empregado.getTaxaSindical();
         LocalDate dataAtual = LocalDate.parse(data, DateTimeFormatter.ofPattern("d/M/yyyy"));
         LocalDate ultimoPagamento = LocalDate.parse(empregado.getUltimoPagamento(), DateTimeFormatter.ofPattern("d/M/yyyy"));
-        long dias = java.time.temporal.ChronoUnit.DAYS.between(ultimoPagamento, dataAtual);
-
+        long dias;
+        if (Objects.equals(empregado.getUltimoPagamento(),"1/1/2005"))
+        {
+            dias = java.time.temporal.ChronoUnit.DAYS.between(ultimoPagamento, dataAtual) + 1;
+        }
+        else
+        {
+            dias = java.time.temporal.ChronoUnit.DAYS.between(ultimoPagamento, dataAtual) + 1;
+        }
         BigDecimal totalTaxaSindical = taxaSindicalDiaria.multiply(new BigDecimal(dias));
 
         BigDecimal taxasServico = new BigDecimal(getTaxasServico(String.valueOf(empregados.entrySet().stream()
@@ -947,7 +954,11 @@ public class SistemaFolha {
 
     private String formatarMetodoPagamento(Empregado empregado) {
         if ("banco".equals(empregado.getMetodoPagamento())) {
-            return String.format("Banco %s, Ag. %s CC %s", empregado.getBanco(), empregado.getAgencia(), empregado.getContaCorrente());
+            return String.format("%s, Ag. %s CC %s", empregado.getBanco(), empregado.getAgencia(), empregado.getContaCorrente());
+        }
+        if ("emMaos".equals(empregado.getMetodoPagamento()))
+        {
+            return "Em maos";
         }
         return empregado.getMetodoPagamento();
     }
