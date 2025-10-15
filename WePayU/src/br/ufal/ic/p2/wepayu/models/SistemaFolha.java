@@ -160,7 +160,7 @@ public class SistemaFolha {
                 empregados.put(novoID, novoAssalariado); //adicionando no hashmap
                 break;
             case "horista":
-                EmpregadoHorista novoHorista = new EmpregadoHorista(nome, endereco, tipo, salario);
+                EmpregadoHorista novoHorista = new EmpregadoHorista(nome, endereco, tipo, sal);
                 empregados.put(novoID, novoHorista); //adicionando no hashmap
                 break;
         }
@@ -228,7 +228,7 @@ public class SistemaFolha {
         double com = Double.parseDouble(comissao);
 
         // cria o empregado
-        EmpregadoComissionado novoComissionado = new EmpregadoComissionado(nome, endereco, tipo, salario, com);
+        EmpregadoComissionado novoComissionado = new EmpregadoComissionado(nome, endereco, tipo, sal, com);
         empregados.put(novoID, novoComissionado); //adicionando no hashmap
 
         id++;
@@ -264,12 +264,12 @@ public class SistemaFolha {
             case "tipo":
                 return empregado.getTipo();
             case "salario":
-                return formatador.format(empregado.getSalario());
+                return doubleParaString(stringParaDouble(empregado.getSalario()));
             case "sindicalizado":
                 return String.valueOf(empregado.isSindicalizado());
             case "comissao":
                 if (empregado instanceof EmpregadoComissionado) {
-                    return formatador.format(((EmpregadoComissionado) empregado).getComissao());
+                    return ((EmpregadoComissionado) empregado).getComissao();
                 }
                 throw new CampoValidoException("Empregado nao eh comissionado.");
             case "idSindicato":
@@ -277,7 +277,7 @@ public class SistemaFolha {
                 return empregado.getIdSindicato();
             case "taxaSindical":
                 if (!empregado.isSindicalizado()) throw new CampoValidoException("Empregado nao eh sindicalizado.");
-                return formatador.format(empregado.getTaxaSindical());
+                return doubleParaString(stringParaDouble(empregado.getTaxaSindical()));
             case "metodoPagamento":
                 return empregado.getMetodoPagamento();
             case "banco":
@@ -530,7 +530,7 @@ public class SistemaFolha {
                 try {
                     double novoSalario = Double.parseDouble(valor.replace(',', '.'));
                     if (novoSalario < 0) throw new CampoValidoException("Salario deve ser nao-negativo.");
-                    empregado.setSalario(BigDecimal.valueOf(novoSalario));
+                    empregado.setSalario(String.valueOf(novoSalario));
                 } catch (NumberFormatException e) {
                     throw new CampoValidoException("Salario deve ser numerico.");
                 }
@@ -559,12 +559,10 @@ public class SistemaFolha {
             case "tipo":
                 if (valor == null || valor.isEmpty()) throw new CampoValidoException("Tipo invalido.");
                 Empregado novoEmpregado = null;
-                // A alteração de salário junto com tipo não é suportada pela assinatura atual,
-                // mas a mudança de tipo e a cópia de atributos funcionarão.
-                double salarioParaNovoTipo = empregado.getSalario().doubleValue();
+                double salarioParaNovoTipo = Double.parseDouble(empregado.getSalario().replace(",", "."));
                 switch (valor) {
                     case "horista":
-                        novoEmpregado = new EmpregadoHorista(empregado.getNome(), empregado.getEndereco(), valor, salarioParaNovoTipo);
+                        novoEmpregado = new EmpregadoHorista(empregado.getNome(), empregado.getEndereco(), valor, comissao);
                         break;
                     case "assalariado":
                         novoEmpregado = new EmpregadoAssalariado(empregado.getNome(), empregado.getEndereco(), valor, salarioParaNovoTipo);
@@ -573,7 +571,7 @@ public class SistemaFolha {
                         if (comissao == null || comissao.isEmpty())
                             throw new CampoValidoException("Comissao nao pode ser nula.");
                         double com = Double.parseDouble(comissao.replace(',', '.'));
-                        novoEmpregado = new EmpregadoComissionado(empregado.getNome(), empregado.getEndereco(), valor, salarioParaNovoTipo, com);
+                        novoEmpregado = new EmpregadoComissionado(empregado.getNome(), empregado.getEndereco(), valor, empregado.getSalario(), com);
                         break;
                     default:
                         throw new CampoValidoException("Tipo invalido.");
@@ -593,7 +591,7 @@ public class SistemaFolha {
                     try {
                         double novaComissao = Double.parseDouble(valor.replace(',', '.'));
                         if (novaComissao < 0) throw new CampoValidoException("Comissao deve ser nao-negativa.");
-                        ((EmpregadoComissionado) empregado).setComissao(novaComissao);
+                        ((EmpregadoComissionado) empregado).setComissao(doubleParaString(novaComissao));
                     } catch (NumberFormatException e) {
                         throw new CampoValidoException("Comissao deve ser numerica.");
                     }
@@ -623,7 +621,7 @@ public class SistemaFolha {
                         if (taxa < 0) {
                             throw new CampoValidoException("Taxa sindical deve ser nao-negativa.");
                         }
-                        empregado.setTaxaSindical(BigDecimal.valueOf(taxa));
+                        empregado.setTaxaSindical(taxaSindical);
                     } catch (NumberFormatException e) {
                         throw new CampoValidoException("Taxa sindical deve ser numerica.");
                     }
@@ -632,7 +630,7 @@ public class SistemaFolha {
                 } else {
                     empregado.setSindicalizado(false);
                     empregado.setIdSindicato(null);
-                    empregado.setTaxaSindical(BigDecimal.ZERO);
+                    empregado.setTaxaSindical("0,00");
                 }
                 break;
             default:
@@ -874,7 +872,7 @@ public class SistemaFolha {
             gravarArq.printf("================================================ ============= ========= =============== ======================================\n");
             BigDecimal totalAssalariados = BigDecimal.ZERO;
             for (EmpregadoAssalariado assalariado : assalariados) {
-                BigDecimal salarioBruto = assalariado.getSalario();
+                BigDecimal salarioBruto = BigDecimal.valueOf(Double.parseDouble(assalariado.getSalario().replace(",", ".")));
                 BigDecimal descontos = calcularDescontos(assalariado, data);
                 BigDecimal salarioLiquido = salarioBruto.subtract(descontos);
                 totalAssalariados = totalAssalariados.add(salarioBruto);
@@ -905,7 +903,7 @@ public class SistemaFolha {
 
                 gravarArq.printf("%-21s %8s %8s %8s %13s %9s %15s %s\n",
                         comissionado.getNome(),
-                        formatador.format(comissionado.getSalario().multiply(new BigDecimal("12")).divide(new BigDecimal("26"), 2, RoundingMode.DOWN)),
+                        formatador.format(BigDecimal.valueOf(Double.parseDouble(comissionado.getSalario().replace(",", "."))).multiply(new BigDecimal("12")).divide(new BigDecimal("26"), 2, RoundingMode.DOWN)),
                         comissionado.getVendas(comissionado.getUltimoPagamento(), data),
                         "0,00", // Comissão não é impressa individualmente no resumo
                         formatador.format(salarioBruto),
@@ -928,7 +926,7 @@ public class SistemaFolha {
             return BigDecimal.ZERO;
         }
 
-        BigDecimal taxaSindicalDiaria = empregado.getTaxaSindical();
+        BigDecimal taxaSindicalDiaria = BigDecimal.valueOf(Double.parseDouble(empregado.getTaxaSindical().replace(",", ".")));
         LocalDate dataAtual = LocalDate.parse(data, DateTimeFormatter.ofPattern("d/M/yyyy"));
         LocalDate ultimoPagamento = LocalDate.parse(empregado.getUltimoPagamento(), DateTimeFormatter.ofPattern("d/M/yyyy"));
         if ((ultimoPagamento.getYear() == dataAtual.getYear()) && (ultimoPagamento.getMonth() == dataAtual.getMonth()) && !(Objects.equals(empregado.getUltimoPagamento(),"1/1/2005"))) return BigDecimal.ZERO;
@@ -962,5 +960,21 @@ public class SistemaFolha {
             return "Em maos";
         }
         return empregado.getMetodoPagamento();
+    }
+
+    public static String doubleParaString (double valor)
+    {
+        Locale localeBrasil = new Locale("pt", "BR");
+        NumberFormat formatador = NumberFormat.getNumberInstance(localeBrasil);
+        //ajustando a formatação dos numeros
+        formatador.setGroupingUsed(false);
+        formatador.setMinimumFractionDigits(2);
+        return formatador.format(valor);
+    }
+
+    public static double stringParaDouble (String valor)
+    {
+        valor = valor.replace(",", ".");
+        return Double.parseDouble(valor);
     }
 }

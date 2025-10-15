@@ -5,7 +5,7 @@
    <string>1</string>
    <object class="br.ufal.ic.p2.wepayu.models.EmpregadoComissionado">
     <void property="comissao">
-     <double>0.02</double>
+     <string>0,02</string>
     </void>
     <void property="endereco">
      <string>Rua dos Jooes, 333 - Campina Grande</string>
@@ -14,7 +14,10 @@
      <string>Joao da Silva</string>
     </void>
     <void property="salario">
-     <double>500.0</double>
+     <string>23</string>
+    </void>
+    <void property="taxaSindical">
+     <string>0,00</string>
     </void>
     <void property="tipo">
      <string>comissionado</string>

@@ -25,7 +25,7 @@ import java.math.RoundingMode;
  */
 public class EmpregadoComissionado extends Empregado
 {
-    private BigDecimal comissao;
+    private String comissao;
     private ArrayList<ResultadoDeVenda> vendas = new ArrayList<>();
     Locale localeBrasil = new Locale("pt", "BR");
     NumberFormat formatador = NumberFormat.getNumberInstance(localeBrasil);
@@ -47,9 +47,9 @@ public class EmpregadoComissionado extends Empregado
      * @param salario O salário base do empregado.
      * @param comissao A taxa de comissão sobre as vendas (ex: 0.05 para 5%).
      */
-    public EmpregadoComissionado(String nome, String endereco, String tipo, double salario, double comissao) {
+    public EmpregadoComissionado(String nome, String endereco, String tipo, String salario, double comissao) {
         super(nome, endereco, tipo, salario);
-        this.comissao = BigDecimal.valueOf(comissao);
+        this.comissao = SistemaFolha.doubleParaString(comissao);
     }
 
     /**
@@ -72,14 +72,14 @@ public class EmpregadoComissionado extends Empregado
      * Retorna a taxa de comissão do empregado.
      * @return A taxa de comissão como um {@code double}.
      */
-    public BigDecimal getComissao(){return comissao;};
+    public String getComissao(){return comissao;};
 
     /**
      * Define a taxa de comissão do empregado.
      * @param comissao A nova taxa de comissão (ex: 0.05 para 5%).
      */
-    public void setComissao(double comissao) {
-        this.comissao = BigDecimal.valueOf(comissao);
+    public void setComissao(String comissao) {
+        this.comissao = comissao;
     }
 
     /**
@@ -159,9 +159,9 @@ public class EmpregadoComissionado extends Empregado
     {
         String vendasStr = this.getVendas(this.getUltimoPagamento(), dataFinal).replace(",", ".");
 
-        BigDecimal salarioMensal = this.getSalario();
+        BigDecimal salarioMensal = BigDecimal.valueOf(Double.parseDouble(this.getSalario().replace(",", ".")));
         BigDecimal valorVendas = new BigDecimal(vendasStr);
-        BigDecimal comissaoPercentual = this.getComissao();
+        BigDecimal comissaoPercentual = BigDecimal.valueOf(SistemaFolha.stringParaDouble(this.getComissao()));
 
         BigDecimal doze = new BigDecimal("12");
         BigDecimal vinteSeis = new BigDecimal("26");
