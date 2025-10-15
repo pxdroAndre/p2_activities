@@ -887,7 +887,7 @@ public class SistemaFolha {
                         "Correios, " + assalariado.getEndereco());
                 assalariado.setUltimoPagamento(data);
             }
-            gravarArq.printf("\nTOTAL ASSALARIADOS %52s %9s %15s\n", formatador.format(totalAssalariados), "0,00", formatador.format(totalAssalariados));
+            gravarArq.printf("\nTOTAL ASSALARIADOS %43s %9s %15s\n", formatador.format(totalAssalariados), "0,00", formatador.format(totalAssalariados));
 
 
             // Processamento e impressão dos comissionados.
@@ -914,7 +914,7 @@ public class SistemaFolha {
                         "Correios, " + comissionado.getEndereco());
                 comissionado.setUltimoPagamento(data);
             }
-            gravarArq.printf("\nTOTAL COMISSIONADOS %8s %8s %8s %13s %9s %15s\n", "0,00", "0,00", "0,00", formatador.format(totalComissionados), "0,00", formatador.format(totalComissionados));
+            gravarArq.printf("\nTOTAL COMISSIONADOS %10s %8s %8s %13s %9s %15s\n", "0,00", "0,00", "0,00", formatador.format(totalComissionados), "0,00", formatador.format(totalComissionados));
 
             totalFolha = totalHoristas.add(totalAssalariados).add(totalComissionados);
             gravarArq.printf("\nTOTAL FOLHA: %s\n", formatador.format(totalFolha));
@@ -931,6 +931,7 @@ public class SistemaFolha {
         BigDecimal taxaSindicalDiaria = empregado.getTaxaSindical();
         LocalDate dataAtual = LocalDate.parse(data, DateTimeFormatter.ofPattern("d/M/yyyy"));
         LocalDate ultimoPagamento = LocalDate.parse(empregado.getUltimoPagamento(), DateTimeFormatter.ofPattern("d/M/yyyy"));
+        if ((ultimoPagamento.getYear() == dataAtual.getYear()) && (ultimoPagamento.getMonth() == dataAtual.getMonth()) && !(Objects.equals(empregado.getUltimoPagamento(),"1/1/2005"))) return BigDecimal.ZERO;
         long dias;
         if (Objects.equals(empregado.getUltimoPagamento(),"1/1/2005"))
         {

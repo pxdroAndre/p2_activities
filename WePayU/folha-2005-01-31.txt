@@ -18,7 +18,7 @@ Flavia Alessandra                                      1200,00    101,00        
 Natalia do Valle                                       1000,00      0,00         1000,00 Correios, end6
 Regina Duarte                                          1100,00     31,00         1069,00 Correios, end7
 
-TOTAL ASSALARIADOS                                              3300,00      0,00         3300,00
+TOTAL ASSALARIADOS                                     3300,00      0,00         3300,00
 
 ===============================================================================================================================
 ===================== COMISSIONADOS ===========================================================================================
@@ -26,6 +26,6 @@ TOTAL ASSALARIADOS                                              3300,00      0,0
 Nome                  Fixo     Vendas   Comissao Salario Bruto Descontos Salario Liquido Metodo
 ===================== ======== ======== ======== ============= ========= =============== ======================================
 
-TOTAL COMISSIONADOS     0,00     0,00     0,00          0,00      0,00            0,00
+TOTAL COMISSIONADOS       0,00     0,00     0,00          0,00      0,00            0,00
 
 TOTAL FOLHA: 3300,00
