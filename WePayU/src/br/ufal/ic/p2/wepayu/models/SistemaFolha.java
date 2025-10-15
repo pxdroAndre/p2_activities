@@ -801,6 +801,7 @@ public class SistemaFolha {
         formatador.setGroupingUsed(false);
         formatador.setMinimumFractionDigits(2);
         formatador.setMaximumFractionDigits(2);
+        formatador.setRoundingMode(RoundingMode.DOWN);
 
         // Coleta os empregados que devem receber no dia.
         for (Empregado empregado : empregados.values()) {
@@ -860,7 +861,7 @@ public class SistemaFolha {
                         formatador.format(descontos),
                         formatador.format(salarioLiquido),
                         formatarMetodoPagamento(horista));
-                horista.setUltimoPagamento(data);
+                if(totalHoristas.compareTo(BigDecimal.ZERO)  > 0) horista.setUltimoPagamento(data);
             }
             gravarArq.printf("\nTOTAL HORISTAS %27d %5d %13s %9s %15s\n", totalNormais, totalExtra, formatador.format(totalHoristas), formatador.format(totalDescontos),formatador.format(totalLiquido));
 
@@ -870,11 +871,15 @@ public class SistemaFolha {
             gravarArq.printf("===============================================================================================================================\n");
             gravarArq.printf("Nome                                             Salario Bruto Descontos Salario Liquido Metodo\n");
             gravarArq.printf("================================================ ============= ========= =============== ======================================\n");
+            totalDescontos = BigDecimal.ZERO;
+            totalLiquido = BigDecimal.ZERO;
             BigDecimal totalAssalariados = BigDecimal.ZERO;
             for (EmpregadoAssalariado assalariado : assalariados) {
                 BigDecimal salarioBruto = BigDecimal.valueOf(Double.parseDouble(assalariado.getSalario().replace(",", ".")));
                 BigDecimal descontos = calcularDescontos(assalariado, data);
+                totalDescontos = totalDescontos.add(descontos);
                 BigDecimal salarioLiquido = salarioBruto.subtract(descontos);
+                totalLiquido = totalLiquido.add(salarioLiquido);
                 totalAssalariados = totalAssalariados.add(salarioBruto);
 
                 gravarArq.printf("%-48s %13s %9s %15s %s\n",
@@ -883,9 +888,9 @@ public class SistemaFolha {
                         formatador.format(descontos),
                         formatador.format(salarioLiquido),
                         "Correios, " + assalariado.getEndereco());
-                assalariado.setUltimoPagamento(data);
+                if(totalAssalariados.compareTo(BigDecimal.ZERO)  > 0) assalariado.setUltimoPagamento(data);
             }
-            gravarArq.printf("\nTOTAL ASSALARIADOS %43s %9s %15s\n", formatador.format(totalAssalariados), "0,00", formatador.format(totalAssalariados));
+            gravarArq.printf("\nTOTAL ASSALARIADOS %43s %9s %15s\n", formatador.format(totalAssalariados), formatador.format(totalDescontos), formatador.format(totalLiquido));
 
 
             // Processamento e impressão dos comissionados.
@@ -894,25 +899,39 @@ public class SistemaFolha {
             gravarArq.printf("===============================================================================================================================\n");
             gravarArq.printf("Nome                  Fixo     Vendas   Comissao Salario Bruto Descontos Salario Liquido Metodo\n");
             gravarArq.printf("===================== ======== ======== ======== ============= ========= =============== ======================================\n");
+            totalDescontos = BigDecimal.ZERO;
+            BigDecimal totalVendas = BigDecimal.ZERO;
+            totalLiquido = BigDecimal.ZERO;
+            BigDecimal totalFixo = BigDecimal.ZERO;
+            BigDecimal totalComissao = BigDecimal.ZERO;
             BigDecimal totalComissionados = BigDecimal.ZERO;
             for (EmpregadoComissionado comissionado : comissionados) {
-                BigDecimal salarioBruto = comissionado.calculaSalarioBruto(data);
+                BigDecimal salarioFixo = BigDecimal.valueOf(stringParaDouble(comissionado.getSalario())).multiply(new BigDecimal("12")).divide(new BigDecimal("26"), 2, RoundingMode.DOWN);
+                BigDecimal salarioBruto = Empregado.calculaSalarioBruto(comissionado, data);
                 BigDecimal descontos = calcularDescontos(comissionado, data);
+                String Vendas = comissionado.getVendas(comissionado.getUltimoPagamento(), data);
                 BigDecimal salarioLiquido = salarioBruto.subtract(descontos);
+                BigDecimal Comissao = BigDecimal.valueOf(stringParaDouble(comissionado.getComissao())).multiply(BigDecimal.valueOf(stringParaDouble(Vendas)));
+                totalLiquido = totalLiquido.add(salarioLiquido);
+                totalFixo = totalFixo.add(salarioFixo);
+                totalDescontos = totalDescontos.add(descontos);
                 totalComissionados = totalComissionados.add(salarioBruto);
+                totalVendas = totalVendas.add(BigDecimal.valueOf(stringParaDouble(Vendas)));
+                totalComissao = totalComissao.add(Comissao.setScale(2, RoundingMode.DOWN));
 
                 gravarArq.printf("%-21s %8s %8s %8s %13s %9s %15s %s\n",
                         comissionado.getNome(),
                         formatador.format(BigDecimal.valueOf(Double.parseDouble(comissionado.getSalario().replace(",", "."))).multiply(new BigDecimal("12")).divide(new BigDecimal("26"), 2, RoundingMode.DOWN)),
-                        comissionado.getVendas(comissionado.getUltimoPagamento(), data),
-                        "0,00", // Comissão não é impressa individualmente no resumo
+                        Vendas,
+                        formatador.format(Comissao),
                         formatador.format(salarioBruto),
                         formatador.format(descontos),
                         formatador.format(salarioLiquido),
                         "Correios, " + comissionado.getEndereco());
                 comissionado.setUltimoPagamento(data);
             }
-            gravarArq.printf("\nTOTAL COMISSIONADOS %10s %8s %8s %13s %9s %15s\n", "0,00", "0,00", "0,00", formatador.format(totalComissionados), "0,00", formatador.format(totalComissionados));
+            gravarArq.printf("\nTOTAL COMISSIONADOS %10s %8s %8s %13s %9s %15s\n", formatador.format(totalFixo), formatador.format(totalVendas), formatador.format(totalComissao),
+                    formatador.format(totalComissionados), formatador.format(totalDescontos), formatador.format(totalLiquido));
 
             totalFolha = totalHoristas.add(totalAssalariados).add(totalComissionados);
             gravarArq.printf("\nTOTAL FOLHA: %s\n", formatador.format(totalFolha));
@@ -922,14 +941,23 @@ public class SistemaFolha {
 // Métodos auxiliares que precisam ser adicionados a sua classe SistemaFolha.
 
     private BigDecimal calcularDescontos(Empregado empregado, String data) throws EmpregadoNaoExisteException, CampoValidoException {
+
         if (!empregado.isSindicalizado()) {
             return BigDecimal.ZERO;
         }
-
         BigDecimal taxaSindicalDiaria = BigDecimal.valueOf(Double.parseDouble(empregado.getTaxaSindical().replace(",", ".")));
         LocalDate dataAtual = LocalDate.parse(data, DateTimeFormatter.ofPattern("d/M/yyyy"));
         LocalDate ultimoPagamento = LocalDate.parse(empregado.getUltimoPagamento(), DateTimeFormatter.ofPattern("d/M/yyyy"));
-        if ((ultimoPagamento.getYear() == dataAtual.getYear()) && (ultimoPagamento.getMonth() == dataAtual.getMonth()) && !(Objects.equals(empregado.getUltimoPagamento(),"1/1/2005"))) return BigDecimal.ZERO;
+        BigDecimal taxasServico = new BigDecimal(getTaxasServico(String.valueOf(empregados.entrySet().stream()
+                .filter(entry -> entry.getValue().equals(empregado))
+                .map(Map.Entry::getKey)
+                .findFirst()
+                .orElse(null)), empregado.getUltimoPagamento(), data).replace(",", "."));
+        if (empregado.getTipo().equals("assalariado"))
+        {
+            return taxaSindicalDiaria.multiply(new BigDecimal(dataAtual.lengthOfMonth())).add(taxasServico);
+        }
+        if ((ultimoPagamento.getYear() == dataAtual.getYear()) && (ultimoPagamento.getMonth() == dataAtual.getMonth()) && !(Objects.equals(empregado.getUltimoPagamento(),"1/1/2005")) && !(empregado.getTipo().equals("comissionado"))) return BigDecimal.ZERO;
         long dias;
         if (Objects.equals(empregado.getUltimoPagamento(),"1/1/2005"))
         {
@@ -937,15 +965,11 @@ public class SistemaFolha {
         }
         else
         {
-            dias = java.time.temporal.ChronoUnit.DAYS.between(ultimoPagamento, dataAtual) + 1;
+            dias = java.time.temporal.ChronoUnit.DAYS.between(ultimoPagamento, dataAtual);
         }
         BigDecimal totalTaxaSindical = taxaSindicalDiaria.multiply(new BigDecimal(dias));
 
-        BigDecimal taxasServico = new BigDecimal(getTaxasServico(String.valueOf(empregados.entrySet().stream()
-                .filter(entry -> entry.getValue().equals(empregado))
-                .map(Map.Entry::getKey)
-                .findFirst()
-                .orElse(null)), empregado.getUltimoPagamento(), data).replace(",", "."));
+
 
 
         return totalTaxaSindical.add(taxasServico);
