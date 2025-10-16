@@ -37,7 +37,7 @@ public class Facade
      * @throws EmpregadoNaoExisteException se o empregado não for encontrado.
      * @throws CampoValidoException se o atributo não existir ou for inválido.
      */
-    public String getAtributoEmpregado (String emp, String atributo) throws EmpregadoNaoExisteException, CampoValidoException
+    public String getAtributoEmpregado (String emp, String atributo) throws Exception
     {
         return sistema.getAtributoEmpregado(emp, atributo);
     }
@@ -52,7 +52,7 @@ public class Facade
      * @return O ID único do novo empregado.
      * @throws CampoValidoException se algum dos parâmetros for inválido.
      */
-    public String criarEmpregado (String nome, String endereco, String tipo, String salario) throws CampoValidoException
+    public String criarEmpregado (String nome, String endereco, String tipo, String salario) throws Exception
     {
         return sistema.criarEmpregado(nome, endereco, tipo, salario);
     }
@@ -68,7 +68,7 @@ public class Facade
      * @return O ID único do novo empregado.
      * @throws CampoValidoException se algum dos parâmetros for inválido.
      */
-    public String criarEmpregado (String nome, String endereco, String tipo, String salario, String comissao) throws CampoValidoException
+    public String criarEmpregado (String nome, String endereco, String tipo, String salario, String comissao) throws Exception
     {
         return sistema.criarEmpregado(nome, endereco, tipo, salario, comissao);
     }
@@ -89,7 +89,7 @@ public class Facade
      * @return O ID do empregado encontrado.
      * @throws CampoValidoException se nenhum empregado com o nome e índice for encontrado.
      */
-    public String getEmpregadoPorNome (String nome, int id) throws CampoValidoException
+    public String getEmpregadoPorNome (String nome, int id) throws Exception
     {
         return sistema.getEmpregadoPorNome(nome, id);
     }
@@ -101,7 +101,7 @@ public class Facade
      * @throws EmpregadoNaoExisteException se o empregado não for encontrado.
      * @throws CampoValidoException se o ID for nulo ou vazio.
      */
-    public void removerEmpregado (String emp) throws EmpregadoNaoExisteException, CampoValidoException {
+    public void removerEmpregado (String emp) throws Exception {
         sistema.removerEmpregado(emp);
     }
 
@@ -115,7 +115,7 @@ public class Facade
      * @throws CampoValidoException se o empregado não for horista ou as datas forem inválidas.
      * @throws EmpregadoNaoExisteException se o empregado não for encontrado.
      */
-    public String getHorasNormaisTrabalhadas (String emp, String dataInicial, String dataFinal) throws CampoValidoException, EmpregadoNaoExisteException
+    public String getHorasNormaisTrabalhadas (String emp, String dataInicial, String dataFinal) throws Exception
     {
         return sistema.getHorasNormaisTrabalhadas(emp, dataInicial, dataFinal);
     }
@@ -130,7 +130,7 @@ public class Facade
      * @throws CampoValidoException se o empregado não for horista ou as datas forem inválidas.
      * @throws EmpregadoNaoExisteException se o empregado não for encontrado.
      */
-    public String getHorasExtrasTrabalhadas (String emp, String dataInicial, String dataFinal) throws CampoValidoException, EmpregadoNaoExisteException
+    public String getHorasExtrasTrabalhadas (String emp, String dataInicial, String dataFinal) throws Exception
     {
         return sistema.getHorasExtrasTrabalhadas(emp, dataInicial, dataFinal);
     }
@@ -143,7 +143,7 @@ public class Facade
      * @param horas O total de horas trabalhadas.
      * @throws CampoValidoException se os dados forem inválidos.
      */
-    public void lancaCartao (String emp, String data, String horas) throws CampoValidoException
+    public void lancaCartao (String emp, String data, String horas) throws Exception
     {
         sistema.lancaCartao(emp, data, horas);
     }
@@ -156,7 +156,7 @@ public class Facade
      * @param valor O valor da venda.
      * @throws CampoValidoException se os dados forem inválidos.
      */
-    public void lancaVenda (String emp, String data, String valor) throws CampoValidoException
+    public void lancaVenda (String emp, String data, String valor) throws Exception
     {
         sistema.lancaVenda(emp, data, valor);
     }
@@ -171,7 +171,7 @@ public class Facade
      * @throws CampoValidoException se o empregado não for comissionado ou as datas forem inválidas.
      * @throws EmpregadoNaoExisteException se o empregado não for encontrado.
      */
-    public String getVendasRealizadas (String emp, String dataInicial, String dataFinal) throws CampoValidoException, EmpregadoNaoExisteException
+    public String getVendasRealizadas (String emp, String dataInicial, String dataFinal) throws Exception
     {
         return sistema.getVendas(emp, dataInicial, dataFinal);
     }
@@ -238,7 +238,7 @@ public class Facade
      * @param valor O valor da taxa.
      * @throws CampoValidoException se os dados forem inválidos.
      */
-    public void lancaTaxaServico(String membro, String data, String valor) throws CampoValidoException
+    public void lancaTaxaServico(String membro, String data, String valor) throws Exception
     {
         sistema.lancaTaxaServico(membro, data, valor);
     }
@@ -252,7 +252,7 @@ public class Facade
      * @return O total das taxas de serviço como String.
      * @throws CampoValidoException se o empregado não for sindicalizado ou as datas forem inválidas.
      */
-    public String getTaxasServico (String emp, String dataInicial, String dataFinal) throws CampoValidoException, EmpregadoNaoExisteException
+    public String getTaxasServico (String emp, String dataInicial, String dataFinal) throws Exception
     {
         return sistema.getTaxasServico(emp, dataInicial, dataFinal);
     }

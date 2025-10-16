@@ -1,5 +1,6 @@
 package br.ufal.ic.p2.wepayu.models;
-import br.ufal.ic.p2.wepayu.Exception.CampoValidoException;
+import br.ufal.ic.p2.wepayu.Exception.*;
+
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -117,29 +118,29 @@ public class EmpregadoHorista extends Empregado
      * @return O total de horas normais formatado como String.
      * @throws CampoValidoException se as datas forem inválidas ou se a data inicial for posterior à final.
      */
-    public String getHorasNormaisTrabalhadas (String inicio, String fim) throws CampoValidoException
+    public String getHorasNormaisTrabalhadas (String inicio, String fim) throws DataInicialInvalidaException, DataFinalInvalidaException, DataInicialNaoPodeSerPosteriorADataFinalException
     {
         double horasNormais = 0;
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/yyyy");
 
-        if (!EmpregadoHorista.validarData(inicio)) throw new CampoValidoException("Data inicial invalida.");
-        if (!EmpregadoHorista.validarData(fim)) throw new CampoValidoException("Data final invalida.");
+        if (!EmpregadoHorista.validarData(inicio)) throw new DataInicialInvalidaException();
+        if (!EmpregadoHorista.validarData(fim)) throw new DataFinalInvalidaException();
         LocalDate in, fi;
         try
         {
             in = LocalDate.parse(inicio, formatter);
         } catch (DateTimeParseException e) {
-            throw new CampoValidoException("Data inicial invalida.");
+            throw new DataInicialInvalidaException();
         }
 
         try
         {
             fi = LocalDate.parse(fim, formatter);
         } catch (DateTimeParseException e) {
-            throw new CampoValidoException("Data final invalida.");
+            throw new DataFinalInvalidaException();
         }
 
-        if (fi.isBefore(in)) throw new CampoValidoException("Data inicial nao pode ser posterior aa data final.");
+        if (fi.isBefore(in)) throw new DataInicialNaoPodeSerPosteriorADataFinalException();
 
         for (CartaoPonto cartao : cartoesDePonto) {
             String dataDoCartao = cartao.getData();
@@ -174,29 +175,29 @@ public class EmpregadoHorista extends Empregado
      * @return O total de horas extras formatado como String.
      * @throws CampoValidoException se as datas forem inválidas ou se a data inicial for posterior à final.
      */
-    public String getHorasExtrasTrabalhadas (String inicio, String fim) throws CampoValidoException
+    public String getHorasExtrasTrabalhadas (String inicio, String fim) throws DataInicialInvalidaException, DataFinalInvalidaException, DataInicialNaoPodeSerPosteriorADataFinalException
     {
         double horasExtras = 0;
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/yyyy");
         LocalDate in, fi;
 
-        if (!EmpregadoHorista.validarData(inicio)) throw new CampoValidoException("Data inicial invalida.");
-        if (!EmpregadoHorista.validarData(fim)) throw new CampoValidoException("Data final invalida.");
+        if (!EmpregadoHorista.validarData(inicio)) throw new DataInicialInvalidaException();
+        if (!EmpregadoHorista.validarData(fim)) throw new DataFinalInvalidaException();
         try
         {
             in = LocalDate.parse(inicio, formatter);
         } catch (DateTimeParseException e)
         {
-            throw new CampoValidoException("Data inicial invalida.");
+            throw new DataInicialInvalidaException();
         }
         try
         {
             fi = LocalDate.parse(fim, formatter);
         } catch (DateTimeParseException e) {
-            throw new CampoValidoException("Data final invalida.");
+            throw new DataFinalInvalidaException();
         }
 
-        if (fi.isBefore(in)) throw new CampoValidoException("Data inicial nao pode ser posterior aa data final.");
+        if (fi.isBefore(in)) throw new DataInicialNaoPodeSerPosteriorADataFinalException();
 
         for (CartaoPonto cartao : cartoesDePonto)
         {
@@ -218,7 +219,7 @@ public class EmpregadoHorista extends Empregado
         }
     }
 
-    public BigDecimal calculaSalarioBruto(String dataFinal) throws CampoValidoException
+    public BigDecimal calculaSalarioBruto(String dataFinal) throws DataInicialInvalidaException, DataFinalInvalidaException, DataInicialNaoPodeSerPosteriorADataFinalException
     {
         String normalStr = this.getHorasNormaisTrabalhadas(this.getUltimoPagamento(), dataFinal).replace(",", ".");
         String extrasStr = this.getHorasExtrasTrabalhadas(this.getUltimoPagamento(), dataFinal).replace(",", ".");

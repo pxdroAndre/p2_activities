@@ -1,6 +1,6 @@
 package br.ufal.ic.p2.wepayu.models;
 
-import br.ufal.ic.p2.wepayu.Exception.CampoValidoException;
+import br.ufal.ic.p2.wepayu.Exception.*;
 
 import java.text.NumberFormat;
 import java.time.LocalDate;
@@ -102,30 +102,30 @@ public class EmpregadoComissionado extends Empregado
      * @return O valor total das vendas no período, formatado como String com duas casas decimais.
      * @throws CampoValidoException Se as datas forem inválidas ou se a data inicial for posterior à final.
      */
-    public String getVendas (String inicio, String fim) throws CampoValidoException
+    public String getVendas (String inicio, String fim) throws DataInicialInvalidaException, DataFinalInvalidaException, DataInicialNaoPodeSerPosteriorADataFinalException
     {
         double totalVendas = 0;
         // fazendo parsing das datas
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/yyyy");
         // formata as datas
-        if (!EmpregadoHorista.validarData(inicio)) throw new CampoValidoException("Data inicial invalida.");
-        if (!EmpregadoHorista.validarData(fim)) throw new CampoValidoException("Data final invalida.");
+        if (!EmpregadoHorista.validarData(inicio)) throw new DataInicialInvalidaException();
+        if (!EmpregadoHorista.validarData(fim)) throw new DataFinalInvalidaException();
         LocalDate in, fi;
         try
         {
             in = LocalDate.parse(inicio, formatter);
         } catch (DateTimeParseException e) {
-            throw new CampoValidoException("Data inicial invalida."); // Mensagem com ponto
+            throw new DataInicialInvalidaException(); // Mensagem com ponto
         }
 
         try
         {
             fi = LocalDate.parse(fim, formatter);
         } catch (DateTimeParseException e) {
-            throw new CampoValidoException("Data final invalida."); // Mensagem com ponto
+            throw new DataFinalInvalidaException(); // Mensagem com ponto
         }
 
-        if (fi.isBefore(in)) throw new CampoValidoException("Data inicial nao pode ser posterior aa data final.");
+        if (fi.isBefore(in)) throw new DataInicialNaoPodeSerPosteriorADataFinalException();
 
         // loop sobre a lista de vendas do empregado
         for (ResultadoDeVenda venda : vendas) {
@@ -155,7 +155,7 @@ public class EmpregadoComissionado extends Empregado
      * @return retorna um bigDecimal com o valor do salario do comissionado naquela data
      * @throws CampoValidoException necessario para chamar o metodo getVendas
      */
-    public BigDecimal calculaSalarioBruto(String dataFinal) throws CampoValidoException
+    public BigDecimal calculaSalarioBruto(String dataFinal) throws DataInicialInvalidaException, DataFinalInvalidaException, DataInicialNaoPodeSerPosteriorADataFinalException
     {
         String vendasStr = this.getVendas(this.getUltimoPagamento(), dataFinal).replace(",", ".");
 

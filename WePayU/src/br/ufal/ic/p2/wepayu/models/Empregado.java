@@ -1,7 +1,7 @@
 package br.ufal.ic.p2.wepayu.models;
 
-import br.ufal.ic.p2.wepayu.Exception.CampoValidoException;
-import br.ufal.ic.p2.wepayu.Exception.EmpregadoNaoExisteException;
+import br.ufal.ic.p2.wepayu.Exception.*;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ArrayList;
@@ -286,7 +286,7 @@ public class Empregado {
      * @param data A data final do período de pagamento.
      * @return Retorna o valor do seu salario como um BigDecimal.
      */
-    public static BigDecimal calculaSalarioBruto(Empregado empregado, String data) throws CampoValidoException {
+    public static BigDecimal calculaSalarioBruto(Empregado empregado, String data) throws CampoValidoException, DataInicialInvalidaException, DataInicialNaoPodeSerPosteriorADataFinalException, DataFinalInvalidaException {
         String tipo = empregado.getTipo();
         BigDecimal salarioFinal = BigDecimal.ZERO;
 

@@ -1,7 +1,7 @@
 package br.ufal.ic.p2.wepayu.models;
 
 import br.ufal.ic.p2.wepayu.Exception.EmpregadoNaoExisteException;
-import br.ufal.ic.p2.wepayu.Exception.CampoValidoException;
+import br.ufal.ic.p2.wepayu.Exception.*;
 
 import java.io.*;
 import java.math.BigDecimal;
@@ -109,27 +109,27 @@ public class SistemaFolha {
      * @param sal      O salário em formato String.
      * @throws CampoValidoException Se qualquer um dos dados for inválido.
      */
-    public static void acharExcecoes(String nome, String endereco, String tipo, String sal) throws CampoValidoException {
+    public static void acharExcecoes(String nome, String endereco, String tipo, String sal) throws NomeNaoPodeSerNuloException, EnderecoNaoPodeSerNuloException, SalarioNaoPodeSerNuloException, SalarioDeveSerNumericoException, SalarioDeveSerNaoNegativoException, TipoNaoAplicavelException, TipoInvalidoException {
         // checando campo nulo
-        if (Objects.equals(nome, "")) throw new CampoValidoException("Nome nao pode ser nulo.");
-        if (Objects.equals(endereco, "")) throw new CampoValidoException("Endereco nao pode ser nulo.");
-        if (Objects.equals(sal, "")) throw new CampoValidoException("Salario nao pode ser nulo.");
+        if (Objects.equals(nome, "")) throw new NomeNaoPodeSerNuloException();
+        if (Objects.equals(endereco, "")) throw new EnderecoNaoPodeSerNuloException();
+        if (Objects.equals(sal, "")) throw new SalarioNaoPodeSerNuloException();
         // checa se o salario eh numerico
         try {
             // corrige a formatação do double
             sal = sal.replace(',', '.');
             double salario = Double.parseDouble(sal);
-            if (salario < 0) throw new CampoValidoException("Salario deve ser nao-negativo.");
+            if (salario < 0) throw new SalarioDeveSerNaoNegativoException();
         } catch (NumberFormatException e) {
-            throw new CampoValidoException("Salario deve ser numerico.");
+            throw new SalarioDeveSerNumericoException();
         }
 
 
         // checando validez do tipo
-        if (Objects.equals(tipo, "comissionado")) throw new CampoValidoException("Tipo nao aplicavel.");
+        if (Objects.equals(tipo, "comissionado")) throw new TipoNaoAplicavelException();
         if ((!Objects.equals(tipo, "horista")) &&
                 (!Objects.equals(tipo, "assalariado"))) {
-            throw new CampoValidoException("Tipo invalido.");
+            throw new TipoInvalidoException();
         }
     }
 
@@ -143,8 +143,7 @@ public class SistemaFolha {
      * @return O ID do novo empregado criado.
      * @throws CampoValidoException Se os dados de entrada forem inválidos.
      */
-    public String criarEmpregado(String nome, String endereco, String tipo, String sal)
-            throws CampoValidoException {
+    public String criarEmpregado(String nome, String endereco, String tipo, String sal) throws NomeNaoPodeSerNuloException, EnderecoNaoPodeSerNuloException, SalarioNaoPodeSerNuloException, SalarioDeveSerNumericoException, SalarioDeveSerNaoNegativoException, TipoNaoAplicavelException, TipoInvalidoException {
         // checando excecoes
         SistemaFolha.acharExcecoes(nome, endereco, tipo, sal);
 
@@ -179,21 +178,20 @@ public class SistemaFolha {
      * @param comissao A taxa de comissão.
      * @throws CampoValidoException Se qualquer um dos dados for inválido.
      */
-    public static void acharExcecoes(String nome, String endereco, String tipo, String sal, String comissao)
-            throws CampoValidoException {
+    public static void acharExcecoes(String nome, String endereco, String tipo, String sal, String comissao) throws ComissaoNaoPodeSerNulaException, ComissaoDeveSerNumericaException, ComissaoDeveSerNaoNegativaException, TipoNaoAplicavelException, NomeNaoPodeSerNuloException, EnderecoNaoPodeSerNuloException, SalarioNaoPodeSerNuloException, SalarioDeveSerNumericoException, SalarioDeveSerNaoNegativoException, TipoInvalidoException {
         // valida a comissao
-        if (Objects.equals(comissao, "")) throw new CampoValidoException("Comissao nao pode ser nula.");
+        if (Objects.equals(comissao, "")) throw new ComissaoNaoPodeSerNulaException();
         try {
             // corrige a formatação do double
             comissao = comissao.replace(',', '.');
             double com = Double.parseDouble(comissao);
-            if (com < 0.00) throw new CampoValidoException("Comissao deve ser nao-negativa.");
+            if (com < 0.00) throw new ComissaoDeveSerNaoNegativaException();
         } catch (NumberFormatException e) {
-            throw new CampoValidoException("Comissao deve ser numerica.");
+            throw new ComissaoDeveSerNumericaException();
         }
         // valida o tipo
         if ((!Objects.equals(tipo, "comissionado"))) {
-            throw new CampoValidoException("Tipo nao aplicavel.");
+            throw new TipoNaoAplicavelException();
         }
         // valida as demais excecoes
         try {
@@ -214,7 +212,7 @@ public class SistemaFolha {
      * @return O ID do novo empregado criado.
      * @throws CampoValidoException Se os dados de entrada forem inválidos.
      */
-    public String criarEmpregado(String nome, String endereco, String tipo, String sal, String comissao) throws CampoValidoException {
+    public String criarEmpregado(String nome, String endereco, String tipo, String sal, String comissao) throws ComissaoNaoPodeSerNulaException, ComissaoDeveSerNumericaException, ComissaoDeveSerNaoNegativaException, TipoNaoAplicavelException, NomeNaoPodeSerNuloException, EnderecoNaoPodeSerNuloException, SalarioNaoPodeSerNuloException, SalarioDeveSerNumericoException, SalarioDeveSerNaoNegativoException, TipoInvalidoException {
         // checando exceções
         SistemaFolha.acharExcecoes(nome, endereco, tipo, sal, comissao);
 
@@ -244,10 +242,9 @@ public class SistemaFolha {
      * @throws EmpregadoNaoExisteException Se o empregado com o ID fornecido não existir.
      * @throws CampoValidoException        Se o atributo solicitado não existir ou não for aplicável.
      */
-    public String getAtributoEmpregado(String emp, String atributo)
-            throws EmpregadoNaoExisteException, CampoValidoException {
+    public String getAtributoEmpregado(String emp, String atributo) throws EmpregadoNaoExisteException, IdentificacaoEmpregadoNulaException, EmpregadoNaoComissionadoException, EmpregadoNaoSindicalizadoException, EmpregadoNaoRecebeEmBancoException, AtributoNaoExisteException {
         // checando excecoes
-        if (Objects.equals(emp, "")) throw new CampoValidoException("Identificacao do empregado nao pode ser nula.");
+        if (Objects.equals(emp, "")) throw new IdentificacaoEmpregadoNulaException();
         //ajustando a formatação dos numeros
         formatador.setGroupingUsed(false);
         formatador.setMinimumFractionDigits(2);
@@ -271,34 +268,34 @@ public class SistemaFolha {
                 if (empregado instanceof EmpregadoComissionado) {
                     return ((EmpregadoComissionado) empregado).getComissao();
                 }
-                throw new CampoValidoException("Empregado nao eh comissionado.");
+                throw new EmpregadoNaoComissionadoException();
             case "idSindicato":
-                if (!empregado.isSindicalizado()) throw new CampoValidoException("Empregado nao eh sindicalizado.");
+                if (!empregado.isSindicalizado()) throw new EmpregadoNaoSindicalizadoException();
                 return empregado.getIdSindicato();
             case "taxaSindical":
-                if (!empregado.isSindicalizado()) throw new CampoValidoException("Empregado nao eh sindicalizado.");
+                if (!empregado.isSindicalizado()) throw new EmpregadoNaoSindicalizadoException();
                 return doubleParaString(stringParaDouble(empregado.getTaxaSindical()));
             case "metodoPagamento":
                 return empregado.getMetodoPagamento();
             case "banco":
                 if (!"banco".equals(empregado.getMetodoPagamento())) {
-                    throw new CampoValidoException("Empregado nao recebe em banco.");
+                    throw new EmpregadoNaoRecebeEmBancoException();
                 }
                 return empregado.getBanco();
             case "agencia":
                 if (!"banco".equals(empregado.getMetodoPagamento())) {
-                    throw new CampoValidoException("Empregado nao recebe em banco.");
+                    throw new EmpregadoNaoRecebeEmBancoException();
                 }
                 return empregado.getAgencia();
             case "contaCorrente":
                 if (!"banco".equals(empregado.getMetodoPagamento())) {
-                    throw new CampoValidoException("Empregado nao recebe em banco.");
+                    throw new EmpregadoNaoRecebeEmBancoException();
                 }
                 return empregado.getContaCorrente();
             // --- Fim da implementação solicitada ---
 
             default:
-                throw new CampoValidoException("Atributo nao existe.");
+                throw new AtributoNaoExisteException();
 
         }
     }
@@ -342,9 +339,9 @@ public class SistemaFolha {
      * @throws EmpregadoNaoExisteException Se o empregado não for encontrado.
      * @throws CampoValidoException        Se o ID fornecido for nulo ou vazio.
      */
-    public void removerEmpregado(String id) throws EmpregadoNaoExisteException, CampoValidoException {
+    public void removerEmpregado(String id) throws EmpregadoNaoExisteException, IdentificacaoEmpregadoNulaException {
         // checando se o id ta preenchido
-        if (Objects.equals(id, "")) throw new CampoValidoException("Identificacao do empregado nao pode ser nula.");
+        if (Objects.equals(id, "")) throw new IdentificacaoEmpregadoNulaException();
         // lendo o dado do empregado e verificando se existe
         Empregado empregado = empregados.get(id);
         if (empregado == null) throw new EmpregadoNaoExisteException();
@@ -361,22 +358,22 @@ public class SistemaFolha {
      * @return O objeto {@link EmpregadoComissionado} correspondente ao ID.
      * @throws CampoValidoException Se algum dos dados for inválido.
      */
-    public static EmpregadoComissionado excecoesLancamento(Map<String, Empregado> empregados, String id, String data, String valor) throws CampoValidoException {
+    public static EmpregadoComissionado excecoesLancamento(Map<String, Empregado> empregados, String id, String data, String valor) throws DataInvalidaException, IdentificacaoEmpregadoNulaException, EmpregadoNaoExisteException, CampoValidoException, EmpregadoNaoComissionadoException {
         // verifica se a data é válida
-        if (!EmpregadoHorista.validarData(data)) throw new CampoValidoException("Data invalida.");
+        if (!EmpregadoHorista.validarData(data)) throw new DataInvalidaException();
         // checando se o id ta preenchido
-        if (Objects.equals(id, "")) throw new CampoValidoException("Identificacao do empregado nao pode ser nula.");
+        if (Objects.equals(id, "")) throw new IdentificacaoEmpregadoNulaException();
         // checando se eh comissionado
         Empregado empregado = empregados.get(id);
         if (empregado == null)
-            throw new CampoValidoException("Empregado nao existe."); // busca o empregado e verifica se existe
+            throw new EmpregadoNaoExisteException(); // busca o empregado e verifica se existe
 
         if (empregado instanceof EmpregadoComissionado comissionado) {
             // validando o valor
             valor = valor.replace(',', '.');
             double v = Double.parseDouble(valor);
             if (v <= 0.00) throw new CampoValidoException("Valor deve ser positivo."); // checa se eh positivo
-        } else throw new CampoValidoException("Empregado nao eh comissionado.");
+        } else throw new EmpregadoNaoComissionadoException();
         return comissionado;
     }
 
@@ -388,25 +385,25 @@ public class SistemaFolha {
      * @param horas O total de horas trabalhadas.
      * @throws CampoValidoException Se o empregado não for horista ou os dados forem inválidos.
      */
-    public void lancaCartao(String id, String data, String horas) throws CampoValidoException {
-        if (!EmpregadoHorista.validarData(data)) throw new CampoValidoException("Data invalida.");
+    public void lancaCartao(String id, String data, String horas) throws DataInvalidaException, IdentificacaoEmpregadoNulaException, EmpregadoNaoExisteException, HorasDevemSerPositivasException, EmpregadoNaoHoristaException {
+        if (!EmpregadoHorista.validarData(data)) throw new DataInvalidaException();
         // checando se o id ta preenchido
-        if (Objects.equals(id, "")) throw new CampoValidoException("Identificacao do empregado nao pode ser nula.");
+        if (Objects.equals(id, "")) throw new IdentificacaoEmpregadoNulaException();
         // checando se eh horista
         Empregado empregado = empregados.get(id);
         if (empregado == null)
-            throw new CampoValidoException("Empregado nao existe."); // busca o empregado e verifica se existe
+            throw new EmpregadoNaoExisteException(); // busca o empregado e verifica se existe
 
         if (empregado instanceof EmpregadoHorista horista) {
             // corrige a formatação do double
             horas = horas.replace(',', '.');
             double h = Double.parseDouble(horas);
-            if (h <= 0) throw new CampoValidoException("Horas devem ser positivas."); // checa se eh positivo
+            if (h <= 0) throw new HorasDevemSerPositivasException(); // checa se eh positivo
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/yyyy"); // formata as datas
             horista.lancaCartao(data, horas); //lanca o cartao
 
 
-        } else throw new CampoValidoException("Empregado nao eh horista.");
+        } else throw new EmpregadoNaoHoristaException();
     }
 
     /**
@@ -419,15 +416,15 @@ public class SistemaFolha {
      * @throws CampoValidoException        Se o empregado não for horista ou as datas forem inválidas.
      * @throws EmpregadoNaoExisteException Se o empregado não for encontrado.
      */
-    public String getHorasNormaisTrabalhadas(String id, String inicio, String fim) throws CampoValidoException, EmpregadoNaoExisteException {
+    public String getHorasNormaisTrabalhadas(String id, String inicio, String fim) throws IdentificacaoEmpregadoNulaException, EmpregadoNaoExisteException, EmpregadoNaoHoristaException, DataInicialInvalidaException, DataFinalInvalidaException, DataInicialNaoPodeSerPosteriorADataFinalException {
         // checando se o id ta preenchido
-        if (Objects.equals(id, "")) throw new CampoValidoException("Identificacao do empregado nao pode ser nula.");
+        if (Objects.equals(id, "")) throw new IdentificacaoEmpregadoNulaException();
         // lendo o dado do empregado e verificando se existe
         Empregado empregado = empregados.get(id);
         if (empregado == null) throw new EmpregadoNaoExisteException();
         // checando se eh horista
         if (empregado instanceof EmpregadoHorista horista) return horista.getHorasNormaisTrabalhadas(inicio, fim);
-        else throw new CampoValidoException("Empregado nao eh horista.");
+        else throw new EmpregadoNaoHoristaException();
     }
 
     /**
@@ -440,15 +437,15 @@ public class SistemaFolha {
      * @throws CampoValidoException        Se o empregado não for horista ou as datas forem inválidas.
      * @throws EmpregadoNaoExisteException Se o empregado não for encontrado.
      */
-    public String getHorasExtrasTrabalhadas(String id, String inicio, String fim) throws CampoValidoException, EmpregadoNaoExisteException {
+    public String getHorasExtrasTrabalhadas(String id, String inicio, String fim) throws IdentificacaoEmpregadoNulaException, EmpregadoNaoExisteException, EmpregadoNaoHoristaException, DataInicialInvalidaException, DataFinalInvalidaException, DataInicialNaoPodeSerPosteriorADataFinalException {
         // checando se o id ta preenchido
-        if (Objects.equals(id, "")) throw new CampoValidoException("Identificacao do empregado nao pode ser nula.");
+        if (Objects.equals(id, "")) throw new IdentificacaoEmpregadoNulaException();
         // lendo o dado do empregado e verificando se existe
         Empregado empregado = empregados.get(id);
         if (empregado == null) throw new EmpregadoNaoExisteException();
         // checando se eh horista
         if (empregado instanceof EmpregadoHorista horista) return horista.getHorasExtrasTrabalhadas(inicio, fim);
-        else throw new CampoValidoException("Empregado nao eh horista.");
+        else throw new EmpregadoNaoHoristaException();
     }
 
 
@@ -460,7 +457,7 @@ public class SistemaFolha {
      * @param valor O valor da venda.
      * @throws CampoValidoException Se o empregado não for comissionado ou os dados forem inválidos.
      */
-    public void lancaVenda(String emp, String data, String valor) throws CampoValidoException {
+    public void lancaVenda(String emp, String data, String valor) throws DataInvalidaException, IdentificacaoEmpregadoNulaException, EmpregadoNaoExisteException, CampoValidoException, EmpregadoNaoComissionadoException {
         EmpregadoComissionado comissionado = SistemaFolha.excecoesLancamento(empregados, emp, data, valor); //identificando o empregado pelo id
         comissionado.lancaVenda(valor, data);
     }
@@ -475,15 +472,15 @@ public class SistemaFolha {
      * @throws CampoValidoException        Se o empregado não for comissionado ou as datas forem inválidas.
      * @throws EmpregadoNaoExisteException Se o empregado não for encontrado.
      */
-    public String getVendas(String emp, String inicio, String fim) throws CampoValidoException, EmpregadoNaoExisteException {
+    public String getVendas(String emp, String inicio, String fim) throws IdentificacaoEmpregadoNulaException, EmpregadoNaoExisteException, EmpregadoNaoComissionadoException, DataInicialInvalidaException, DataFinalInvalidaException, DataInicialNaoPodeSerPosteriorADataFinalException {
         // checando se o id ta preenchido
-        if (Objects.equals(emp, "")) throw new CampoValidoException("Identificacao do empregado nao pode ser nula.");
+        if (Objects.equals(emp, "")) throw new IdentificacaoEmpregadoNulaException();
         // lendo o dado do empregado e verificando se existe
         Empregado empregado = empregados.get(emp);
         if (empregado == null) throw new EmpregadoNaoExisteException();
         // checando se eh comissinoado
         if (empregado instanceof EmpregadoComissionado comissionado) return comissionado.getVendas(inicio, fim);
-        else throw new CampoValidoException("Empregado nao eh comissionado.");
+        else throw new EmpregadoNaoComissionadoException();
     }
 
     /**
@@ -678,14 +675,14 @@ public class SistemaFolha {
      * @return O valor total das taxas formatado como String.
      * @throws CampoValidoException Se o empregado não for sindicalizado ou as datas forem inválidas.
      */
-    public String getTaxasServico(String emp, String dataInicial, String dataFinal) throws CampoValidoException, EmpregadoNaoExisteException {
+    public String getTaxasServico(String emp, String dataInicial, String dataFinal) throws EmpregadoNaoExisteException, EmpregadoNaoSindicalizadoException, DataInicialInvalidaException, DataFinalInvalidaException, DataInicialNaoPodeSerPosteriorADataFinalException {
         Empregado empregado = empregados.get(emp);
         if (empregado == null) {
             throw new EmpregadoNaoExisteException();
         }
-        if (!empregado.isSindicalizado()) throw new CampoValidoException("Empregado nao eh sindicalizado.");
-        if (!EmpregadoHorista.validarData(dataInicial)) throw new CampoValidoException("Data inicial invalida.");
-        if (!EmpregadoHorista.validarData(dataFinal)) throw new CampoValidoException("Data final invalida.");
+        if (!empregado.isSindicalizado()) throw new EmpregadoNaoSindicalizadoException();
+        if (!EmpregadoHorista.validarData(dataInicial)) throw new DataInicialInvalidaException();
+        if (!EmpregadoHorista.validarData(dataFinal)) throw new DataFinalInvalidaException();
 
         // A lógica de validação de datas e iteração é quase idêntica à de getVendas
         double totalTaxas = 0;
@@ -693,7 +690,7 @@ public class SistemaFolha {
         LocalDate inicio = LocalDate.parse(dataInicial, formatter);
         LocalDate fim = LocalDate.parse(dataFinal, formatter);
 
-        if (fim.isBefore(inicio)) throw new CampoValidoException("Data inicial nao pode ser posterior aa data final.");
+        if (fim.isBefore(inicio)) throw new DataInicialNaoPodeSerPosteriorADataFinalException();
 
         for (TaxaServico taxa : empregado.getTaxasServico()) {
             LocalDate dataTaxa = LocalDate.parse(taxa.getData(), formatter);
@@ -940,7 +937,7 @@ public class SistemaFolha {
 
 // Métodos auxiliares que precisam ser adicionados a sua classe SistemaFolha.
 
-    private BigDecimal calcularDescontos(Empregado empregado, String data) throws EmpregadoNaoExisteException, CampoValidoException {
+    private BigDecimal calcularDescontos(Empregado empregado, String data) throws EmpregadoNaoExisteException, CampoValidoException, DataInicialInvalidaException, EmpregadoNaoSindicalizadoException, DataInicialNaoPodeSerPosteriorADataFinalException, DataFinalInvalidaException {
 
         if (!empregado.isSindicalizado()) {
             return BigDecimal.ZERO;
