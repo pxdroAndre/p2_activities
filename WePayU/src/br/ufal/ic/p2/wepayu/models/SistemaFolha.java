@@ -35,6 +35,10 @@ public class SistemaFolha {
     Locale localeBrasil = new Locale("pt", "BR");
     NumberFormat formatador = NumberFormat.getNumberInstance(localeBrasil);
 
+    // Pilhas para Undo/Redo
+    private final Deque<Object> undoStack = new ArrayDeque<>();
+    private final Deque<Object> redoStack = new ArrayDeque<>();
+
     /**
      * Construtor da classe SistemaFolha.
      * <p>
