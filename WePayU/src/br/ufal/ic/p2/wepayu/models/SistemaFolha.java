@@ -35,9 +35,38 @@ public class SistemaFolha {
     Locale localeBrasil = new Locale("pt", "BR");
     NumberFormat formatador = NumberFormat.getNumberInstance(localeBrasil);
 
-    // Pilhas para Undo/Redo
-    private final Deque<Object> undoStack = new ArrayDeque<>();
-    private final Deque<Object> redoStack = new ArrayDeque<>();
+    // Pilhas para Undo/Redo (agora tipadas para Command)
+    private final Deque<Command> undoStack = new ArrayDeque<>();
+    private final Deque<Command> redoStack = new ArrayDeque<>();
+
+    /**
+     * Executa um comando e o adiciona à pilha de undo. Limpa a pilha de redo.
+     * @param comando O comando a ser executado.
+     * @throws Exception Se a execução do comando falhar.
+     */
+    public void executarComando(Command comando) throws Exception {
+        comando.execute();
+        undoStack.push(comando);
+        redoStack.clear(); // Uma nova ação invalida o histórico de redo
+    }
+
+    public void undo() throws Exception {
+        if (undoStack.isEmpty()) {
+            throw new RuntimeException("Nao ha comando a desfazer.");
+        }
+        Command comando = undoStack.pop();
+        comando.undo();
+        redoStack.push(comando);
+    }
+
+    public void redo() throws Exception {
+        if (redoStack.isEmpty()) {
+            throw new RuntimeException("Nao ha comando a refazer.");
+        }
+        Command comando = redoStack.pop();
+        comando.execute(); // Re-executa a ação
+        undoStack.push(comando);
+    }
 
     /**
      * Construtor da classe SistemaFolha.

@@ -1,4 +1,4 @@
-package br.ufal.ic.p2.commands;
+package br.ufal.ic.p2.wepayu.commands;
 
 /**
  * Comando para criar um novo empregado.

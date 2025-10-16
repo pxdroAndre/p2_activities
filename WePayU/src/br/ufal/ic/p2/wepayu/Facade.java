@@ -2,6 +2,7 @@ package br.ufal.ic.p2.wepayu;
 
 import br.ufal.ic.p2.wepayu.Exception.EmpregadoNaoExisteException;
 import br.ufal.ic.p2.wepayu.Exception.CampoValidoException;
+import br.ufal.ic.p2.wepayu.models.*;
 import br.ufal.ic.p2.wepayu.models.EmpregadoComissionado;
 import br.ufal.ic.p2.wepayu.models.SistemaFolha;
 
@@ -26,6 +27,22 @@ public class Facade
     public void zerarSistema()
     {
         sistema.zerarSistema();
+    }
+
+    /**
+     * Desfaz a última operação que modificou o estado do sistema.
+     * @throws Exception se não houver comando para desfazer.
+     */
+    public void undo() throws Exception {
+        sistema.undo();
+    }
+
+    /**
+     * Refaz a última operação desfeita.
+     * @throws Exception se não houver comando para refazer.
+     */
+    public void redo() throws Exception {
+        sistema.redo();
     }
 
     /**
@@ -54,7 +71,9 @@ public class Facade
      */
     public String criarEmpregado (String nome, String endereco, String tipo, String salario) throws Exception
     {
-        return sistema.criarEmpregado(nome, endereco, tipo, salario);
+        CriarEmpregadoCommand command = new CriarEmpregadoCommand(sistema, nome, endereco, tipo, salario);
+        sistema.executarComando(command);
+        return command.getIdCriado();
     }
 
     /**
@@ -70,7 +89,9 @@ public class Facade
      */
     public String criarEmpregado (String nome, String endereco, String tipo, String salario, String comissao) throws Exception
     {
-        return sistema.criarEmpregado(nome, endereco, tipo, salario, comissao);
+        CriarEmpregadoCommand command = new CriarEmpregadoCommand(sistema, nome, endereco, tipo, salario, comissao);
+        sistema.executarComando(command);
+        return command.getIdCriado();
     }
 
     /**
