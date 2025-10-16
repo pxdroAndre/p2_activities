@@ -1,0 +1,1 @@
+packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"br.ufal.ic.p2.wepayu"},{"l":"br.ufal.ic.p2.wepayu.Exception"},{"l":"br.ufal.ic.p2.wepayu.models"}];updateSearchResults();

@@ -975,6 +975,11 @@ public class SistemaFolha {
         return totalTaxaSindical.add(taxasServico);
     }
 
+    /**
+     * Funcao que formata o metodo de pagamento para ser printado na folha de pagamento
+     * @param empregado recebe o empregado que deseja-se ver o metodo de pagamento
+     * @return retorna a string formatada corretamente para o tipo de metodo de pagamento do empregado
+     */
     private String formatarMetodoPagamento(Empregado empregado) {
         if ("banco".equals(empregado.getMetodoPagamento())) {
             return String.format("%s, Ag. %s CC %s", empregado.getBanco(), empregado.getAgencia(), empregado.getContaCorrente());
@@ -986,6 +991,11 @@ public class SistemaFolha {
         return empregado.getMetodoPagamento();
     }
 
+    /**
+     * Metodo estatico que serve para passar um valor double para a formatação string requerida nos testes
+     * @param valor o valor double a ser "traduzido"
+     * @return a String devidamente formatada
+     */
     public static String doubleParaString (double valor)
     {
         Locale localeBrasil = new Locale("pt", "BR");
@@ -996,6 +1006,11 @@ public class SistemaFolha {
         return formatador.format(valor);
     }
 
+    /**
+     * Metodo que formata uma String para double
+     * @param valor a string a ser transformada
+     * @return o valor double formatado
+     */
     public static double stringParaDouble (String valor)
     {
         valor = valor.replace(",", ".");
