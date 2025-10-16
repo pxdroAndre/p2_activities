@@ -1,10 +1,13 @@
 package br.ufal.ic.p2.wepayu.commands;
 
+import br.ufal.ic.p2.wepayu.models.SistemaFolha;
+
 /**
  * Comando para criar um novo empregado.
  * Encapsula a lógica de criação e a lógica inversa (remoção) para o undo.
  */
-public class CriarEmpregadoCommand implements Command {
+public class CriarEmpregadoCommand implements Command
+{
 
     private SistemaFolha sistema;
     private String nome;
@@ -43,5 +46,10 @@ public class CriarEmpregadoCommand implements Command {
         if (idCriado != null) {
             sistema.removerEmpregado(idCriado);
         }
+    }
+
+    public String getIdCriado()
+    {
+        return this.idCriado;
     }
 }

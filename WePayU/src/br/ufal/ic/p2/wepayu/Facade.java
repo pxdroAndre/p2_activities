@@ -2,6 +2,8 @@ package br.ufal.ic.p2.wepayu;
 
 import br.ufal.ic.p2.wepayu.Exception.EmpregadoNaoExisteException;
 import br.ufal.ic.p2.wepayu.Exception.CampoValidoException;
+import br.ufal.ic.p2.wepayu.commands.CriarEmpregadoCommand;
+import br.ufal.ic.p2.wepayu.commands.RemoverEmpregadoCommand;
 import br.ufal.ic.p2.wepayu.models.*;
 import br.ufal.ic.p2.wepayu.models.EmpregadoComissionado;
 import br.ufal.ic.p2.wepayu.models.SistemaFolha;
@@ -123,7 +125,8 @@ public class Facade
      * @throws CampoValidoException se o ID for nulo ou vazio.
      */
     public void removerEmpregado (String emp) throws Exception {
-        sistema.removerEmpregado(emp);
+        RemoverEmpregadoCommand command = new RemoverEmpregadoCommand(emp);
+        command.execute();
     }
 
     /**
