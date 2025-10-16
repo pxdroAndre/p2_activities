@@ -46,7 +46,7 @@ public class EmpregadoHorista extends Empregado
      * @param tipo O tipo de contrato, que deve ser "horista".
      * @param salario O valor da remuneração por hora de trabalho.
      */
-    public EmpregadoHorista (String nome, String endereco, String tipo, double salario)
+    public EmpregadoHorista (String nome, String endereco, String tipo, String salario)
     {
         super(nome, endereco, tipo, salario);
     }
@@ -218,13 +218,14 @@ public class EmpregadoHorista extends Empregado
         }
     }
 
-    public BigDecimal calculaSalarioBruto(String dataFinal) throws CampoValidoException {
+    public BigDecimal calculaSalarioBruto(String dataFinal) throws CampoValidoException
+    {
         String normalStr = this.getHorasNormaisTrabalhadas(this.getUltimoPagamento(), dataFinal).replace(",", ".");
         String extrasStr = this.getHorasExtrasTrabalhadas(this.getUltimoPagamento(), dataFinal).replace(",", ".");
 
         BigDecimal horasNormais = new BigDecimal(normalStr);
         BigDecimal horasExtras = new BigDecimal(extrasStr);
-        BigDecimal salarioHora = this.getSalario();
+        BigDecimal salarioHora = BigDecimal.valueOf(Double.parseDouble(this.getSalario().replace(",", ".")));
         BigDecimal multiplicadorExtra = new BigDecimal("1.5");
 
         BigDecimal pagamentoNormal = horasNormais.multiply(salarioHora);

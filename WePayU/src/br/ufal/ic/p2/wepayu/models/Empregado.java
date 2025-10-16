@@ -24,10 +24,10 @@ public class Empregado {
     private String nome;
     private String endereco;
     private String tipo;
-    private BigDecimal salario;
+    private String salario;
     private boolean sindicalizado;
     private String idSindicato;
-    private BigDecimal taxaSindical;
+    private String taxaSindical;
     private ArrayList<TaxaServico> taxasServico = new ArrayList<>();
     private String metodoPagamento = "emMaos"; // Valor default conforme os testes
     private String banco;
@@ -132,12 +132,12 @@ public class Empregado {
      * @param tipo O tipo de contrato (ex: "horista", "assalariado").
      * @param salario O valor base do salário ou da hora de trabalho.
      */
-    public Empregado(String nome, String endereco, String tipo, double salario)
+    public Empregado(String nome, String endereco, String tipo, String salario)
     {
         this.nome = nome;
         this.endereco = endereco;
         this.tipo = tipo;
-        this.salario = BigDecimal.valueOf(salario);
+        this.salario = salario;
         this.sindicalizado = false;
         if (!Objects.equals(tipo, "comissionado")) this.ultimoPagamento = "1/1/2005";
         else this.ultimoPagamento = "1/1/2005";
@@ -171,7 +171,8 @@ public class Empregado {
      * Define o salário do empregado.
      * @param salario O novo valor de salário.
      */
-    public void setSalario(BigDecimal salario) {
+    public void setSalario(String salario)
+    {
         this.salario = salario;
     }
 
@@ -211,7 +212,7 @@ public class Empregado {
      * Retorna o valor da taxa sindical.
      * @return O valor da taxa.
      */
-    public BigDecimal getTaxaSindical() {
+    public String getTaxaSindical() {
         return taxaSindical;
     }
 
@@ -219,7 +220,7 @@ public class Empregado {
      * Define o valor da taxa sindical.
      * @param taxaSindical O novo valor da taxa.
      */
-    public void setTaxaSindical(BigDecimal taxaSindical) {
+    public void setTaxaSindical(String taxaSindical) {
         this.taxaSindical = taxaSindical;
     }
 
@@ -267,7 +268,7 @@ public class Empregado {
      * Retorna o salário base do empregado.
      * @return O salário base.
      */
-    public BigDecimal getSalario() {
+    public String getSalario() {
         return salario;
     }
 
@@ -299,7 +300,7 @@ public class Empregado {
                 salarioFinal = com.calculaSalarioBruto(data);
             }
             case "assalariado" -> {
-                salarioFinal = empregado.getSalario();
+                salarioFinal = BigDecimal.valueOf(Double.parseDouble(empregado.getSalario().replace(",", ".")));
             }
         }
 
