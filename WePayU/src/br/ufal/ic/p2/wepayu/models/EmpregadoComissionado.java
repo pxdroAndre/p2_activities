@@ -38,6 +38,16 @@ public class EmpregadoComissionado extends Empregado
      */
     public EmpregadoComissionado(){}
 
+    public EmpregadoComissionado(Empregado empregado)
+    {
+        super(empregado);
+        this.vendas = new ArrayList<>();
+        for (ResultadoDeVenda venda : empregado.) {
+            // CartaoPonto também precisa de um construtor de cópia
+            this.cartoesDePonto.add(new CartaoPonto(cartao));
+        }
+    }
+
     /**
      * Construtor para criar um novo empregado comissionado.
      *

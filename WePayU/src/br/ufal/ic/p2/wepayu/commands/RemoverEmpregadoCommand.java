@@ -1,10 +1,11 @@
 package br.ufal.ic.p2.wepayu.commands;
-import br.ufal.ic.p2.wepayu.models.SistemaFolha;
+import br.ufal.ic.p2.wepayu.models.*;
 
 public class RemoverEmpregadoCommand implements Command
 {
     private SistemaFolha sistema;
     private String empregado;
+    private Empregado removido;
 
 
     public RemoverEmpregadoCommand(String empregado)
@@ -16,7 +17,7 @@ public class RemoverEmpregadoCommand implements Command
     @Override
     public void execute() throws Exception
     {
-        this.sistema.removerEmpregado(empregado);
+        this.removido = this.sistema.removerEmpregado(empregado);
     }
 
     @Override

@@ -33,6 +33,9 @@ public class TaxaServico {
         this.valor = valor;
     }
 
+    public TaxaServico(TaxaServico taxa) {
+    }
+
     /**
      * Retorna a data da cobrança da taxa.
      * @return A data no formato "d/M/yyyy".

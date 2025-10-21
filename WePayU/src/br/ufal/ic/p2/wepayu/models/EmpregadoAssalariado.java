@@ -8,6 +8,10 @@ public class EmpregadoAssalariado extends Empregado {
         super(nome, endereco, tipo, SistemaFolha.doubleParaString(salario));
     }
 
+    public EmpregadoAssalariado(Empregado empregado)
+    {
+        super(empregado);
+    }
     public EmpregadoAssalariado() {}
 
     public BigDecimal calculaSalarioBruto(LocalDate dataInicial, LocalDate dataFinal) {

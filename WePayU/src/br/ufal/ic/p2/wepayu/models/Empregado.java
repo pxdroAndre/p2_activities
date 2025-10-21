@@ -143,6 +143,30 @@ public class Empregado {
         else this.ultimoPagamento = "1/1/2005";
     }
 
+    public Empregado(Empregado original)
+    {
+        this.nome = original.nome;
+        this.endereco = original.endereco;
+        this.tipo = original.tipo;
+        this.salario = original.salario; // BigDecimal é imutável, então ok
+        this.sindicalizado = original.sindicalizado;
+        this.idSindicato = original.idSindicato;
+        this.taxaSindical = original.taxaSindical;
+        this.metodoPagamento = original.metodoPagamento;
+        this.banco = original.banco;
+        this.agencia = original.agencia;
+        this.contaCorrente = original.contaCorrente;
+        this.ultimoPagamento = original.ultimoPagamento;
+
+        // Copiar Taxas de Serviço
+        this.taxasServico = new ArrayList<>();
+        for (TaxaServico taxa : original.taxasServico)
+        {
+            // A classe TaxaServico também precisa de um construtor de cópia
+            this.taxasServico.add(new TaxaServico(taxa));
+        }
+    }
+
     /**
      * Define o nome do empregado.
      * @param nome O novo nome do empregado.

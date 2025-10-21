@@ -187,7 +187,8 @@ public class SistemaFolha {
         sal = sal.replace(',', '.');
         double salario = Double.parseDouble(sal);
         // cria o empregado
-        switch (tipo) {
+        switch (tipo)
+        {
             case "assalariado":
                 EmpregadoAssalariado novoAssalariado = new EmpregadoAssalariado(nome, endereco, tipo, salario);
                 empregados.put(novoID, novoAssalariado); //adicionando no hashmap
@@ -373,13 +374,27 @@ public class SistemaFolha {
      * @throws EmpregadoNaoExisteException Se o empregado não for encontrado.
      * @throws CampoValidoException        Se o ID fornecido for nulo ou vazio.
      */
-    public void removerEmpregado(String id) throws EmpregadoNaoExisteException, IdentificacaoEmpregadoNulaException {
+    public Empregado removerEmpregado(String id) throws EmpregadoNaoExisteException, IdentificacaoEmpregadoNulaException {
         // checando se o id ta preenchido
         if (Objects.equals(id, "")) throw new IdentificacaoEmpregadoNulaException();
         // lendo o dado do empregado e verificando se existe
         Empregado empregado = empregados.get(id);
         if (empregado == null) throw new EmpregadoNaoExisteException();
-        this.empregados.remove(id); // remove do Hash
+        // fazendo backup do empregado
+        switch (empregado.getTipo())
+        {
+            case "assalariado":
+                Empregado removido = new EmpregadoAssalariado(empregado);
+                break;
+            case "comissionado":
+                Empregado removido = new EmpregadoComissionado(empregado);
+        }
+
+        Empregado removido = new Empregado(empregado);
+
+        //removendo
+        this.empregados.remove(id); // remove do Hash"'
+        return removido;
     }
 
     /**
