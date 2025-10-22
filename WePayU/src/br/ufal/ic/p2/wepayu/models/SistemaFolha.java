@@ -3,12 +3,15 @@ package br.ufal.ic.p2.wepayu.models;
 import br.ufal.ic.p2.wepayu.Exception.EmpregadoNaoExisteException;
 import br.ufal.ic.p2.wepayu.Exception.*;
 import br.ufal.ic.p2.wepayu.commands.Command;
+import br.ufal.ic.p2.wepayu.utilities.*;
+
 
 import java.io.*;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.time.format.DateTimeParseException;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.text.NumberFormat;
 import java.beans.XMLEncoder;
@@ -68,6 +71,32 @@ public class SistemaFolha {
             this.empregados = new HashMap<>();
             this.id = 1;
         }
+    }
+
+    /**
+     * Cria um clone profundo de um mapa de empregados manualmente.
+     * @param mapaOriginal O mapa do SistemaFolha.
+     * @return Um novo HashMap com clones de todos os empregados.
+     */
+    public Map<String, Empregado> clonarMapaManualmente(Map<String, Empregado> mapaOriginal) {
+
+        // Cria um novo HashMap (cópia rasa da estrutura)
+        Map<String, Empregado> novoMapa = new HashMap<>();
+
+        // Itera por cada entrada do mapa original
+        for (Map.Entry<String, Empregado> entry : mapaOriginal.entrySet()) {
+            String chave = entry.getKey();
+            Empregado empregadoOriginal = entry.getValue();
+
+            // 3. Clona profundamente o empregado
+            Empregado empregadoClonado = Clonador.clonar(empregadoOriginal);
+
+            // 4. Adiciona o clone no novo mapa
+            novoMapa.put(chave, empregadoClonado);
+        }
+
+        // 5. Retorna o novo mapa, que agora é um clone profundo
+        return novoMapa;
     }
 
     /**
@@ -446,10 +475,10 @@ public class SistemaFolha {
      */
     public String getEmpregadoPorNome(String nome, int indice) throws CampoValidoException {
         // Cria uma lista para armazenar os IDs dos empregados que correspondem ao nome fornecido.
-        java.util.List<String> matchingIds = new java.util.ArrayList<>();
+        List<String> matchingIds = new ArrayList<>();
 
         // Itera sobre o mapa de empregados para encontrar correspondências de nome.
-        for (java.util.Map.Entry<String, Empregado> entry : empregados.entrySet()) {
+        for (Map.Entry<String, Empregado> entry : empregados.entrySet()) {
             if (entry.getValue().getNome().equals(nome)) {
                 matchingIds.add(entry.getKey());
             }
@@ -657,7 +686,7 @@ public class SistemaFolha {
         if (empregado == null) {
             throw new EmpregadoNaoExisteException();
         }
-        Map <String, Empregado> backupEmpregados = new HashMap<>(empregados);
+        Map <String, Empregado> backupEmpregados = clonarMapaManualmente(empregados);
         switch (atributo) {
             case "nome":
                 if (valor == null || valor.isEmpty()) throw new CampoValidoException("Nome nao pode ser nulo.");
@@ -866,7 +895,7 @@ public class SistemaFolha {
         switch (tipo) {
             case "horista":
                 // Horistas recebem toda sexta-feira
-                return dataAtual.getDayOfWeek() == java.time.DayOfWeek.FRIDAY;
+                return dataAtual.getDayOfWeek() == DayOfWeek.FRIDAY;
 
             case "assalariado":
                 // Assalariados recebem no último dia do mês
@@ -877,7 +906,7 @@ public class SistemaFolha {
                 // Comissionados recebem a cada 2 sextas-feiras[cite: 210].
                 // Os testes (us7.txt) mostram que o primeiro pagamento ocorre na segunda sexta-feira do ano.
                 // A partir daí, o pagamento é quinzenal.
-                if (dataAtual.getDayOfWeek() != java.time.DayOfWeek.FRIDAY) {
+                if (dataAtual.getDayOfWeek() != DayOfWeek.FRIDAY) {
                     return false; // Se não for sexta-feira, não há pagamento.
                 }
 
@@ -888,11 +917,11 @@ public class SistemaFolha {
                 // Calcula o número de semanas entre a data de referência e a data atual
                 if (Objects.equals(empregado.getUltimoPagamento(),"1/1/2005"))
                 {
-                    semanasDesdeReferencia = (java.time.temporal.ChronoUnit.WEEKS.between(primeiroPagamento, dataAtual)) + 1;
+                    semanasDesdeReferencia = (ChronoUnit.WEEKS.between(primeiroPagamento, dataAtual)) + 1;
                 }
                 else
                 {
-                    semanasDesdeReferencia = (java.time.temporal.ChronoUnit.WEEKS.between(primeiroPagamento, dataAtual));
+                    semanasDesdeReferencia = (ChronoUnit.WEEKS.between(primeiroPagamento, dataAtual));
                 }
 
                 // Se o número de semanas for par, significa que está no ciclo de 2 semanas.
@@ -937,7 +966,7 @@ public class SistemaFolha {
      * @throws Exception Se ocorrer um erro durante o processamento ou geração do arquivo.
      */
     public Map<String, Empregado> rodaFolha(String data, String saida) throws Exception {
-        Map<String, Empregado> backup = new HashMap<>(empregados);
+        Map<String, Empregado> backup = clonarMapaManualmente(empregados);
         ArrayList<EmpregadoAssalariado> assalariados = new ArrayList<>();
         ArrayList<EmpregadoComissionado> comissionados = new ArrayList<>();
         ArrayList<EmpregadoHorista> horistas = new ArrayList<>();
@@ -1109,11 +1138,11 @@ public class SistemaFolha {
         long dias;
         if (Objects.equals(empregado.getUltimoPagamento(),"1/1/2005"))
         {
-            dias = java.time.temporal.ChronoUnit.DAYS.between(ultimoPagamento, dataAtual) + 1;
+            dias = ChronoUnit.DAYS.between(ultimoPagamento, dataAtual) + 1;
         }
         else
         {
-            dias = java.time.temporal.ChronoUnit.DAYS.between(ultimoPagamento, dataAtual);
+            dias = ChronoUnit.DAYS.between(ultimoPagamento, dataAtual);
         }
         BigDecimal totalTaxaSindical = taxaSindicalDiaria.multiply(new BigDecimal(dias));
 
