@@ -277,7 +277,8 @@ public class Facade
      */
     public void lancaTaxaServico(String membro, String data, String valor) throws Exception
     {
-        sistema.lancaTaxaServico(membro, data, valor);
+        LancaTaxaServicoCommand command = new LancaTaxaServicoCommand(sistema, membro, data, valor);
+        sistema.executarComando(command);
     }
 
     /**

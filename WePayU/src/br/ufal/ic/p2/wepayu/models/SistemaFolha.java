@@ -68,6 +68,24 @@ public class SistemaFolha {
         }
     }
 
+    public void restauraTaxasServico (String membro, ArrayList<TaxaServico> original)
+    {
+        Empregado empregadoAlvo = null;
+        // Encontra o empregado pelo ID do Sindicato
+        for (Empregado e : empregados.values()) {
+            if (e.isSindicalizado() && membro.equals(e.getIdSindicato())) {
+                empregadoAlvo = e;
+                break;
+            }
+        }
+        if (empregadoAlvo!=null) empregadoAlvo.restauraTaxasServico(original);
+    }
+
+    /**
+     * Metodo para restaurar os cartoes de pontos do horista para um estado anterior
+     * @param emp
+     * @param original
+     */
     public void restauraCartoes (String emp, ArrayList<CartaoPonto> original)
     {
         EmpregadoHorista horista = (EmpregadoHorista) this.empregados.get(emp);
@@ -746,7 +764,8 @@ public class SistemaFolha {
      * @param valor  O valor da taxa de serviço.
      * @throws CampoValidoException Se o membro não for encontrado ou os dados forem inválidos.
      */
-    public void lancaTaxaServico(String membro, String data, String valor) throws CampoValidoException {
+    public ArrayList<TaxaServico> lancaTaxaServico(String membro, String data, String valor) throws CampoValidoException {
+        ArrayList<TaxaServico> original;
         // Validações de erro
         if (membro.isEmpty()) throw new CampoValidoException("Identificacao do membro nao pode ser nula.");
         if (!EmpregadoHorista.validarData(data)) throw new CampoValidoException("Data invalida.");
@@ -766,7 +785,9 @@ public class SistemaFolha {
 
         // Cria e adiciona a taxa de serviço
         TaxaServico novaTaxa = new TaxaServico(data, valor);
+        original = empregadoAlvo.backupTaxasServico();
         empregadoAlvo.getTaxasServico().add(novaTaxa);
+        return original;
     }
 
     /**

@@ -167,6 +167,21 @@ public class Empregado {
         }
     }
 
+    public ArrayList<TaxaServico> backupTaxasServico ()
+    {
+        ArrayList<TaxaServico> backup = new ArrayList<>(this.taxasServico);
+        return backup;
+    }
+
+    /**
+     * Metodo que restaura um array de taxa de servico para uma versao anterior
+     * @param original
+     */
+    public void restauraTaxasServico(ArrayList<TaxaServico> original) {
+        this.taxasServico.clear();
+        taxasServico.addAll(original);
+    }
+
     /**
      * Define o nome do empregado.
      * @param nome O novo nome do empregado.
