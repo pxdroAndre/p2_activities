@@ -316,6 +316,7 @@ public class Facade
      * @throws Exception se ocorrer um erro durante o processamento.
      */
     public void rodaFolha(String data, String saida) throws Exception {
-        sistema.rodaFolha(data, saida);
+        RodaFolhaCommand command = new RodaFolhaCommand(sistema, data, saida);
+        sistema.executarComando(command);
     }
 }

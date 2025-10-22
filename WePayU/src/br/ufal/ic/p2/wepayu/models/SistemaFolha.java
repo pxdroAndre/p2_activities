@@ -148,6 +148,7 @@ public class SistemaFolha {
      */
     public void restaurarEmpregados (Map<String, Empregado> original)
     {
+        if (!(empregados.isEmpty())) empregados.clear();
         this.empregados.putAll(original);
     }
 
@@ -930,7 +931,8 @@ public class SistemaFolha {
      * @param saida O nome do arquivo de texto a ser gerado com o resumo da folha.
      * @throws Exception Se ocorrer um erro durante o processamento ou geração do arquivo.
      */
-    public void rodaFolha(String data, String saida) throws Exception {
+    public Map<String, Empregado> rodaFolha(String data, String saida) throws Exception {
+        Map<String, Empregado> backup = new HashMap<>(empregados);
         ArrayList<EmpregadoAssalariado> assalariados = new ArrayList<>();
         ArrayList<EmpregadoComissionado> comissionados = new ArrayList<>();
         ArrayList<EmpregadoHorista> horistas = new ArrayList<>();
@@ -1076,6 +1078,7 @@ public class SistemaFolha {
             totalFolha = totalHoristas.add(totalAssalariados).add(totalComissionados);
             gravarArq.printf("\nTOTAL FOLHA: %s\n", formatador.format(totalFolha));
         }
+        return backup;
     }
 
 // Métodos auxiliares que precisam ser adicionados a sua classe SistemaFolha.
