@@ -68,6 +68,22 @@ public class SistemaFolha {
         }
     }
 
+    /**
+     * MEtodo para restaurar as vendas de um comissionado
+     * @param emp
+     * @param original
+     */
+    public void restauraVendas (String emp, ArrayList<ResultadoDeVenda> original)
+    {
+        EmpregadoComissionado comissionado = (EmpregadoComissionado) this.empregados.get(emp);
+        comissionado.restaurarVendas(original);
+    }
+
+    /**
+     * Metodo para restaurar as taxas de servicos para outro estado
+     * @param membro
+     * @param original
+     */
     public void restauraTaxasServico (String membro, ArrayList<TaxaServico> original)
     {
         Empregado empregadoAlvo = null;
@@ -577,9 +593,12 @@ public class SistemaFolha {
      * @param valor O valor da venda.
      * @throws CampoValidoException Se o empregado não for comissionado ou os dados forem inválidos.
      */
-    public void lancaVenda(String emp, String data, String valor) throws DataInvalidaException, IdentificacaoEmpregadoNulaException, EmpregadoNaoExisteException, CampoValidoException, EmpregadoNaoComissionadoException {
+    public ArrayList<ResultadoDeVenda> lancaVenda(String emp, String data, String valor) throws DataInvalidaException, IdentificacaoEmpregadoNulaException, EmpregadoNaoExisteException, CampoValidoException, EmpregadoNaoComissionadoException {
+        ArrayList<ResultadoDeVenda> backup;
         EmpregadoComissionado comissionado = SistemaFolha.excecoesLancamento(empregados, emp, data, valor); //identificando o empregado pelo id
-        comissionado.lancaVenda(valor, data);
+        backup = comissionado.lancaVenda(valor, data);
+
+        return backup;
     }
 
     /**

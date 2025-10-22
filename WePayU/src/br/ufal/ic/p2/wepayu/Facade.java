@@ -189,7 +189,8 @@ public class Facade
      */
     public void lancaVenda (String emp, String data, String valor) throws Exception
     {
-        sistema.lancaVenda(emp, data, valor);
+        LancaVendaCommand command = new LancaVendaCommand(sistema, emp, data, valor);
+        sistema.executarComando(command);
     }
 
     /**

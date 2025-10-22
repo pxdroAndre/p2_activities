@@ -93,15 +93,27 @@ public class EmpregadoComissionado extends Empregado
     }
 
     /**
+     * Metodo para restaurar vendas deste comissionado
+     * @param original
+     */
+    public void restaurarVendas (ArrayList<ResultadoDeVenda> original)
+    {
+        this.vendas.clear();
+        this.vendas.addAll(original);
+    }
+
+    /**
      * Adiciona um novo registro de venda à lista do empregado.
      *
      * @param valor O valor da venda realizada.
      * @param data  A data em que a venda ocorreu.
      */
-    public void lancaVenda (String valor, String data)
+    public ArrayList<ResultadoDeVenda> lancaVenda (String valor, String data)
     {
+        ArrayList<ResultadoDeVenda> original = new ArrayList<>(vendas);
         ResultadoDeVenda venda = new ResultadoDeVenda(data, valor); // criando um objeto de venda
         vendas.add(venda); // adicionando no array
+        return original;
     }
 
     /**
