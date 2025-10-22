@@ -40,6 +40,11 @@ public class SistemaFolha {
     private final Deque<Command> undoStack = new ArrayDeque<>();
     private final Deque<Command> redoStack = new ArrayDeque<>();
 
+    public int getNumeroDeEmpregados()
+    {
+        return this.empregados.size();
+    }
+
     /**
      * Executa um comando e o adiciona à pilha de undo. Limpa a pilha de redo.
      * @param comando O comando a ser executado.

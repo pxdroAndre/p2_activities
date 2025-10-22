@@ -23,6 +23,11 @@ public class Facade
 {
     SistemaFolha sistema = new SistemaFolha();
 
+    public int getNumeroDeEmpregados()
+    {
+        return sistema.getNumeroDeEmpregados();
+    }
+
     /**
      * Limpa todos os dados do sistema, reiniciando o estado da aplicação.
      */
