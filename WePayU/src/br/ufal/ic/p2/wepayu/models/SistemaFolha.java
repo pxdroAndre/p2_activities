@@ -68,6 +68,16 @@ public class SistemaFolha {
         }
     }
 
+    public void restauraCartoes (String emp, ArrayList<CartaoPonto> original)
+    {
+        EmpregadoHorista horista = (EmpregadoHorista) this.empregados.get(emp);
+        horista.restaurarCartoes(original);
+    }
+
+    /**
+     * Metodo que apaga a lista de empregados atuais e restaura para uma versão anterior
+     * @param original
+     */
     public void apagaRestauraEmpregados (Map<String, Empregado> original)
     {
         this.empregados.clear();
@@ -475,7 +485,8 @@ public class SistemaFolha {
      * @param horas O total de horas trabalhadas.
      * @throws CampoValidoException Se o empregado não for horista ou os dados forem inválidos.
      */
-    public void lancaCartao(String id, String data, String horas) throws DataInvalidaException, IdentificacaoEmpregadoNulaException, EmpregadoNaoExisteException, HorasDevemSerPositivasException, EmpregadoNaoHoristaException {
+    public ArrayList<CartaoPonto> lancaCartao(String id, String data, String horas) throws DataInvalidaException, IdentificacaoEmpregadoNulaException, EmpregadoNaoExisteException, HorasDevemSerPositivasException, EmpregadoNaoHoristaException {
+        ArrayList<CartaoPonto> backup;
         if (!EmpregadoHorista.validarData(data)) throw new DataInvalidaException();
         // checando se o id ta preenchido
         if (Objects.equals(id, "")) throw new IdentificacaoEmpregadoNulaException();
@@ -490,10 +501,11 @@ public class SistemaFolha {
             double h = Double.parseDouble(horas);
             if (h <= 0) throw new HorasDevemSerPositivasException(); // checa se eh positivo
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/yyyy"); // formata as datas
-            horista.lancaCartao(data, horas); //lanca o cartao
+            backup = horista.lancaCartao(data, horas); //lanca o cartao
 
 
         } else throw new EmpregadoNaoHoristaException();
+        return backup;
     }
 
     /**

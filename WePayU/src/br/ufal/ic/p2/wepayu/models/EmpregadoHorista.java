@@ -39,6 +39,10 @@ public class EmpregadoHorista extends Empregado
      */
     public EmpregadoHorista (){}
 
+    /**
+     * Construtor para refazer um empregado horista
+     * @param empregado
+     */
     public EmpregadoHorista (EmpregadoHorista empregado)
     {
         super(empregado);
@@ -63,6 +67,23 @@ public class EmpregadoHorista extends Empregado
         super(nome, endereco, tipo, salario);
     }
 
+    public void restaurarCartoes (ArrayList<CartaoPonto> original)
+    {
+        this.cartoesDePonto.clear();
+        this.cartoesDePonto.addAll(original);
+    }
+
+    /**
+     * Metodo para criar um backup dos cartoes de ponto lancados
+     * @param original
+     * @return retorna o backup
+     */
+    public ArrayList<CartaoPonto> backupCartoes(ArrayList<CartaoPonto> original)
+    {
+        ArrayList<CartaoPonto> backup = new ArrayList<>(original);
+        return backup;
+    }
+
     /**
      * Retorna a lista de todos os cartões de ponto associados a este empregado.
      * @return Uma {@code ArrayList} de objetos {@link CartaoPonto}.
@@ -78,14 +99,16 @@ public class EmpregadoHorista extends Empregado
      * @param data A data do registro de trabalho.
      * @param horas O total de horas trabalhadas no dia.
      */
-    public void lancaCartao (String data, String horas)
+    public ArrayList<CartaoPonto> lancaCartao (String data, String horas)
     {
+        ArrayList<CartaoPonto> backup = backupCartoes(cartoesDePonto);
         if(cartoesDePonto.isEmpty())
         {
             this.setUltimoPagamento(data);
         }
         CartaoPonto novoCartao = new CartaoPonto(data, horas);
         cartoesDePonto.add(novoCartao);
+        return backup;
     }
 
     /**
