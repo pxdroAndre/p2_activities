@@ -40,6 +40,47 @@ public class SistemaFolha {
     private final Deque<Command> undoStack = new ArrayDeque<>();
     private final Deque<Command> redoStack = new ArrayDeque<>();
 
+    /**
+     * Construtor da classe SistemaFolha.
+     * <p>
+     * Tenta carregar o estado do sistema a partir de um arquivo "database.xml".
+     * Se o arquivo não for encontrado, inicializa um sistema vazio.
+     * </p>
+     */
+    public SistemaFolha() {
+        try {
+            // tenta abrir o XML
+            FileInputStream fis = new FileInputStream("database.xml");
+
+            // instancia o decoder
+            XMLDecoder decoder = new XMLDecoder(fis);
+
+            // recriacao do hashmap
+            this.empregados = (Map<String, Empregado>) decoder.readObject();
+
+            // correcao da contagem de id
+            this.id = this.empregados.size() + 1;
+
+            decoder.close();
+        } catch (FileNotFoundException e) {
+            this.empregados = new HashMap<>();
+            this.id = 1;
+        }
+    }
+
+    /**
+     * Metodo que coloca os dados de um hash map no do sistema
+     * @param original
+     */
+    public void restaurarEmpregados (Map<String, Empregado> original)
+    {
+        this.empregados.putAll(original);
+    }
+
+    /**
+     * Metodo que mostra a quantidade de empregados atual no sistema
+     * @return numero de empregados
+     */
     public int getNumeroDeEmpregados()
     {
         return this.empregados.size();
@@ -74,33 +115,7 @@ public class SistemaFolha {
         undoStack.push(comando);
     }
 
-    /**
-     * Construtor da classe SistemaFolha.
-     * <p>
-     * Tenta carregar o estado do sistema a partir de um arquivo "database.xml".
-     * Se o arquivo não for encontrado, inicializa um sistema vazio.
-     * </p>
-     */
-    public SistemaFolha() {
-        try {
-            // tenta abrir o XML
-            FileInputStream fis = new FileInputStream("database.xml");
 
-            // instancia o decoder
-            XMLDecoder decoder = new XMLDecoder(fis);
-
-            // recriacao do hashmap
-            this.empregados = (Map<String, Empregado>) decoder.readObject();
-
-            // correcao da contagem de id
-            this.id = this.empregados.size() + 1;
-
-            decoder.close();
-        } catch (FileNotFoundException e) {
-            this.empregados = new HashMap<>();
-            this.id = 1;
-        }
-    }
 
     /**
      * Limpa todos os dados do sistema.
@@ -108,10 +123,11 @@ public class SistemaFolha {
      * Remove todos os empregados do mapa e reinicia o contador de IDs.
      * </p>
      */
-    public void zerarSistema() {
-
+    public Map<String, Empregado> zerarSistema() {
+        Map <String, Empregado> backupEmpregados = new HashMap<>(empregados);
         empregados.clear();
         id = 1;
+        return backupEmpregados;
     }
 
     /**

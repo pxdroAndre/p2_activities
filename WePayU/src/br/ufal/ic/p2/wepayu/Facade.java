@@ -4,6 +4,7 @@ import br.ufal.ic.p2.wepayu.Exception.EmpregadoNaoExisteException;
 import br.ufal.ic.p2.wepayu.Exception.CampoValidoException;
 import br.ufal.ic.p2.wepayu.commands.CriarEmpregadoCommand;
 import br.ufal.ic.p2.wepayu.commands.RemoverEmpregadoCommand;
+import br.ufal.ic.p2.wepayu.commands.ZerarSistemaCommand;
 import br.ufal.ic.p2.wepayu.models.*;
 import br.ufal.ic.p2.wepayu.models.EmpregadoComissionado;
 import br.ufal.ic.p2.wepayu.models.SistemaFolha;
@@ -31,9 +32,11 @@ public class Facade
     /**
      * Limpa todos os dados do sistema, reiniciando o estado da aplicação.
      */
-    public void zerarSistema()
-    {
-        sistema.zerarSistema();
+    public void zerarSistema() throws Exception {
+
+        ZerarSistemaCommand command = new ZerarSistemaCommand(sistema);
+        sistema.executarComando(command);
+
     }
 
     /**
