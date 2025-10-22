@@ -31,6 +31,7 @@ public class SistemaFolha {
     //criação do hashmap de empregados e id
     private int id = 1;
     private Map<String, Empregado> empregados = new HashMap<>();
+    private boolean sistemaEncerrado;
 
     //locale do BR para formatar o número
     Locale localeBrasil = new Locale("pt", "BR");
@@ -60,6 +61,7 @@ public class SistemaFolha {
 
             // correcao da contagem de id
             this.id = this.empregados.size() + 1;
+            this.sistemaEncerrado = false;
 
             decoder.close();
         } catch (FileNotFoundException e) {
@@ -173,9 +175,11 @@ public class SistemaFolha {
     }
 
     public void undo() throws Exception {
-        if (undoStack.isEmpty()) {
+        if (undoStack.isEmpty())
+        {
             throw new RuntimeException("Nao ha comando a desfazer.");
         }
+        if (sistemaEncerrado) throw new SistemaEncerradoException("Nao pode dar comandos depois de encerrarSistema.");
         Command comando = undoStack.pop();
         comando.undo();
         redoStack.push(comando);
@@ -222,6 +226,7 @@ public class SistemaFolha {
 
             //escrevendo o hashMap
             encoder.writeObject(this.empregados);
+            this.sistemaEncerrado = true;
             //encerra p encoder
             encoder.close();
         } catch (FileNotFoundException e) {
