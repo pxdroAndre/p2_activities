@@ -2,6 +2,7 @@ package br.ufal.ic.p2.wepayu;
 
 import br.ufal.ic.p2.wepayu.Exception.EmpregadoNaoExisteException;
 import br.ufal.ic.p2.wepayu.Exception.CampoValidoException;
+import br.ufal.ic.p2.wepayu.commands.AlteraEmpregadoCommand;
 import br.ufal.ic.p2.wepayu.commands.CriarEmpregadoCommand;
 import br.ufal.ic.p2.wepayu.commands.RemoverEmpregadoCommand;
 import br.ufal.ic.p2.wepayu.commands.ZerarSistemaCommand;
@@ -216,8 +217,10 @@ public class Facade
      * @param valor O novo valor do atributo.
      * @throws Exception se ocorrer um erro de validação.
      */
-    public void alteraEmpregado(String emp, String atributo, String valor) throws Exception {
-        sistema.alteraEmpregado(emp, atributo, valor, null, null, null, null, null, null);
+    public void alteraEmpregado(String emp, String atributo, String valor) throws Exception
+    {
+        AlteraEmpregadoCommand command = new AlteraEmpregadoCommand(sistema, emp, atributo, valor);
+        sistema.executarComando(command);
     }
 
     /**
@@ -229,8 +232,10 @@ public class Facade
      * @param comissao A taxa de comissão a ser definida.
      * @throws Exception se ocorrer um erro de validação.
      */
-    public void alteraEmpregado(String emp, String atributo, String valor, String comissao) throws Exception {
-        sistema.alteraEmpregado(emp, atributo, valor, null, null, comissao, null, null, null);
+    public void alteraEmpregado(String emp, String atributo, String valor, String comissao) throws Exception
+    {
+        AlteraEmpregadoCommand command = new AlteraEmpregadoCommand(sistema, emp, atributo, valor, comissao);
+        sistema.executarComando(command);
     }
 
     /**
@@ -244,7 +249,8 @@ public class Facade
      * @throws Exception se ocorrer um erro de validação.
      */
     public void alteraEmpregado(String emp, String atributo, boolean valor, String idSindicato, String taxaSindical) throws Exception {
-        sistema.alteraEmpregado(emp, atributo, String.valueOf(valor), idSindicato, taxaSindical, null, null, null, null);
+        AlteraEmpregadoCommand command = new AlteraEmpregadoCommand(sistema, emp, atributo, String.valueOf(valor), idSindicato, taxaSindical);
+        sistema.executarComando(command);
     }
 
     /**
@@ -259,7 +265,8 @@ public class Facade
      * @throws Exception se ocorrer um erro de validação.
      */
     public void alteraEmpregado(String emp, String atributo, String valor, String banco, String agencia, String contaCorrente) throws Exception {
-        sistema.alteraEmpregado(emp, atributo, valor, null, null, null, banco, agencia, contaCorrente);
+        AlteraEmpregadoCommand command =  new AlteraEmpregadoCommand(sistema, emp, atributo, valor, banco, agencia, contaCorrente);
+        sistema.executarComando(command);
     }
 
     /**

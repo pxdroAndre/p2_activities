@@ -68,6 +68,36 @@ public class SistemaFolha {
         }
     }
 
+    public void apagaRestauraEmpregados (Map<String, Empregado> original)
+    {
+        this.empregados.clear();
+        this.empregados.putAll(original);
+    }
+
+    /**
+     * Metodo que cria uma copia de empregado para backup
+     * @param empregado
+     * @return retorna a copia
+     * @throws Exception
+     */
+    public Empregado backupEmpregado (Empregado empregado) throws Exception
+    {
+        if (empregado == null) throw new EmpregadoNaoExisteException();
+        // fazendo backup do empregado
+        switch (empregado.getTipo())
+        {
+            case "comissionado":
+                EmpregadoComissionado comissionadoRemovido = new EmpregadoComissionado((EmpregadoComissionado) empregado);
+                return comissionadoRemovido;
+            case "horista":
+                EmpregadoHorista horistaRemovido = new EmpregadoHorista((EmpregadoHorista) empregado);
+                return horistaRemovido;
+            default:
+                EmpregadoAssalariado assalariadoRemovido = new EmpregadoAssalariado((EmpregadoAssalariado) empregado);
+                return assalariadoRemovido;
+        }
+    }
+
     /**
      * Metodo que coloca os dados de um hash map no do sistema
      * @param original
@@ -395,31 +425,17 @@ public class SistemaFolha {
      * @throws EmpregadoNaoExisteException Se o empregado não for encontrado.
      * @throws CampoValidoException        Se o ID fornecido for nulo ou vazio.
      */
-    public Empregado removerEmpregado(String id) throws EmpregadoNaoExisteException, IdentificacaoEmpregadoNulaException {
+    public Empregado removerEmpregado(String id) throws Exception
+    {
         // checando se o id ta preenchido
         if (Objects.equals(id, "")) throw new IdentificacaoEmpregadoNulaException();
         // lendo o dado do empregado e verificando se existe
         Empregado empregado = empregados.get(id);
         if (empregado == null) throw new EmpregadoNaoExisteException();
-        // fazendo backup do empregado
-        switch (empregado.getTipo())
-        {
-            case "comissionado":
-                EmpregadoComissionado comissionadoRemovido = new EmpregadoComissionado((EmpregadoComissionado) empregado);
-                //removendo
-                this.empregados.remove(id); // remove do Hash"'
-                return comissionadoRemovido;
-            case "horista":
-                EmpregadoHorista horistaRemovido = new EmpregadoHorista((EmpregadoHorista) empregado);
-                //removendo
-                this.empregados.remove(id); // remove do Hash"'
-                return horistaRemovido;
-            default:
-                EmpregadoAssalariado assalariadoRemovido = new EmpregadoAssalariado((EmpregadoAssalariado) empregado);
-                //removendo
-                this.empregados.remove(id); // remove do Hash"'
-                return assalariadoRemovido;
-        }
+        Empregado removido = backupEmpregado(empregado);
+        //removendo
+        this.empregados.remove(id); // remove do Hash"'
+        return removido;
     }
 
     /**
@@ -575,7 +591,7 @@ public class SistemaFolha {
      * @param contaCorrente A conta corrente (usado se atributo="metodoPagamento" e valor="banco").
      * @throws Exception Se ocorrer um erro de validação ou o empregado não existir.
      */
-    public void alteraEmpregado(String emp, String atributo, String valor,
+    public Map<String, Empregado> alteraEmpregado(String emp, String atributo, String valor,
                                 String idSindicato, String taxaSindical,
                                 String comissao, String banco, String agencia, String contaCorrente) throws Exception {
 
@@ -586,7 +602,7 @@ public class SistemaFolha {
         if (empregado == null) {
             throw new EmpregadoNaoExisteException();
         }
-
+        Map <String, Empregado> backupEmpregados = new HashMap<>(empregados);
         switch (atributo) {
             case "nome":
                 if (valor == null || valor.isEmpty()) throw new CampoValidoException("Nome nao pode ser nulo.");
@@ -707,6 +723,7 @@ public class SistemaFolha {
             default:
                 throw new CampoValidoException("Atributo nao existe.");
         }
+        return backupEmpregados;
     }
 
     /**
