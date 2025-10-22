@@ -38,13 +38,13 @@ public class EmpregadoComissionado extends Empregado
      */
     public EmpregadoComissionado(){}
 
-    public EmpregadoComissionado(Empregado empregado)
+    public EmpregadoComissionado(EmpregadoComissionado empregado)
     {
         super(empregado);
         this.vendas = new ArrayList<>();
-        for (ResultadoDeVenda venda : empregado.) {
-            // CartaoPonto também precisa de um construtor de cópia
-            this.cartoesDePonto.add(new CartaoPonto(cartao));
+        for (ResultadoDeVenda venda : empregado.vendas)
+        {
+            this.vendas.add(new ResultadoDeVenda(venda));
         }
     }
 

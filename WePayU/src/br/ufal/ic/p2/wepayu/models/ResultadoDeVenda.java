@@ -21,6 +21,13 @@ public class ResultadoDeVenda
      */
     public ResultadoDeVenda(){}
 
+    public ResultadoDeVenda(ResultadoDeVenda venda)
+    {
+        this.data = venda.data;
+        this.valor = venda.valor;
+
+    }
+
     /**
      * Retorna o valor da venda.
      * @return O valor da venda em formato String.

@@ -3,10 +3,7 @@
  <object class="java.util.HashMap">
   <void method="put">
    <string>1</string>
-   <object class="br.ufal.ic.p2.wepayu.models.EmpregadoComissionado">
-    <void property="comissao">
-     <string>0,02</string>
-    </void>
+   <object class="br.ufal.ic.p2.wepayu.models.EmpregadoHorista">
     <void property="endereco">
      <string>Rua dos Jooes, 333 - Campina Grande</string>
     </void>
@@ -16,11 +13,8 @@
     <void property="salario">
      <string>23</string>
     </void>
-    <void property="taxaSindical">
-     <string>0,00</string>
-    </void>
     <void property="tipo">
-     <string>comissionado</string>
+     <string>horista</string>
     </void>
     <void property="ultimoPagamento">
      <string>1/1/2005</string>

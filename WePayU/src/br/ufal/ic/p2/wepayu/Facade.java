@@ -125,8 +125,8 @@ public class Facade
      * @throws CampoValidoException se o ID for nulo ou vazio.
      */
     public void removerEmpregado (String emp) throws Exception {
-        RemoverEmpregadoCommand command = new RemoverEmpregadoCommand(emp);
-        command.execute();
+        RemoverEmpregadoCommand command = new RemoverEmpregadoCommand(emp, this.sistema);
+        sistema.executarComando(command);
     }
 
     /**

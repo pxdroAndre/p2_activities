@@ -8,7 +8,7 @@ public class EmpregadoAssalariado extends Empregado {
         super(nome, endereco, tipo, SistemaFolha.doubleParaString(salario));
     }
 
-    public EmpregadoAssalariado(Empregado empregado)
+    public EmpregadoAssalariado(EmpregadoAssalariado empregado)
     {
         super(empregado);
     }

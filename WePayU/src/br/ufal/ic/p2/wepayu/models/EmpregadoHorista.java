@@ -39,6 +39,17 @@ public class EmpregadoHorista extends Empregado
      */
     public EmpregadoHorista (){}
 
+    public EmpregadoHorista (EmpregadoHorista empregado)
+    {
+        super(empregado);
+        // Copiar Cartões de Ponto
+        this.cartoesDePonto = new ArrayList<>();
+        for (CartaoPonto cartao : empregado.cartoesDePonto) {
+            // CartaoPonto também precisa de um construtor de cópia
+            this.cartoesDePonto.add(new CartaoPonto(cartao));
+        }
+    }
+
     /**
      * Construtor para criar um novo empregado horista.
      *

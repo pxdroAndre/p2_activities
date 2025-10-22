@@ -53,6 +53,13 @@ public class CartaoPonto
         }
     }
 
+    public CartaoPonto(CartaoPonto cartao)
+    {
+        this.data = cartao.data;
+        this.horas = cartao.horas;
+        this.horasExtras = cartao.horasExtras;
+    }
+
     /**
      * Retorna o total de horas trabalhadas.
      *

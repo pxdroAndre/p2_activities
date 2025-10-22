@@ -383,18 +383,22 @@ public class SistemaFolha {
         // fazendo backup do empregado
         switch (empregado.getTipo())
         {
-            case "assalariado":
-                Empregado removido = new EmpregadoAssalariado(empregado);
-                break;
             case "comissionado":
-                Empregado removido = new EmpregadoComissionado(empregado);
+                EmpregadoComissionado comissionadoRemovido = new EmpregadoComissionado((EmpregadoComissionado) empregado);
+                //removendo
+                this.empregados.remove(id); // remove do Hash"'
+                return comissionadoRemovido;
+            case "horista":
+                EmpregadoHorista horistaRemovido = new EmpregadoHorista((EmpregadoHorista) empregado);
+                //removendo
+                this.empregados.remove(id); // remove do Hash"'
+                return horistaRemovido;
+            default:
+                EmpregadoAssalariado assalariadoRemovido = new EmpregadoAssalariado((EmpregadoAssalariado) empregado);
+                //removendo
+                this.empregados.remove(id); // remove do Hash"'
+                return assalariadoRemovido;
         }
-
-        Empregado removido = new Empregado(empregado);
-
-        //removendo
-        this.empregados.remove(id); // remove do Hash"'
-        return removido;
     }
 
     /**
@@ -1061,5 +1065,10 @@ public class SistemaFolha {
     {
         valor = valor.replace(",", ".");
         return Double.parseDouble(valor);
+    }
+
+    public void adicionaHashMap (String id, Empregado empregado)
+    {
+        this.empregados.put(id, empregado);
     }
 }

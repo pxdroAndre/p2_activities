@@ -8,9 +8,10 @@ public class RemoverEmpregadoCommand implements Command
     private Empregado removido;
 
 
-    public RemoverEmpregadoCommand(String empregado)
+    public RemoverEmpregadoCommand(String empregado, SistemaFolha sistema)
     {
         this.empregado = empregado;
+        this.sistema = sistema;
     }
 
 
@@ -23,6 +24,6 @@ public class RemoverEmpregadoCommand implements Command
     @Override
     public void undo()
     {
-
+        sistema.adicionaHashMap(empregado, removido);
     }
 }
