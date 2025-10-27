@@ -20,7 +20,7 @@ import java.math.RoundingMode;
  * @author pxdroAndre
  * @version 1.0
  */
-public class Empregado {
+public abstract class Empregado {
     private String nome;
     private String endereco;
     private String tipo;
@@ -34,6 +34,7 @@ public class Empregado {
     private String agencia;
     private String contaCorrente;
     private String ultimoPagamento;
+    private String agendaPagamento;
 
 
     /**
@@ -50,6 +51,22 @@ public class Empregado {
      */
     public void setUltimoPagamento(String ultimoPagamento) {
         this.ultimoPagamento = ultimoPagamento;
+    }
+
+    /**
+     * Retorna a agenda de pagamento do empregado.
+     * @return A agenda de pagamento em formato String.
+     */
+    public String getAgendaPagamento() {
+        return agendaPagamento;
+    }
+
+    /**
+     * Define a agenda de pagamento do empregado.
+     * @param agendaPagamento A nova agenda de pagamento.
+     */
+    public void setAgendaPagamento(String agendaPagamento) {
+        this.agendaPagamento = agendaPagamento;
     }
 
     /**
@@ -157,6 +174,7 @@ public class Empregado {
         this.agencia = original.agencia;
         this.contaCorrente = original.contaCorrente;
         this.ultimoPagamento = original.ultimoPagamento;
+        this.agendaPagamento = original.agendaPagamento;
 
         // Copiar Taxas de Serviço
         this.taxasServico = new ArrayList<>();
@@ -325,26 +343,7 @@ public class Empregado {
      * @param data A data final do período de pagamento.
      * @return Retorna o valor do seu salario como um BigDecimal.
      */
-    public static BigDecimal calculaSalarioBruto(Empregado empregado, String data) throws CampoValidoException, DataInicialInvalidaException, DataInicialNaoPodeSerPosteriorADataFinalException, DataFinalInvalidaException {
-        String tipo = empregado.getTipo();
-        BigDecimal salarioFinal = BigDecimal.ZERO;
+    public abstract BigDecimal calculaSalarioBruto(String dataFinal) throws DataInicialInvalidaException, DataFinalInvalidaException, DataInicialNaoPodeSerPosteriorADataFinalException;
 
-        switch (tipo) {
-            case "horista" -> {
-                EmpregadoHorista emp = (EmpregadoHorista) empregado;
-                salarioFinal = emp.calculaSalarioBruto(data);
-            }
-            case "comissionado" -> {
-                EmpregadoComissionado com = (EmpregadoComissionado) empregado;
-                salarioFinal = com.calculaSalarioBruto(data);
-            }
-            case "assalariado" -> {
-                salarioFinal = BigDecimal.valueOf(Double.parseDouble(empregado.getSalario().replace(",", ".")));
-            }
-        }
-
-        // Retorna o BigDecimal com 2 casas decimais
-        return salarioFinal.setScale(2, RoundingMode.DOWN);
-    }
 
 }

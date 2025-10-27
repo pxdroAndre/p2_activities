@@ -3,6 +3,7 @@ import br.ufal.ic.p2.wepayu.Exception.*;
 
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -154,7 +155,7 @@ public class EmpregadoHorista extends Empregado
      */
     public String getHorasNormaisTrabalhadas (String inicio, String fim) throws DataInicialInvalidaException, DataFinalInvalidaException, DataInicialNaoPodeSerPosteriorADataFinalException
     {
-        double horasNormais = 0;
+        BigDecimal horasNormais = BigDecimal.ZERO;
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/yyyy");
 
         if (!EmpregadoHorista.validarData(inicio)) throw new DataInicialInvalidaException();
@@ -182,21 +183,20 @@ public class EmpregadoHorista extends Empregado
 
             if (!dataCartao.isBefore(in) && dataCartao.isBefore(fi)) {
                 String horasDoDia = cartao.getHoras().replace(',', '.');
-                double h = Double.parseDouble(horasDoDia);
-                if (h > 8) {
-                    horasNormais += 8;
+                BigDecimal h = new BigDecimal(horasDoDia);
+                if (h.compareTo(new BigDecimal("8")) > 0) {
+                    horasNormais = horasNormais.add(new BigDecimal("8"));
                 } else {
-                    horasNormais += h;
+                    horasNormais = horasNormais.add(h);
                 }
             }
         }
-        if (horasNormais % 1 == 0.0)
-        {
-            return String.valueOf((int) horasNormais);
+        // Se o valor não tiver parte fracionária, retorna como inteiro.
+        if (horasNormais.stripTrailingZeros().scale() <= 0) {
+            return horasNormais.toBigInteger().toString();
         }
-        else {
-            return String.valueOf(horasNormais).replace('.', ',');
-        }
+        // Caso contrário, retorna com a vírgula.
+        return horasNormais.toPlainString().replace('.', ',');
     }
 
     /**
@@ -211,7 +211,7 @@ public class EmpregadoHorista extends Empregado
      */
     public String getHorasExtrasTrabalhadas (String inicio, String fim) throws DataInicialInvalidaException, DataFinalInvalidaException, DataInicialNaoPodeSerPosteriorADataFinalException
     {
-        double horasExtras = 0;
+        BigDecimal horasExtras = BigDecimal.ZERO;
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/yyyy");
         LocalDate in, fi;
 
@@ -240,19 +240,19 @@ public class EmpregadoHorista extends Empregado
 
             if (!dataCartao.isBefore(in) && dataCartao.isBefore(fi)) {
                 String horasExtrasDoDia = cartao.getHorasExtras().replace(",", ".");
-                double h = Double.parseDouble(horasExtrasDoDia);
-                horasExtras += h;
+                BigDecimal h = new BigDecimal(horasExtrasDoDia);
+                horasExtras = horasExtras.add(h);
             }
         }
-        if (horasExtras % 1 == 0.0)
-        {
-            return String.valueOf((int) horasExtras);
+        // Se o valor não tiver parte fracionária, retorna como inteiro.
+        if (horasExtras.stripTrailingZeros().scale() <= 0) {
+            return horasExtras.toBigInteger().toString();
         }
-        else {
-            return String.valueOf(horasExtras).replace('.', ',');
-        }
+        // Caso contrário, retorna com a vírgula.
+        return horasExtras.toPlainString().replace('.', ',');
     }
 
+    @Override
     public BigDecimal calculaSalarioBruto(String dataFinal) throws DataInicialInvalidaException, DataFinalInvalidaException, DataInicialNaoPodeSerPosteriorADataFinalException
     {
         String normalStr = this.getHorasNormaisTrabalhadas(this.getUltimoPagamento(), dataFinal).replace(",", ".");
@@ -260,11 +260,11 @@ public class EmpregadoHorista extends Empregado
 
         BigDecimal horasNormais = new BigDecimal(normalStr);
         BigDecimal horasExtras = new BigDecimal(extrasStr);
-        BigDecimal salarioHora = BigDecimal.valueOf(Double.parseDouble(this.getSalario().replace(",", ".")));
+        BigDecimal salarioHora = new BigDecimal(this.getSalario().replace(",", "."));
         BigDecimal multiplicadorExtra = new BigDecimal("1.5");
 
         BigDecimal pagamentoNormal = horasNormais.multiply(salarioHora);
         BigDecimal pagamentoExtra = horasExtras.multiply(salarioHora).multiply(multiplicadorExtra);
-        return pagamentoNormal.add(pagamentoExtra);
+        return pagamentoNormal.add(pagamentoExtra).setScale(2, RoundingMode.DOWN);
     }
 }

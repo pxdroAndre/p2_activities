@@ -34,6 +34,8 @@ public class TaxaServico {
     }
 
     public TaxaServico(TaxaServico taxa) {
+        this.data = taxa.data;
+        this.valor = taxa.valor;
     }
 
     /**

@@ -1,6 +1,5 @@
 package br.ufal.ic.p2.wepayu.models;
 
-import br.ufal.ic.p2.wepayu.Exception.EmpregadoNaoExisteException;
 import br.ufal.ic.p2.wepayu.Exception.*;
 import br.ufal.ic.p2.wepayu.commands.Command;
 import br.ufal.ic.p2.wepayu.utilities.*;
@@ -34,6 +33,7 @@ public class SistemaFolha {
     //criação do hashmap de empregados e id
     private int id = 1;
     private Map<String, Empregado> empregados = new HashMap<>();
+    private List<String> agendasDePagamento = new ArrayList<>(Arrays.asList("semanal 5", "mensal $", "semanal 2 5"));
     private boolean sistemaEncerrado;
 
     //locale do BR para formatar o número
@@ -315,16 +315,18 @@ public class SistemaFolha {
         String novoID = String.valueOf(id);
         // corrige a formatação do double
         sal = sal.replace(',', '.');
-        double salario = Double.parseDouble(sal);
+        BigDecimal salario = new BigDecimal(sal);
         // cria o empregado
         switch (tipo)
         {
             case "assalariado":
-                EmpregadoAssalariado novoAssalariado = new EmpregadoAssalariado(nome, endereco, tipo, salario);
+                EmpregadoAssalariado novoAssalariado = new EmpregadoAssalariado(nome, endereco, tipo, salario.setScale(2, RoundingMode.DOWN));
+                novoAssalariado.setAgendaPagamento("mensal $");
                 empregados.put(novoID, novoAssalariado); //adicionando no hashmap
                 break;
             case "horista":
                 EmpregadoHorista novoHorista = new EmpregadoHorista(nome, endereco, tipo, sal);
+                novoHorista.setAgendaPagamento("semanal 5");
                 empregados.put(novoID, novoHorista); //adicionando no hashmap
                 break;
         }
@@ -384,14 +386,15 @@ public class SistemaFolha {
         // transformando o id em string
         String novoID = String.valueOf(id);
 
-        // corrige a formatação do double
+        // corrige a formatação
         sal = sal.replace(',', '.');
         comissao = comissao.replace(',', '.');
-        double salario = Double.parseDouble(sal);
-        double com = Double.parseDouble(comissao);
+        BigDecimal salario = new BigDecimal(sal);
+        BigDecimal com = new BigDecimal(comissao);
 
         // cria o empregado
         EmpregadoComissionado novoComissionado = new EmpregadoComissionado(nome, endereco, tipo, sal, com);
+        novoComissionado.setAgendaPagamento("semanal 2 5");
         empregados.put(novoID, novoComissionado); //adicionando no hashmap
 
         id++;
@@ -426,12 +429,11 @@ public class SistemaFolha {
             case "tipo":
                 return empregado.getTipo();
             case "salario":
-                return doubleParaString(stringParaDouble(empregado.getSalario()));
-            case "sindicalizado":
+return new BigDecimal(empregado.getSalario().replace(",", ".")).setScale(2, RoundingMode.DOWN).toPlainString().replace('.', ',');            case "sindicalizado":
                 return String.valueOf(empregado.isSindicalizado());
             case "comissao":
                 if (empregado instanceof EmpregadoComissionado) {
-                    return ((EmpregadoComissionado) empregado).getComissao();
+                    return new BigDecimal(((EmpregadoComissionado) empregado).getComissao().replace(",", ".")).setScale(2, RoundingMode.DOWN).toPlainString().replace('.', ',');
                 }
                 throw new EmpregadoNaoComissionadoException();
             case "idSindicato":
@@ -439,7 +441,7 @@ public class SistemaFolha {
                 return empregado.getIdSindicato();
             case "taxaSindical":
                 if (!empregado.isSindicalizado()) throw new EmpregadoNaoSindicalizadoException();
-                return doubleParaString(stringParaDouble(empregado.getTaxaSindical()));
+                return new BigDecimal(empregado.getTaxaSindical().replace(",", ".")).setScale(2, RoundingMode.DOWN).toPlainString().replace('.', ',');
             case "metodoPagamento":
                 return empregado.getMetodoPagamento();
             case "banco":
@@ -457,6 +459,8 @@ public class SistemaFolha {
                     throw new EmpregadoNaoRecebeEmBancoException();
                 }
                 return empregado.getContaCorrente();
+            case "agendaPagamento":
+                return empregado.getAgendaPagamento();
             // --- Fim da implementação solicitada ---
 
             default:
@@ -730,19 +734,19 @@ public class SistemaFolha {
             case "tipo":
                 if (valor == null || valor.isEmpty()) throw new CampoValidoException("Tipo invalido.");
                 Empregado novoEmpregado = null;
-                double salarioParaNovoTipo = Double.parseDouble(empregado.getSalario().replace(",", "."));
+                BigDecimal salarioParaNovoTipo = new BigDecimal(empregado.getSalario().replace(",", "."));
                 switch (valor) {
                     case "horista":
                         novoEmpregado = new EmpregadoHorista(empregado.getNome(), empregado.getEndereco(), valor, comissao);
                         break;
                     case "assalariado":
-                        novoEmpregado = new EmpregadoAssalariado(empregado.getNome(), empregado.getEndereco(), valor, salarioParaNovoTipo);
+                        novoEmpregado = new EmpregadoAssalariado(empregado.getNome(), empregado.getEndereco(), valor, salarioParaNovoTipo.setScale(2, RoundingMode.DOWN));
                         break;
                     case "comissionado":
                         if (comissao == null || comissao.isEmpty())
                             throw new CampoValidoException("Comissao nao pode ser nula.");
-                        double com = Double.parseDouble(comissao.replace(',', '.'));
-                        novoEmpregado = new EmpregadoComissionado(empregado.getNome(), empregado.getEndereco(), valor, empregado.getSalario(), com);
+                        BigDecimal com = new BigDecimal(comissao.replace(',', '.'));
+                        novoEmpregado = new EmpregadoComissionado(empregado.getNome(), empregado.getEndereco(), valor, empregado.getSalario(), com.setScale(2, RoundingMode.DOWN));
                         break;
                     default:
                         throw new CampoValidoException("Tipo invalido.");
@@ -760,9 +764,9 @@ public class SistemaFolha {
                 if (empregado instanceof EmpregadoComissionado) {
                     if (valor == null || valor.isEmpty()) throw new CampoValidoException("Comissao nao pode ser nula.");
                     try {
-                        double novaComissao = Double.parseDouble(valor.replace(',', '.'));
-                        if (novaComissao < 0) throw new CampoValidoException("Comissao deve ser nao-negativa.");
-                        ((EmpregadoComissionado) empregado).setComissao(doubleParaString(novaComissao));
+                        BigDecimal novaComissao = new BigDecimal(valor.replace(',', '.'));
+                        if (novaComissao.compareTo(BigDecimal.ZERO) < 0) throw new CampoValidoException("Comissao deve ser nao-negativa.");
+                        ((EmpregadoComissionado) empregado).setComissao(novaComissao.setScale(2, RoundingMode.DOWN).toPlainString().replace('.', ','));
                     } catch (NumberFormatException e) {
                         throw new CampoValidoException("Comissao deve ser numerica.");
                     }
@@ -788,8 +792,8 @@ public class SistemaFolha {
                     }
 
                     try {
-                        double taxa = Double.parseDouble(taxaSindical.replace(',', '.'));
-                        if (taxa < 0) {
+                        BigDecimal taxa = new BigDecimal(taxaSindical.replace(',', '.'));
+                        if (taxa.compareTo(BigDecimal.ZERO) < 0) {
                             throw new CampoValidoException("Taxa sindical deve ser nao-negativa.");
                         }
                         empregado.setTaxaSindical(taxaSindical);
@@ -803,6 +807,12 @@ public class SistemaFolha {
                     empregado.setIdSindicato(null);
                     empregado.setTaxaSindical("0,00");
                 }
+                break;
+            case "agendaPagamento":
+                if (!agendasDePagamento.contains(valor)) {
+                    throw new CampoValidoException("Agenda de pagamento nao esta disponivel");
+                }
+                empregado.setAgendaPagamento(valor);
                 break;
             default:
                 throw new CampoValidoException("Atributo nao existe.");
@@ -823,8 +833,8 @@ public class SistemaFolha {
         // Validações de erro
         if (membro.isEmpty()) throw new CampoValidoException("Identificacao do membro nao pode ser nula.");
         if (!EmpregadoHorista.validarData(data)) throw new CampoValidoException("Data invalida.");
-        double valorNumerico = Double.parseDouble(valor.replace(',', '.'));
-        if (valorNumerico <= 0) throw new CampoValidoException("Valor deve ser positivo.");
+        BigDecimal valorNumerico = new BigDecimal(valor.replace(',', '.'));
+        if (valorNumerico.compareTo(BigDecimal.ZERO) <= 0) throw new CampoValidoException("Valor deve ser positivo.");
 
         Empregado empregadoAlvo = null;
         // Encontra o empregado pelo ID do Sindicato
@@ -863,7 +873,7 @@ public class SistemaFolha {
         if (!EmpregadoHorista.validarData(dataFinal)) throw new DataFinalInvalidaException();
 
         // A lógica de validação de datas e iteração é quase idêntica à de getVendas
-        double totalTaxas = 0;
+        BigDecimal totalTaxas = BigDecimal.ZERO;
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/yyyy");
         LocalDate inicio = LocalDate.parse(dataInicial, formatter);
         LocalDate fim = LocalDate.parse(dataFinal, formatter);
@@ -873,12 +883,12 @@ public class SistemaFolha {
         for (TaxaServico taxa : empregado.getTaxasServico()) {
             LocalDate dataTaxa = LocalDate.parse(taxa.getData(), formatter);
             if (!dataTaxa.isBefore(inicio) && dataTaxa.isBefore(fim)) {
-                totalTaxas += Double.parseDouble(taxa.getValor().replace(',', '.'));
+                totalTaxas = totalTaxas.add(new BigDecimal(taxa.getValor().replace(',', '.')));
             }
         }
 
         // Formata o resultado para o padrão brasileiro
-        return String.format(new Locale("pt", "BR"), "%.2f", totalTaxas);
+        return totalTaxas.setScale(2, RoundingMode.DOWN).toPlainString().replace('.', ',');
     }
 
     /**
@@ -890,47 +900,40 @@ public class SistemaFolha {
      */
     private boolean deveReceber(Empregado empregado, LocalDate dataAtual)
     {
-        String tipo = empregado.getTipo();
+        String agenda = empregado.getAgendaPagamento();
+        if (agenda == null) return false; // Segurança caso a agenda não esteja definida
 
-        switch (tipo) {
-            case "horista":
-                // Horistas recebem toda sexta-feira
-                return dataAtual.getDayOfWeek() == DayOfWeek.FRIDAY;
+        String[] partes = agenda.split(" ");
+        String tipoAgenda = partes[0];
 
-            case "assalariado":
-                // Assalariados recebem no último dia do mês
-                // A verificação `isEqual` compara se a data atual é o último dia do mês.
+        if ("mensal".equals(tipoAgenda)) {
+            if ("$".equals(partes[1])) {
+                // Último dia do mês
                 return dataAtual.isEqual(dataAtual.withDayOfMonth(dataAtual.lengthOfMonth()));
+            } else {
+                // Dia específico do mês
+                int dia = Integer.parseInt(partes[1]);
+                return dataAtual.getDayOfMonth() == dia;
+            }
+        } else if ("semanal".equals(tipoAgenda)) {
+            // Formatos: "semanal <dia_semana>" ou "semanal <frequencia> <dia_semana>"
+            DayOfWeek diaDaSemanaAgendado = DayOfWeek.of(Integer.parseInt(partes[partes.length - 1]));
 
-            case "comissionado":
-                // Comissionados recebem a cada 2 sextas-feiras[cite: 210].
-                // Os testes (us7.txt) mostram que o primeiro pagamento ocorre na segunda sexta-feira do ano.
-                // A partir daí, o pagamento é quinzenal.
-                if (dataAtual.getDayOfWeek() != DayOfWeek.FRIDAY) {
-                    return false; // Se não for sexta-feira, não há pagamento.
-                }
-
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/yyyy");
-                LocalDate primeiroPagamento = LocalDate.parse(empregado.getUltimoPagamento(), formatter);
-
-                long semanasDesdeReferencia;
-                // Calcula o número de semanas entre a data de referência e a data atual
-                if (Objects.equals(empregado.getUltimoPagamento(),"1/1/2005"))
-                {
-                    semanasDesdeReferencia = (ChronoUnit.WEEKS.between(primeiroPagamento, dataAtual)) + 1;
-                }
-                else
-                {
-                    semanasDesdeReferencia = (ChronoUnit.WEEKS.between(primeiroPagamento, dataAtual));
-                }
-
-                // Se o número de semanas for par, significa que está no ciclo de 2 semanas.
-                return semanasDesdeReferencia > 0 && semanasDesdeReferencia % 2 == 0;
-
-            default:
+            // Se não for o dia da semana correto, não paga.
+            if (dataAtual.getDayOfWeek() != diaDaSemanaAgendado) {
                 return false;
-        }
+            }
 
+            int frequenciaSemanas = (partes.length == 2) ? 1 : Integer.parseInt(partes[1]);
+
+            // Usamos uma data de referência fixa (início do projeto) para calcular os ciclos.
+            LocalDate dataReferencia = LocalDate.of(2005, 1, 1); // Um sábado
+            long diasDesdeReferencia = ChronoUnit.DAYS.between(dataReferencia, dataAtual);
+
+            // O pagamento ocorre se o número de semanas completas desde a referência for um múltiplo da frequência.
+            return (diasDesdeReferencia / 7) % frequenciaSemanas == (frequenciaSemanas - 1);
+        }
+        return false;
     }
 
     /**
@@ -947,8 +950,8 @@ public class SistemaFolha {
 
         for (Empregado empregado : empregados.values()) {
             if (deveReceber(empregado, dataAtual)) {
-                // Chama o método do próprio objeto empregado
-                total = total.add(Empregado.calculaSalarioBruto(empregado, data));
+                // Chama o método polimórfico do próprio objeto empregado
+                total = total.add(empregado.calculaSalarioBruto(data));
             }
         }
 
@@ -1033,9 +1036,9 @@ public class SistemaFolha {
                         horista.getNome(),
                         horista.getHorasNormaisTrabalhadas(horista.getUltimoPagamento(), data),
                         horista.getHorasExtrasTrabalhadas(horista.getUltimoPagamento(), data),
-                        formatador.format(salarioBruto),
-                        formatador.format(descontos),
-                        formatador.format(salarioLiquido),
+                        formatador.format(salarioBruto.doubleValue()),
+                        formatador.format(descontos.doubleValue()),
+                        formatador.format(salarioLiquido.doubleValue()),
                         formatarMetodoPagamento(horista));
                 if(totalHoristas.compareTo(BigDecimal.ZERO)  > 0) horista.setUltimoPagamento(data);
             }
@@ -1051,7 +1054,7 @@ public class SistemaFolha {
             totalLiquido = BigDecimal.ZERO;
             BigDecimal totalAssalariados = BigDecimal.ZERO;
             for (EmpregadoAssalariado assalariado : assalariados) {
-                BigDecimal salarioBruto = BigDecimal.valueOf(Double.parseDouble(assalariado.getSalario().replace(",", ".")));
+                BigDecimal salarioBruto = assalariado.calculaSalarioBruto(data);
                 BigDecimal descontos = calcularDescontos(assalariado, data);
                 totalDescontos = totalDescontos.add(descontos);
                 BigDecimal salarioLiquido = salarioBruto.subtract(descontos);
@@ -1060,13 +1063,13 @@ public class SistemaFolha {
 
                 gravarArq.printf("%-48s %13s %9s %15s %s\n",
                         assalariado.getNome(),
-                        formatador.format(salarioBruto),
-                        formatador.format(descontos),
-                        formatador.format(salarioLiquido),
+                        formatador.format(salarioBruto.doubleValue()),
+                        formatador.format(descontos.doubleValue()),
+                        formatador.format(salarioLiquido.doubleValue()),
                         "Correios, " + assalariado.getEndereco());
                 if(totalAssalariados.compareTo(BigDecimal.ZERO)  > 0) assalariado.setUltimoPagamento(data);
             }
-            gravarArq.printf("\nTOTAL ASSALARIADOS %43s %9s %15s\n", formatador.format(totalAssalariados), formatador.format(totalDescontos), formatador.format(totalLiquido));
+            gravarArq.printf("\nTOTAL ASSALARIADOS %43s %9s %15s\n", formatador.format(totalAssalariados.doubleValue()), formatador.format(totalDescontos.doubleValue()), formatador.format(totalLiquido.doubleValue()));
 
 
             // Processamento e impressão dos comissionados.
@@ -1082,35 +1085,36 @@ public class SistemaFolha {
             BigDecimal totalComissao = BigDecimal.ZERO;
             BigDecimal totalComissionados = BigDecimal.ZERO;
             for (EmpregadoComissionado comissionado : comissionados) {
-                BigDecimal salarioFixo = BigDecimal.valueOf(stringParaDouble(comissionado.getSalario())).multiply(new BigDecimal("12")).divide(new BigDecimal("26"), 2, RoundingMode.DOWN);
-                BigDecimal salarioBruto = Empregado.calculaSalarioBruto(comissionado, data);
+                BigDecimal salarioBruto = comissionado.calculaSalarioBruto(data).setScale(2, RoundingMode.DOWN);
                 BigDecimal descontos = calcularDescontos(comissionado, data);
-                String Vendas = comissionado.getVendas(comissionado.getUltimoPagamento(), data);
+                String vendasString = comissionado.getVendas(comissionado.getUltimoPagamento(), data);
+                BigDecimal Vendas = new BigDecimal(vendasString.replace(",", "."));
                 BigDecimal salarioLiquido = salarioBruto.subtract(descontos);
-                BigDecimal Comissao = BigDecimal.valueOf(stringParaDouble(comissionado.getComissao())).multiply(BigDecimal.valueOf(stringParaDouble(Vendas)));
+                BigDecimal Comissao = new BigDecimal(comissionado.getComissao().replace(",", ".")).multiply(Vendas).setScale(2, RoundingMode.DOWN);
+                BigDecimal salarioFixo = salarioBruto.subtract(Comissao);
                 totalLiquido = totalLiquido.add(salarioLiquido);
-                totalFixo = totalFixo.add(salarioFixo);
+                totalFixo = totalFixo.add(new BigDecimal(salarioFixo.toPlainString()));
                 totalDescontos = totalDescontos.add(descontos);
                 totalComissionados = totalComissionados.add(salarioBruto);
-                totalVendas = totalVendas.add(BigDecimal.valueOf(stringParaDouble(Vendas)));
+                totalVendas = totalVendas.add(Vendas);
                 totalComissao = totalComissao.add(Comissao.setScale(2, RoundingMode.DOWN));
 
                 gravarArq.printf("%-21s %8s %8s %8s %13s %9s %15s %s\n",
                         comissionado.getNome(),
-                        formatador.format(BigDecimal.valueOf(Double.parseDouble(comissionado.getSalario().replace(",", "."))).multiply(new BigDecimal("12")).divide(new BigDecimal("26"), 2, RoundingMode.DOWN)),
-                        Vendas,
-                        formatador.format(Comissao),
-                        formatador.format(salarioBruto),
-                        formatador.format(descontos),
-                        formatador.format(salarioLiquido),
+                        formatador.format(salarioFixo.doubleValue()),
+                        formatador.format(Vendas.doubleValue()),
+                        formatador.format(Comissao.doubleValue()),
+                        formatador.format(salarioBruto.doubleValue()),
+                        formatador.format(descontos.doubleValue()),
+                        formatador.format(salarioLiquido.doubleValue()),
                         "Correios, " + comissionado.getEndereco());
                 comissionado.setUltimoPagamento(data);
             }
             gravarArq.printf("\nTOTAL COMISSIONADOS %10s %8s %8s %13s %9s %15s\n", formatador.format(totalFixo), formatador.format(totalVendas), formatador.format(totalComissao),
-                    formatador.format(totalComissionados), formatador.format(totalDescontos), formatador.format(totalLiquido));
+                    formatador.format(totalComissionados.doubleValue()), formatador.format(totalDescontos.doubleValue()), formatador.format(totalLiquido.doubleValue()));
 
             totalFolha = totalHoristas.add(totalAssalariados).add(totalComissionados);
-            gravarArq.printf("\nTOTAL FOLHA: %s\n", formatador.format(totalFolha));
+            gravarArq.printf("\nTOTAL FOLHA: %s\n", formatador.format(totalFolha.doubleValue()));
         }
         return backup;
     }
@@ -1122,14 +1126,14 @@ public class SistemaFolha {
         if (!empregado.isSindicalizado()) {
             return BigDecimal.ZERO;
         }
-        BigDecimal taxaSindicalDiaria = BigDecimal.valueOf(Double.parseDouble(empregado.getTaxaSindical().replace(",", ".")));
+        BigDecimal taxaSindicalDiaria = new BigDecimal(empregado.getTaxaSindical().replace(",", "."));
         LocalDate dataAtual = LocalDate.parse(data, DateTimeFormatter.ofPattern("d/M/yyyy"));
         LocalDate ultimoPagamento = LocalDate.parse(empregado.getUltimoPagamento(), DateTimeFormatter.ofPattern("d/M/yyyy"));
         BigDecimal taxasServico = new BigDecimal(getTaxasServico(String.valueOf(empregados.entrySet().stream()
                 .filter(entry -> entry.getValue().equals(empregado))
                 .map(Map.Entry::getKey)
                 .findFirst()
-                .orElse(null)), empregado.getUltimoPagamento(), data).replace(",", "."));
+                .orElse(null)), empregado.getUltimoPagamento(), data).replace(",", ".")).setScale(2, RoundingMode.DOWN);
         if (empregado.getTipo().equals("assalariado"))
         {
             return taxaSindicalDiaria.multiply(new BigDecimal(dataAtual.lengthOfMonth())).add(taxasServico);
@@ -1144,12 +1148,9 @@ public class SistemaFolha {
         {
             dias = ChronoUnit.DAYS.between(ultimoPagamento, dataAtual);
         }
-        BigDecimal totalTaxaSindical = taxaSindicalDiaria.multiply(new BigDecimal(dias));
+        BigDecimal totalTaxaSindical = taxaSindicalDiaria.multiply(new BigDecimal(dias)).setScale(2, RoundingMode.DOWN);
 
-
-
-
-        return totalTaxaSindical.add(taxasServico);
+        return totalTaxaSindical.add(taxasServico).setScale(2, RoundingMode.DOWN);
     }
 
     /**
@@ -1167,33 +1168,6 @@ public class SistemaFolha {
         }
         return empregado.getMetodoPagamento();
     }
-
-    /**
-     * Metodo estatico que serve para passar um valor double para a formatação string requerida nos testes
-     * @param valor o valor double a ser "traduzido"
-     * @return a String devidamente formatada
-     */
-    public static String doubleParaString (double valor)
-    {
-        Locale localeBrasil = new Locale("pt", "BR");
-        NumberFormat formatador = NumberFormat.getNumberInstance(localeBrasil);
-        //ajustando a formatação dos numeros
-        formatador.setGroupingUsed(false);
-        formatador.setMinimumFractionDigits(2);
-        return formatador.format(valor);
-    }
-
-    /**
-     * Metodo que formata uma String para double
-     * @param valor a string a ser transformada
-     * @return o valor double formatado
-     */
-    public static double stringParaDouble (String valor)
-    {
-        valor = valor.replace(",", ".");
-        return Double.parseDouble(valor);
-    }
-
     public void adicionaHashMap (String id, Empregado empregado)
     {
         this.empregados.put(id, empregado);

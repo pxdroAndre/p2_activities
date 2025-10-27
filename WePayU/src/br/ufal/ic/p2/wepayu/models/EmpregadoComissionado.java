@@ -57,9 +57,9 @@ public class EmpregadoComissionado extends Empregado
      * @param salario O salário base do empregado.
      * @param comissao A taxa de comissão sobre as vendas (ex: 0.05 para 5%).
      */
-    public EmpregadoComissionado(String nome, String endereco, String tipo, String salario, double comissao) {
+    public EmpregadoComissionado(String nome, String endereco, String tipo, String salario, BigDecimal comissao) {
         super(nome, endereco, tipo, salario);
-        this.comissao = SistemaFolha.doubleParaString(comissao);
+        this.comissao = comissao.setScale(2, RoundingMode.DOWN).toPlainString().replace('.', ',');
     }
 
     /**
@@ -126,7 +126,7 @@ public class EmpregadoComissionado extends Empregado
      */
     public String getVendas (String inicio, String fim) throws DataInicialInvalidaException, DataFinalInvalidaException, DataInicialNaoPodeSerPosteriorADataFinalException
     {
-        double totalVendas = 0;
+        BigDecimal totalVendas = BigDecimal.ZERO;
         // fazendo parsing das datas
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/yyyy");
         // formata as datas
@@ -158,16 +158,11 @@ public class EmpregadoComissionado extends Empregado
             if (!dataVenda.isBefore(in) && dataVenda.isBefore(fi)) {
                 // Se estiver no intervalo, some as vendas
                 String valorDaVenda = venda.getValor();
-                valorDaVenda = valorDaVenda.replace(',', '.');
-                double v = Double.parseDouble(valorDaVenda);
-                totalVendas += v;
+                totalVendas = totalVendas.add(new BigDecimal(valorDaVenda.replace(',', '.')));
             }
         }
         // formata o retorno para string
-        formatador.setGroupingUsed(false);
-        formatador.setMinimumFractionDigits(2);
-        formatador.setMaximumFractionDigits(2);
-        return formatador.format(totalVendas);
+        return totalVendas.setScale(2, RoundingMode.DOWN).toPlainString().replace('.', ',');
     }
 
 
@@ -177,23 +172,55 @@ public class EmpregadoComissionado extends Empregado
      * @return retorna um bigDecimal com o valor do salario do comissionado naquela data
      * @throws CampoValidoException necessario para chamar o metodo getVendas
      */
+    @Override
     public BigDecimal calculaSalarioBruto(String dataFinal) throws DataInicialInvalidaException, DataFinalInvalidaException, DataInicialNaoPodeSerPosteriorADataFinalException
     {
         String vendasStr = this.getVendas(this.getUltimoPagamento(), dataFinal).replace(",", ".");
 
-        BigDecimal salarioMensal = BigDecimal.valueOf(Double.parseDouble(this.getSalario().replace(",", ".")));
+        BigDecimal salarioBase = new BigDecimal(this.getSalario().replace(",", "."));
         BigDecimal valorVendas = new BigDecimal(vendasStr);
-        BigDecimal comissaoPercentual = BigDecimal.valueOf(SistemaFolha.stringParaDouble(this.getComissao()));
-
-        BigDecimal doze = new BigDecimal("12");
-        BigDecimal vinteSeis = new BigDecimal("26");
-
-        BigDecimal parteFixa = salarioMensal.multiply(doze)
-                .divide(vinteSeis, 2, RoundingMode.DOWN);
-
+        BigDecimal comissaoPercentual = new BigDecimal(this.getComissao().replace(",", "."));
         BigDecimal valorComissao = valorVendas.multiply(comissaoPercentual);
+        valorComissao.setScale(2, RoundingMode.DOWN);
+        BigDecimal parteFixa;
 
-        return parteFixa.add(valorComissao);
+        String agenda = this.getAgendaPagamento();
+        if (agenda.startsWith("semanal")) {
+            String[] partes = agenda.split(" ");
+            int frequencia = partes.length == 2 ? 1 : Integer.parseInt(partes[1]);
+            BigDecimal salarioSemanal = salarioBase.multiply(new BigDecimal(12)).divide(new BigDecimal(52), 10, RoundingMode.DOWN);
+            salarioSemanal = salarioSemanal.setScale(2, RoundingMode.DOWN);
+            parteFixa = salarioSemanal.multiply(new BigDecimal(frequencia));
+        } else {
+            parteFixa = salarioBase;
+        }
+
+        return parteFixa.add(valorComissao).setScale(2, RoundingMode.DOWN);
     }
+
+    /**
+     * Calcula o salario do comissionado
+     * @param dataFinal data atual para ser calculado
+     * @return retorna um bigDecimal com o valor do salario do comissionado naquela data
+     * @throws CampoValidoException necessario para chamar o metodo getVendas
+     */
+    // public BigDecimal calculaSalarioBruto(String dataFinal) throws DataInicialInvalidaException, DataFinalInvalidaException, DataInicialNaoPodeSerPosteriorADataFinalException
+    // {
+    //     String vendasStr = this.getVendas(this.getUltimoPagamento(), dataFinal).replace(",", ".");
+
+    //     BigDecimal salarioMensal = BigDecimal.valueOf(Double.parseDouble(this.getSalario().replace(",", ".")));
+    //     BigDecimal valorVendas = new BigDecimal(vendasStr);
+    //     BigDecimal comissaoPercentual = BigDecimal.valueOf(SistemaFolha.stringParaDouble(this.getComissao()));
+
+    //     BigDecimal doze = new BigDecimal("12");
+    //     BigDecimal vinteSeis = new BigDecimal("26");
+
+    //     BigDecimal parteFixa = salarioMensal.multiply(doze)
+    //             .divide(vinteSeis, 2, RoundingMode.DOWN);
+
+    //     BigDecimal valorComissao = valorVendas.multiply(comissaoPercentual);
+
+    //     return parteFixa.add(valorComissao);
+    // }
 
 }
